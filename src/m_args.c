@@ -72,11 +72,13 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 				opt_help(args);
 			} else {
 				if (args[it].take_arg) {
-					if (i + 1 < (u32_t)ac)
+					if (i + 1 < (u32_t)ac) {
 						args[it].callback(av[++i]);
-					else
-						m_panic("Option -%c must take an argument\n",
+					} else {
+						m_error("Option -%c must take an argument\n",
 							args[it].opt);
+						opt_help(args);
+					}
 				} else {
 					args[it].callback(NULL);
 				}
@@ -115,8 +117,11 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 				m_error("Unknown option %s\n", av[i]);
 				opt_help(args);
 			} else {
-				if (args[it].take_arg && !got_arg)
-					m_panic("Option %s must take an argument", args[it].s_opt);
+				if (args[it].take_arg && !got_arg) {
+					m_error("Option %s must take an argument", args[it].s_opt);
+					opt_help(args);
+				}
+
 				if (got_arg)
 					args[it].callback(&(av[i][k + 3]));
 				else
@@ -132,9 +137,14 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
  * \param args List of arguments to print
  */
 static void		opt_help(const margs_t *args) {
+	m_info("Usage: %s -qwerty\n", "./builder");
 	m_info("Help:\n");
 	for (u32_t i = 0; args[i].opt != 0; i++) {
 		m_info("\t-%c | --%s : %s\n", args[i].opt, args[i].s_opt, args[i].desc);
 	}
+	write(1, "\n", 1);
+	m_info("If an argument requires a value, you can set it two ways:\n");
+	m_info("\t-o value\n");
+	m_info("\t--option=value\n");
 	_exit(1);
 }
