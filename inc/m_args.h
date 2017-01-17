@@ -14,19 +14,45 @@
 *                       limitations under the License.                         *
 \******************************************************************************/
 
-#ifndef M_TYPES_H
-# define M_TYPES_H
+#ifndef M_ARGS_H
+# define M_ARGS_H
 
-/* Generic types */
+# include <stdbool.h>
+# include <m_types.h>
+# include <m_print.h>
 
-typedef signed char			s8_t;
-typedef signed short		s16_t;
-typedef signed int			s32_t;
-typedef signed long long	s64_t;
+typedef struct		s_args {
+	/**
+	 * Single letter option
+	 * Example: -f, -s
+	 */
+	char	opt;
 
-typedef unsigned char		u8_t;
-typedef unsigned short		u16_t;
-typedef unsigned int		u32_t;
-typedef unsigned long long	u64_t;
+	/**
+	 * Full string option
+	 * Example: --force, --skip
+	 */
+	char	*s_opt;
 
-#endif /* M_TYPES_H */
+	/**
+	 * Description of the option.
+	 * Used for the help
+	 */
+	char	*desc;
+
+	/**
+	 * Boolean that describe if the option must take an argument
+	 */
+	bool		take_arg;
+
+	/**
+	 * Callback of the option
+	 */
+	void	(*callback)(char *);
+}					margs_t;
+
+
+u32_t		read_opt(const int ac, const char **av, const margs_t *args);
+static void		opt_help(const margs_t *args);
+
+#endif /* M_ARGS_H */
