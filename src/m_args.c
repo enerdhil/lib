@@ -31,8 +31,8 @@
  *
  * \note Only the arguments beginning with - are parsed.
  */
-u32_t		read_opt(const int ac, const char **av, const margs_t *args) {
-	u32_t		ret = 0, it;
+u32_t		read_opt(const int ac, char **av, const margs_t *args) {
+	u32_t		ret = 0, it, k;
 	u8_t		n_dash;
 
 	for (u32_t i = 1, j = 0; i < (u32_t)ac; i++) {
@@ -71,11 +71,21 @@ u32_t		read_opt(const int ac, const char **av, const margs_t *args) {
 				m_error("Unknow option -%s\n", &(av[i][1]));
 				opt_help(args);
 			} else {
-				args[it].callback(NULL);
+				if (args[it].take_arg) {
+					if (i + 1 < (u32_t)ac)
+						args[it].callback(av[++i]);
+					else
+						m_panic("Option -%c must take an argument\n",
+							args[it].opt);
+				} else {
+					args[it].callback(NULL);
+				}
 			}
 
 		/* Word option */
 		} else if (n_dash == 2) {
+			bool	got_arg = false;
+
 			if (strlen(av[i]) < 3) {
 				m_error("Double dash without option. Ignoring...\n");
 				continue ;
@@ -84,9 +94,20 @@ u32_t		read_opt(const int ac, const char **av, const margs_t *args) {
 			if (strcmp(&(av[i][2]), "help") == 0)
 				opt_help(args);
 
+			/* Look for an argument */
+			for (k = 2; av[i][k] != '\0' && av[i][k] != '='; k++)
+				;
+
+			if (av[i][k] != '\0') {
+				got_arg = true;
+				k -= 2;
+			} else {
+				k = strlen(av[i]) - 2;
+			}
+
 			/* Search the option in the args array */
 			for (it = 0; args[it].opt != 0 && (args[it].s_opt != NULL &&
-						strcmp(args[it].s_opt, &(av[i][2])) != 0); it++)
+						strncmp(args[it].s_opt, &(av[i][2]), k) != 0); it++)
 				;
 
 			/* Can't find the option */
@@ -94,7 +115,12 @@ u32_t		read_opt(const int ac, const char **av, const margs_t *args) {
 				m_error("Unknown option %s\n", av[i]);
 				opt_help(args);
 			} else {
-				args[it].callback(NULL);
+				if (args[it].take_arg && !got_arg)
+					m_panic("Option %s must take an argument", args[it].s_opt);
+				if (got_arg)
+					args[it].callback(&(av[i][k + 3]));
+				else
+					args[it].callback(NULL);
 			}
 		}
 	}

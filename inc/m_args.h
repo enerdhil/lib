@@ -48,11 +48,11 @@ typedef struct		s_args {
 	/**
 	 * Callback of the option
 	 */
-	void	(*callback)(char *);
+	void	(*callback)(const char *);
 }					margs_t;
 
 
-u32_t		read_opt(const int ac, const char **av, const margs_t *args);
+u32_t		read_opt(const int ac, char **av, const margs_t *args);
 static void		opt_help(const margs_t *args);
 
 #endif /* M_ARGS_H */
