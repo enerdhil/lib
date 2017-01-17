@@ -14,47 +14,61 @@
 *                       limitations under the License.                         *
 \******************************************************************************/
 
-#ifndef M_ARGS_H
-# define M_ARGS_H
-
-# include <stdbool.h>
-# include <m_types.h>
-# include <m_print.h>
-# include <m_infos.h>
-
-typedef struct		s_args {
-	/**
-	 * Single letter option
-	 * Example: -f, -s
-	 */
-	char	opt;
-
-	/**
-	 * Full string option
-	 * Example: --force, --skip
-	 */
-	char	*s_opt;
-
-	/**
-	 * Description of the option.
-	 * Used for the help
-	 */
-	char	*desc;
-
-	/**
-	 * Boolean that describe if the option must take an argument
-	 */
-	bool		take_arg;
-
-	/**
-	 * Callback of the option
-	 */
-	void	(*callback)(const char *);
-}					margs_t;
+#include <m_infos.h>
 
 
-u32_t			read_opt(const int ac, char **av, const margs_t *args);
-static void		opt_help(const margs_t *args);
-static void		p_version(void);
+/* Globals */
+static char		program[INFOS_G_LEN_MAX] = "";
+static char		version[INFOS_G_LEN_MAX] = "";
+static char		maintainer[INFOS_G_LEN_MAX] = "";
 
-#endif /* M_ARGS_H */
+/*!
+ * Set the program name to a string
+ */
+void	set_program_name(const char *str) {
+	memcpy(program, str, strlen(str));
+}
+
+/*!
+ * Set the version name to a string
+ */
+void	set_version(const char *str) {
+	memcpy(version, str, strlen(str));
+}
+
+/*!
+ * Set the maintainer name to a string
+ */
+void	set_maintainer(const char *str) {
+	memcpy(maintainer, str, strlen(str));
+}
+
+/*!
+ * Get the program name
+ * \note If the program is not set, return NULL
+ */
+const char	*get_program_name(void) {
+	if (strlen(program) != 0)
+		return program;
+	return NULL;
+}
+
+/*!
+ * Get the version
+ * \note If the version is not set, return NULL
+ */
+const char	*get_version(void) {
+	if (strlen(version) != 0)
+		return version;
+	return NULL;
+}
+
+/*!
+ * Get the maintainer
+ * \note If the maintainer is not set, return NULL
+ */
+const char	*get_maintainer(void) {
+	if (strlen(maintainer) != 0)
+		return maintainer;
+	return NULL;
+}

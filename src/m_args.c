@@ -58,9 +58,11 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 				continue ;
 			}
 
-			/* Help option */
+			/* Builtins options */
 			if (av[i][1] == 'h')
 				opt_help(args);
+			else if (av[i][1] == 'v')
+				p_version();
 
 			/* Search the option in the args array */
 			for (it = 0; args[it].opt != 0 && args[it].opt != av[i][1]; it++)
@@ -93,8 +95,11 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 				continue ;
 			}
 
+			/* Builtins options */
 			if (strcmp(&(av[i][2]), "help") == 0)
 				opt_help(args);
+			else if (strcmp(&(av[i][2]), "version") == 0)
+				p_version();
 
 			/* Look for an argument */
 			for (k = 2; av[i][k] != '\0' && av[i][k] != '='; k++)
@@ -137,7 +142,6 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
  * \param args List of arguments to print
  */
 static void		opt_help(const margs_t *args) {
-	m_info("Usage: %s -qwerty\n", "./builder");
 	m_info("Help:\n");
 	for (u32_t i = 0; args[i].opt != 0; i++) {
 		m_info("\t-%c | --%s : %s\n", args[i].opt, args[i].s_opt, args[i].desc);
@@ -146,5 +150,15 @@ static void		opt_help(const margs_t *args) {
 	m_info("If an argument requires a value, you can set it two ways:\n");
 	m_info("\t-o value\n");
 	m_info("\t--option=value\n");
+	_exit(1);
+}
+
+/*!
+ * \brief Print the program name, the version and the maintainer, then exit
+ */
+static void		p_version(void) {
+	m_info("Program: %s\n", get_program_name());
+	m_info("Version: %s\n", get_version());
+	m_info("%s\n", get_maintainer());
 	_exit(1);
 }

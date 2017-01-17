@@ -14,47 +14,19 @@
 *                       limitations under the License.                         *
 \******************************************************************************/
 
-#ifndef M_ARGS_H
-# define M_ARGS_H
+#ifndef M_INFOS_H
+# define M_INFOS_H
 
-# include <stdbool.h>
-# include <m_types.h>
-# include <m_print.h>
-# include <m_infos.h>
+# include <stdio.h>
+# include <string.h>
 
-typedef struct		s_args {
-	/**
-	 * Single letter option
-	 * Example: -f, -s
-	 */
-	char	opt;
+# define INFOS_G_LEN_MAX 150
 
-	/**
-	 * Full string option
-	 * Example: --force, --skip
-	 */
-	char	*s_opt;
+void	set_program_name(const char *str);
+void	set_version(const char *str);
+void	set_maintainer(const char *str);
+const char	*get_program_name(void);
+const char	*get_version(void);
+const char	*get_maintainer(void);
 
-	/**
-	 * Description of the option.
-	 * Used for the help
-	 */
-	char	*desc;
-
-	/**
-	 * Boolean that describe if the option must take an argument
-	 */
-	bool		take_arg;
-
-	/**
-	 * Callback of the option
-	 */
-	void	(*callback)(const char *);
-}					margs_t;
-
-
-u32_t			read_opt(const int ac, char **av, const margs_t *args);
-static void		opt_help(const margs_t *args);
-static void		p_version(void);
-
-#endif /* M_ARGS_H */
+#endif /* M_INFOS_H */
