@@ -101,6 +101,10 @@ u32_t		read_opt(const int ac, const char **av, const margs_t *args) {
 	return ret;
 }
 
+/*!
+ * \brief Print helps with a list of argument
+ * \param args List of arguments to print
+ */
 static void		opt_help(const margs_t *args) {
 	m_info("Help:\n");
 	for (u32_t i = 0; args[i].opt != 0; i++) {
