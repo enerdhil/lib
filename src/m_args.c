@@ -65,24 +65,27 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 				p_version();
 
 			/* Search the option in the args array */
-			for (it = 0; args[it].opt != 0 && args[it].opt != av[i][1]; it++)
-				;
+			for (u32_t z = 1; av[i][z] != '\0'; z++) {
+				for (it = 0; args[it].opt != 0 && args[it].opt != av[i][z]; it++)
+					;
 
-			/* Can't find the option */
-			if (args[it].opt == 0) {
-				m_error("Unknow option -%s\n", &(av[i][1]));
-				opt_help(args);
-			} else {
-				if (args[it].take_arg) {
-					if (i + 1 < (u32_t)ac) {
-						args[it].callback(av[++i]);
-					} else {
-						m_error("Option -%c must take an argument\n",
-							args[it].opt);
-						opt_help(args);
-					}
+				/* Can't find the option */
+				if (args[it].opt == 0) {
+					m_error("Unknow option -%s\n", &(av[i][z]));
+					opt_help(args);
 				} else {
-					args[it].callback(NULL);
+					if (args[it].take_arg) {
+						if (i + 1 < (u32_t)ac) {
+							args[it].callback(av[++i]);
+							break ;
+						} else {
+							m_error("Option -%c must take an argument\n",
+								args[it].opt);
+							opt_help(args);
+						}
+					} else {
+						args[it].callback(NULL);
+					}
 				}
 			}
 
