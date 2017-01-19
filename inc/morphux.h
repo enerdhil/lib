@@ -17,6 +17,8 @@
 #ifndef MORPHUX_H
 # define MORPHUX_H
 
+# define _GNU_SOURCE
+
 # include <m_types.h>
 # include <m_print.h>
 # include <m_args.h>

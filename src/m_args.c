@@ -145,7 +145,7 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
  * \brief Print helps with a list of argument
  * \param args List of arguments to print
  */
-static void		opt_help(const margs_t *args) {
+void		opt_help(const margs_t *args) {
 	m_info("Help:\n");
 	for (u32_t i = 0; args[i].opt != 0; i++) {
 		m_info("\t-%c | --%s : %s\n", args[i].opt, args[i].s_opt, args[i].desc);
@@ -160,7 +160,7 @@ static void		opt_help(const margs_t *args) {
 /*!
  * \brief Print the program name, the version and the maintainer, then exit
  */
-static void		p_version(void) {
+void		p_version(void) {
 	m_info("Program: %s\n", get_program_name());
 	m_info("Version: %s\n", get_version());
 	m_info("%s\n", get_maintainer());

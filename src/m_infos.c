@@ -26,21 +26,33 @@ static char		maintainer[INFOS_G_LEN_MAX] = "";
  * Set the program name to a string
  */
 void	set_program_name(const char *str) {
-	memcpy(program, str, strlen(str));
+	if (str == NULL) {
+		strcpy(program, "");
+	} else {
+		strcpy(program, str);
+	}
 }
 
 /*!
  * Set the version name to a string
  */
 void	set_version(const char *str) {
-	memcpy(version, str, strlen(str));
+	if (str == NULL) {
+		strcpy(version, "");
+	} else {
+		strcpy(version, str);
+	}
 }
 
 /*!
  * Set the maintainer name to a string
  */
 void	set_maintainer(const char *str) {
-	memcpy(maintainer, str, strlen(str));
+	if (str == NULL) {
+		strcpy(maintainer, "");
+	} else {
+		strcpy(maintainer, str);
+	}
 }
 
 /*!

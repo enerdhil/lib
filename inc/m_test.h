@@ -50,11 +50,11 @@ typedef struct		s_test_results {
 }
 
 /* Functions */
-static void		title(char *s);
+void			title(char *s);
 void			register_test(char *group, char *(*fn_test)(void), char *name);
 mtest_results_t	test_group(char *group);
-void			test_all(void);
+u32_t			test_all(void);
 void			test_free(void);
-static int		single_test_free(void *ptr);
+int				single_test_free(void *ptr);
 
 #endif /* M_TEST_H */

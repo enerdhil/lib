@@ -22,7 +22,7 @@ static mlist_t		*tests = NULL;
  * \brief Print a title
  * \param s Title name
  */
-static void	title(char *s) {
+void	title(char *s) {
 	u8_t			len = TITLE_LEN;
 	int				i;
 
@@ -114,8 +114,9 @@ mtest_results_t	test_group(char *group) {
 
 /*!
  * \brief Test all registered tests
+ * \return Numbers of tests failed
  */
-void		test_all(void) {
+u32_t		test_all(void) {
 	mlist_t			*tmp, *groups = NULL;
 	mtest_t			*ptr;
 	mtest_results_t	res;
@@ -139,6 +140,8 @@ void		test_all(void) {
 		printf("\n");
 		m_info("Results: %d%% (%d/%d)\n", (success * 100) / total, success, total);
 	}
+
+	return failed;
 }
 
 /*!
@@ -153,7 +156,7 @@ void	test_free(void) {
  * \brief Free a single test
  * \note Used in test_free, as a list_free callback
  */
-static int		single_test_free(void *ptr) {
+int		single_test_free(void *ptr) {
 	mtest_t		*tmp = ptr;
 
 	if (ptr) {
