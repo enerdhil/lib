@@ -10,3 +10,18 @@ script:
     - make -C tests
     - make -C tests check
     - make -C tests valgrind
+
+env:
+    global:
+       - secure: "ksvBo7ATRA7YhWHOES1mmnpydaYTANCcZtIT663HcIAdxltQumUPdUFGqvzFgZuYuqybAS2mlLcML1TwQZ/hSKC7vIWq+l40K8LhxBJlyoRwe9Ss+Z3Cb2f8rioLlPdrN/ddL2gVAGafiLo9lEhwATB/gY+eOCm3n7V3tU6Vx0sGmsrp5sdXPv6hGAkYAr7Ve+6hVRQlBUIgs28m173A7mOmEZHiQ9fW587f12FS0P88BZYZGM9HxqK4S8QJJCi40+ndvD6g1giksq1Whj1vLgy8ICw5/E9DtVScMts2v1UjHdYPepwSsKHXcOwDqJWrsGc9Wl3/AoiWVN9vg2E6xf//D0ak3pZRtwU8g0VOUuKe4Gx3bIAGZwAs09yase+aAA81ufsqsJWp8HrZpNfv9MOWm7NJtDhEECuvpp2JdELmwKt5P4ik7KXmXN8hVGyXD9QXCoSpjPQb35ETsVR1gFrmMz7zGeKU86EObeabpLGjFTnjONw/MUdoWyhebYMwDAzWKJ8W9RWl/e3OQBmxMiET60h3883kfNIPR4WbtQNf1siwoR3VB3MOcVSSdQGx5rPDITlv1xNnBMPcReUMHC2YXZKbAnFHIvZbjfY1FcX7EuvDI77l/TUdm5gbyJMm6gkeF6yGxqsQu9E/7YzAeOIFHQBAPooTA2uAQqegqUM="
+
+before_install:
+    - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+
+addons:
+    coverity_scan:
+        project:
+            name: "Morphux/lib"
+        notification_email: louis@ne02ptzero.me
+        build_command:   "make && make -C tests check"
+        branch_pattern: master
