@@ -14,14 +14,47 @@
 *                       limitations under the License.                         *
 \******************************************************************************/
 
-#ifndef MORPHUX_H
-# define MORPHUX_H
+#ifndef M_TEST_H
+# define M_TEST_H
 
-# include <m_types.h>
-# include <m_print.h>
-# include <m_args.h>
-# include <m_infos.h>
+# include <stdio.h>
+# include <unistd.h>
 # include <m_list.h>
-# include <m_test.h>
+# include <m_print.h>
 
-#endif /* MORPHUX_H */
+typedef struct		s_test {
+	char				*(*fn_test)(void);
+	char				*group;
+	char				*name;
+}					mtest_t;
+
+typedef struct		s_test_results {
+	u32_t				success;
+	u32_t				failed;
+	u32_t				total;
+}					mtest_results_t;
+
+
+/* Defines */
+# define TEST_SUCCESS		0x0
+# define TITLE_LEN			80
+
+# define TEST(name) char		*test_##name(void)
+# define reg_test(group, name) register_test(group, &test_##name, #name);
+# define TEST_ASSERT(condition, error_name) {\
+	if (!condition) {\
+		char *ret = NULL; \
+		asprintf(&ret, "\t%s: Test: '%s', File %s:%d", error_name, #condition, __FILE__, __LINE__);\
+		return ret;\
+	}\
+}
+
+/* Functions */
+static void		title(char *s);
+void			register_test(char *group, char *(*fn_test)(void), char *name);
+mtest_results_t	test_group(char *group);
+void			test_all(void);
+void			test_free(void);
+static int		single_test_free(void *ptr);
+
+#endif /* M_TEST_H */

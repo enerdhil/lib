@@ -215,15 +215,40 @@ u32_t		list_size(mlist_t *list) {
  * \return If the list has been entirely freed, this function will return NULL
  */
 mlist_t		*list_free(mlist_t *list, int (*free_fn)(void *member)) {
-	mlist_t		*tmp;
+	mlist_t		*tmp = list, *tmp2;
 
-	for (tmp = list; tmp != NULL; tmp = tmp->next) {
-		if (free_fn(tmp->member) != 0) {
+	while (tmp != NULL) {
+		tmp2 = tmp->next;
+		if (free_fn != NULL && free_fn(tmp->member) == 0) {
+			return tmp;
+		} else {
 			free(tmp->member);
 			free(tmp);
-		} else {
-			return tmp;
 		}
+		tmp = tmp2;
+	}
+	return NULL;
+}
+
+/*!
+ * \brief Search a member in a list
+ * \param list List head
+ * \param member Member to search
+ * \param size Size of the member
+ *
+ * Search member in list.
+ * If member is found, return a pointer to it
+ * If not, NULL is returned
+ */
+void		*list_get(mlist_t *list, void *member, size_t size) {
+	mlist_t		*tmp;
+	void		*ptr;
+
+	if (list == NULL)
+		return NULL;
+	list_for_each(list, tmp, ptr) {
+		if (memcmp(ptr, member, size) == 0 && (size == tmp->size))
+			return ptr;
 	}
 	return NULL;
 }

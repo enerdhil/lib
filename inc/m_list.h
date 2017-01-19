@@ -57,5 +57,6 @@ mlist_t		*list_insert_after(mlist_t *org, mlist_t *ptr, void *member, u32_t size
 mlist_t		*list_insert_before(mlist_t *org, mlist_t *ptr, void *member, u32_t size);
 u32_t		list_size(mlist_t *list);
 mlist_t		*list_free(mlist_t *list, int (*free_fn)(void *member));
+void		*list_get(mlist_t *list, void *member, size_t size);
 
 #endif

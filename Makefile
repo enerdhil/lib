@@ -17,7 +17,7 @@
 NAME=		libmorphux.a
 CC =		gcc
 LIB =		ar
-CFLAGS =	-Wall -Wextra -Werror -I inc/ -std=c99
+CFLAGS =	-Wall -Wextra -Werror -I inc/ -std=c99 -g -O3
 LFLAGS =	-cq
 SRCS =		$(wildcard src/*.c)
 OBJS =		$(SRCS:%.c=%.o)
