@@ -3,7 +3,7 @@ compiler: gcc
 
 before_install:
     - sudo apt-get -qq update
-    - sudo apt-get install -y valgrind gcov
+    - sudo apt-get install -y valgrind lcov
 
 script:
     - make
