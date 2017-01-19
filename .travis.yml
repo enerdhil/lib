@@ -1,0 +1,12 @@
+language: c
+compiler: gcc
+
+before_install:
+    - sudo apt-get -qq update
+    - sudo apt-get install -y valgrind gcov
+
+script:
+    - make
+    - make -C tests
+    - make -C tests check
+    - make -C tests valgrind
