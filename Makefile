@@ -27,6 +27,12 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	$(LIB) $(LFLAGS) $(NAME) $(OBJS)
 
+check:
+	make -C tests check
+
+doc:
+	doxygen docs/doxyfile
+
 clean:
 	rm -f $(OBJS)
 
