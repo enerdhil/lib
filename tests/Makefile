@@ -13,7 +13,7 @@ check: $(NAME)
 	./$(NAME)
 
 valgrind: $(NAME)
-	valgrind --leak-check=full --errors-for-leak-kinds=all --error-exitcode=1 ./$(NAME)
+	valgrind --leak-check=full --error-exitcode=1 ./$(NAME)
 
 clean:
 	rm -f $(OBJS)
