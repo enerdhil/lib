@@ -27,7 +27,8 @@
  * The read_opt function reads a given list of arguments, and parse the options
  * in it. The options are read from the args array.
  * If an option is not known, the function calls the help and quit.
- * If the option is -h | --help is passed, the function call the help and quit.
+ * If the option -h | --help is passed, the function call the help and quit.
+ * If the option -v | --version is passed, the function call the version and quit.
  *
  * \note Only the arguments beginning with - are parsed.
  */
