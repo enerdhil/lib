@@ -54,5 +54,13 @@ In code:
 #include <morphux.h>
 ```
 
-### Documentation
-TBD.
+# Documentation
+### Dependencies
+```
+doxygen
+```
+
+Generate it:
+```
+make doc
+```
