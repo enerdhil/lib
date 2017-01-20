@@ -185,7 +185,7 @@ mlist_t		*list_insert_before(mlist_t *org, mlist_t *ptr, void *member, u32_t siz
 
 /*!
  * \brief Return the size of a list
- * \param List head
+ * \param list List head
  * \note If the list head is NULL, this function will return 0
  */
 u32_t		list_size(mlist_t *list) {
