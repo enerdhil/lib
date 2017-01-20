@@ -52,6 +52,8 @@ typedef struct		s_args {
 	void	(*callback)(const char *);
 }					margs_t;
 
+#define ARGS_EOL {0, NULL, NULL, false, NULL}
+
 
 u32_t			read_opt(const int ac, char **av, const margs_t *args);
 void			opt_help(const margs_t *args);

@@ -36,6 +36,9 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 	u32_t		ret = 0, it, k;
 	u8_t		n_dash;
 
+	if (ac == 0 || av == NULL || args == NULL)
+		return ret;
+
 	for (u32_t i = 1, j = 0; i < (u32_t)ac; i++) {
 
 		if (av[i] == NULL || strlen(av[i]) == 0)
@@ -86,6 +89,7 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 						}
 					} else {
 						args[it].callback(NULL);
+						ret++;
 					}
 				}
 			}
@@ -135,6 +139,7 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 					args[it].callback(&(av[i][k + 3]));
 				else
 					args[it].callback(NULL);
+				ret++;
 			}
 		}
 	}
