@@ -56,7 +56,7 @@ typedef struct		s_args {
 
 
 u32_t			read_opt(const int ac, char **av, const margs_t *args);
-void			opt_help(const margs_t *args);
-void			p_version(void);
+void			opt_help(const margs_t *args, u8_t ret);
+void			p_version(u8_t ret);
 
 #endif /* M_ARGS_H */

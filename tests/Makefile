@@ -1,6 +1,6 @@
 NAME =		test
 CC =		gcc
-CFLAGS =	-Wall -Wextra -g -O3 -I../inc -lmorphux
+CFLAGS =	-Wall -Wextra -Wno-unused-result -g -O3 -I../inc -lmorphux
 SRCS =		$(wildcard *.c)
 OBJS =		$(SRCS:%.c=%.o)
 

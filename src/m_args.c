@@ -64,9 +64,9 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 
 			/* Builtins options */
 			if (av[i][1] == 'h')
-				opt_help(args);
+				opt_help(args, 0);
 			else if (av[i][1] == 'v')
-				p_version();
+				p_version(0);
 
 			/* Search the option in the args array */
 			for (u32_t z = 1; av[i][z] != '\0'; z++) {
@@ -76,7 +76,7 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 				/* Can't find the option */
 				if (args[it].opt == 0) {
 					m_error("Unknow option -%s\n", &(av[i][z]));
-					opt_help(args);
+					opt_help(args, 1);
 				} else {
 					if (args[it].take_arg) {
 						if (i + 1 < (u32_t)ac) {
@@ -85,7 +85,7 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 						} else {
 							m_error("Option -%c must take an argument\n",
 								args[it].opt);
-							opt_help(args);
+							opt_help(args, 1);
 						}
 					} else {
 						args[it].callback(NULL);
@@ -105,9 +105,9 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 
 			/* Builtins options */
 			if (strcmp(&(av[i][2]), "help") == 0)
-				opt_help(args);
+				opt_help(args, 0);
 			else if (strcmp(&(av[i][2]), "version") == 0)
-				p_version();
+				p_version(0);
 
 			/* Look for an argument */
 			for (k = 2; av[i][k] != '\0' && av[i][k] != '='; k++)
@@ -128,11 +128,11 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 			/* Can't find the option */
 			if (args[it].opt == 0) {
 				m_error("Unknown option %s\n", av[i]);
-				opt_help(args);
+				opt_help(args, 1);
 			} else {
 				if (args[it].take_arg && !got_arg) {
 					m_error("Option %s must take an argument", args[it].s_opt);
-					opt_help(args);
+					opt_help(args, 1);
 				}
 
 				if (got_arg)
@@ -147,10 +147,11 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 }
 
 /*!
- * \brief Print helps with a list of argument
+ * \brief Print helps with a list of argument, and exit
  * \param args List of arguments to print
+ * \param ret Return code of the exit
  */
-void		opt_help(const margs_t *args) {
+void		opt_help(const margs_t *args, u8_t ret) {
 	m_info("Help:\n");
 	for (u32_t i = 0; args[i].opt != 0; i++) {
 		m_info("\t-%c | --%s : %s\n", args[i].opt, args[i].s_opt, args[i].desc);
@@ -159,15 +160,16 @@ void		opt_help(const margs_t *args) {
 	m_info("If an argument requires a value, you can set it two ways:\n");
 	m_info("\t-o value\n");
 	m_info("\t--option=value\n");
-	_exit(1);
+	_exit(ret);
 }
 
 /*!
  * \brief Print the program name, the version and the maintainer, then exit
+ * \param ret Return code of the exit
  */
-void		p_version(void) {
+void		p_version(u8_t ret) {
 	m_info("Program: %s\n", get_program_name());
 	m_info("Version: %s\n", get_version());
 	m_info("%s\n", get_maintainer());
-	_exit(1);
+	_exit(ret);
 }
