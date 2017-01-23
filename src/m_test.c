@@ -117,29 +117,36 @@ mtest_results_t	test_group(char *group) {
  * \return Numbers of tests failed
  */
 u32_t		test_all(void) {
-	mlist_t			*tmp, *groups = NULL;
+	mlist_t			*tmp, *groups = NULL, *tests_results = NULL;
 	mtest_t			*ptr;
-	mtest_results_t	res;
+	mtest_results_t	res, *ptr2;
 	u32_t			total = 0, success = 0, failed = 0;
 
 	list_for_each(tests, tmp, ptr) {
 		if (list_get(groups, ptr->group, strlen(ptr->group)) == NULL) {
 			res = test_group(ptr->group);
+
+			res.group_name = malloc(sizeof(char) * strlen(ptr->group) + 1);
+			strcpy(res.group_name, ptr->group);
 			total += res.total;
 			success += res.success;
 			failed += res.failed;
 			list_add(groups, ptr->group, strlen(ptr->group));
+			list_add(tests_results, &res, sizeof(res));
 		}
 	}
 
-	list_free(groups, NULL);
-
+	title("Results");
 	if (total == 0)
 		m_warning("No tests registered, skipping.\n");
 	else {
-		printf("\n");
-		m_info("Results: %d%% (%d/%d)\n", (success * 100) / total, success, total);
+		list_for_each(tests_results, tmp, ptr2) {
+			m_info("%s:\t\t%d/%d %d%%\n", ptr2->group_name, ptr2->success,
+				ptr2->total, ptr2->success * 100 / ptr2->total);
+		}
+		m_info("Total:\t\t%d%% (%d/%d)\n", (success * 100) / total, success, total);
 	}
+	list_free(groups, NULL);
 
 	return failed;
 }

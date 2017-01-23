@@ -17,6 +17,7 @@
 #ifndef M_TEST_H
 # define M_TEST_H
 
+# include <string.h>
 # include <stdio.h>
 # include <unistd.h>
 # include <m_list.h>
@@ -29,6 +30,7 @@ typedef struct		s_test {
 }					mtest_t;
 
 typedef struct		s_test_results {
+	char				*group_name;
 	u32_t				success;
 	u32_t				failed;
 	u32_t				total;
