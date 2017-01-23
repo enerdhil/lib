@@ -21,6 +21,7 @@
 
 void	register_infos_tests(void);
 void	register_args_tests(void);
+void	register_list_tests(void);
 void		callback_q(const char *s);
 void		callback_w(const char *s);
 void		callback_e(const char *s);
