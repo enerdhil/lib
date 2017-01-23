@@ -79,6 +79,7 @@ mtest_results_t	test_group(char *group) {
 	char			*s_tmp;
 
 	res.total = res.success = res.failed = 0;
+	res.group_name = NULL;
 	title(group);
 
 	/* Iterate over each test */
