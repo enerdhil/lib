@@ -81,6 +81,7 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 					if (args[it].take_arg) {
 						if (i + 1 < (u32_t)ac) {
 							args[it].callback(av[++i]);
+							ret++;
 							break ;
 						} else {
 							m_error("Option -%c must take an argument\n",
