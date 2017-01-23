@@ -26,6 +26,7 @@ void		m_panic(const char *str, ...) {
 	write(2, "\033[0;31m> \033[0m", 13);
 	va_start(ap, str);
 	vfprintf(stderr, str, ap);
+	va_end(ap);
 	if (str[strlen(str) - 1] != '\n')
 		fprintf(stderr, "\n");
 	_exit(1);
@@ -41,6 +42,7 @@ void		m_error(const char *str, ...) {
 	write(2, "\033[0;31m> \033[0m", 13);
 	va_start(ap, str);
 	vfprintf(stderr, str, ap);
+	va_end(ap);
 	if (str[strlen(str) - 1] != '\n')
 		fprintf(stderr, "\n");
 }
@@ -55,6 +57,7 @@ void		m_warning(const char *str, ...) {
 	write(2, "\033[0;31m> \033[0m", 13);
 	va_start(ap, str);
 	vfprintf(stderr, str, ap);
+	va_end(ap);
 }
 
 /*!
@@ -67,4 +70,5 @@ void		m_info(const char *str, ...) {
 	write(1, "\033[0;34m> \033[0m", 13);
 	va_start(ap, str);
 	vprintf(str, ap);
+	va_end(ap);
 }
