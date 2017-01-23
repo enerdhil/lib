@@ -10,12 +10,12 @@
 # define WAIT_AND_CLOSE(pid, status, fd) pid = waitpid(pid, &status, 0); close(fd[1]);
 # define OPT_STR_SIZE 150
 # define OPT_DEF(val) { \
-	{'q', "--qwerty", "qwerty", val, &callback_q}, \
-	{'w', "--wertyu", "wertyu", val, &callback_w}, \
-	{'e', "--ertyui", "rtyuio", val, &callback_e}, \
-	{'r', "--rtyuio", "tyuiop", val, &callback_r}, \
-	{'t', "--tyuiop", "tyuiop", val, &callback_t}, \
-	{'y', "--yuiop[", "yuiop[", val, &callback_y}, \
+	{'q', "qwerty", "qwerty", val, &callback_q}, \
+	{'w', "wertyu", "wertyu", val, &callback_w}, \
+	{'e', "ertyui", "rtyuio", val, &callback_e}, \
+	{'r', "rtyuio", "tyuiop", val, &callback_r}, \
+	{'t', "tyuiop", "tyuiop", val, &callback_t}, \
+	{'y', "yuiop[", "yuiop[", val, &callback_y}, \
 	ARGS_EOL \
 }
 
