@@ -305,7 +305,7 @@ void		register_args_tests(void) {
 	reg_test("m_args", args_unhandled_3);
 	reg_test("m_args", args_help_1);
 	reg_test("m_args", args_help_2);
-	reg_test("m_args", args_version_2);
+	reg_test("m_args", args_version_1);
 	reg_test("m_args", args_version_2);
 	reg_test("m_args", args_base_1);
 	reg_test("m_args", args_base_2);
