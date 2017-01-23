@@ -147,6 +147,7 @@ u32_t		test_all(void) {
 		m_info("Total:\t\t%d%% (%d/%d)\n", (success * 100) / total, success, total);
 	}
 	list_free(groups, NULL);
+	list_free(tests_results, &single_result_free);
 
 	return failed;
 }
@@ -169,6 +170,18 @@ int		single_test_free(void *ptr) {
 	if (ptr) {
 		free(tmp->group);
 		free(tmp->name);
+	}
+	return 1;
+}
+
+/*!
+ * \brief Free a mtest_results_t
+ * \note Used in test_all, as a list_free callback
+ */
+int		single_result_free(void *ptr) {
+	mtest_results_t		*tmp = ptr;
+	if (ptr) {
+		free(tmp->group_name);
 	}
 	return 1;
 }

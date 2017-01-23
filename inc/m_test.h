@@ -58,5 +58,6 @@ mtest_results_t	test_group(char *group);
 u32_t			test_all(void);
 void			test_free(void);
 int				single_test_free(void *ptr);
+int				single_result_free(void *ptr);
 
 #endif /* M_TEST_H */
