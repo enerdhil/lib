@@ -27,7 +27,7 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	$(LIB) $(LFLAGS) $(NAME) $(OBJS)
 
-check:
+check: all
 	make -C tests check
 
 doc:
