@@ -299,6 +299,7 @@ TEST(args_missing_value_1) {
 	int			st, fd[2];
 	pid_t		pid;
 
+	reset_args();
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
@@ -317,6 +318,7 @@ TEST(args_missing_value_2) {
 	int			st, fd[2];
 	pid_t		pid;
 
+	reset_args();
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
@@ -333,6 +335,7 @@ TEST(args_value_1) {
 	margs_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "-q", "toto"};
 
+	reset_args();
 	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 1, "Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(strcmp(args.str_q, "toto") == 0, "Value not read");
@@ -343,6 +346,7 @@ TEST(args_value_2) {
 	margs_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto"};
 
+	reset_args();
 	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 1, "Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(strcmp(args.str_q, "toto") == 0, "Value not read");
@@ -353,6 +357,7 @@ TEST(args_value_3) {
 	margs_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto", "-w", "tata"};
 
+	reset_args();
 	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2, "Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(strcmp(args.str_q, "toto") == 0, "Value not read");
@@ -365,11 +370,26 @@ TEST(args_value_4) {
 	margs_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto", "--wertyu=tata"};
 
+	reset_args();
 	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2, "Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(strcmp(args.str_q, "toto") == 0, "Value not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
 	TEST_ASSERT(strcmp(args.str_w, "tata") == 0, "Value not read");
+	return TEST_SUCCESS;
+}
+
+TEST(args_word_only_1) {
+	margs_t		opt[] = {
+		{0, "qwerty", "qwerty", false, &callback_q},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "--qwerty"};
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 1, "Wrong return");
+	TEST_ASSERT(args.opt_q == true, "Argument not read");
+	TEST_ASSERT(args.opt_w == false, "Wrong argument");
 	return TEST_SUCCESS;
 }
 
@@ -466,4 +486,5 @@ void		register_args_tests(void) {
 	reg_test("m_args", args_value_2);
 	reg_test("m_args", args_value_3);
 	reg_test("m_args", args_value_4);
+	reg_test("m_args", args_word_only_1);
 }

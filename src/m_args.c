@@ -70,11 +70,11 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 
 			/* Search the option in the args array */
 			for (u32_t z = 1; av[i][z] != '\0'; z++) {
-				for (it = 0; args[it].opt != 0 && args[it].opt != av[i][z]; it++)
+				for (it = 0; !IS_EOL(args[it]) && args[it].opt != av[i][z]; it++)
 					;
 
 				/* Can't find the option */
-				if (args[it].opt == 0) {
+				if (IS_EOL(args[it])) {
 					m_error("Unknow option -%s\n", &(av[i][z]));
 					opt_help(args, 1);
 				} else {
@@ -122,12 +122,12 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 			}
 
 			/* Search the option in the args array */
-			for (it = 0; args[it].opt != 0 && (args[it].s_opt != NULL &&
-						strncmp(args[it].s_opt, &(av[i][2]), k) != 0); it++)
+			for (it = 0; !IS_EOL(args[it]) &&
+						(strncmp(args[it].s_opt, &(av[i][2]), k) != 0); it++)
 				;
 
 			/* Can't find the option */
-			if (args[it].opt == 0) {
+			if (IS_EOL(args[it])) {
 				m_error("Unknown option %s\n", av[i]);
 				opt_help(args, 1);
 			} else {
@@ -135,7 +135,6 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 					m_error("Option %s must take an argument", args[it].s_opt);
 					opt_help(args, 1);
 				}
-
 				if (got_arg)
 					args[it].callback(&(av[i][k + 3]));
 				else

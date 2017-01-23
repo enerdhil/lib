@@ -53,6 +53,8 @@ typedef struct		s_args {
 }					margs_t;
 
 #define ARGS_EOL {0, NULL, NULL, false, NULL}
+#define IS_EOL(lst) (lst.opt == 0 && lst.s_opt == NULL && lst.desc == NULL && \
+						lst.take_arg == false && lst.callback == NULL)
 
 
 u32_t			read_opt(const int ac, char **av, const margs_t *args);
