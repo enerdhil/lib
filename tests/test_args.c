@@ -227,6 +227,18 @@ TEST(args_base_2) {
 	return TEST_SUCCESS;
 }
 
+TEST(args_base_3) {
+	margs_t		opt[] = OPT_DEF(false);
+	char		*av[] = {"./test", "-q", "-w"};
+
+	reset_args();
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2), "Wrong return");
+	TEST_ASSERT(args.opt_q == true, "Argument not read");
+	TEST_ASSERT(args.opt_w == true, "Argument not read");
+	TEST_ASSERT(args.opt_e != true, "Argument not read");
+	return TEST_SUCCESS;
+}
+
 
 void		callback_q(const char *s) {
 	args.opt_q = true;
@@ -309,4 +321,5 @@ void		register_args_tests(void) {
 	reg_test("m_args", args_version_2);
 	reg_test("m_args", args_base_1);
 	reg_test("m_args", args_base_2);
+	reg_test("m_args", args_base_3);
 }
