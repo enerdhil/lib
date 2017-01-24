@@ -40,6 +40,7 @@
 # Test
 tests/test
 tests/.gdb_history
+.gdb_history
 
 # Documentation
 docs/doxygen_sqlite3.db
