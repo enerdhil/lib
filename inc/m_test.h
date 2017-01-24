@@ -39,7 +39,8 @@ typedef struct		s_test_results {
 
 /* Defines */
 # define TEST_SUCCESS		0x0
-# define TITLE_LEN			80
+# define LINE_SIZE			80
+# define TITLE_LEN			LINE_SIZE
 
 # define TEST(name) char		*test_##name(void)
 # define reg_test(group, name) register_test(group, &test_##name, #name);
