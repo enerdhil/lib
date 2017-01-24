@@ -116,6 +116,10 @@ TEST(list_add_after) {
 	TEST_ASSERT(!strcmp(tmp->member, "Hello4 !\n"), "Order is wrong.");
 	TEST_ASSERT(!tmp->next, "Next pointer is wrong.");
 	list_free(ptr, NULL);
+	ptr = NULL;
+	list_add_after(ptr, NULL, test, sizeof(test));
+	TEST_ASSERT(!strcmp(ptr->member, "Hello !\n"), "Head is wrong.");
+	list_free(ptr, NULL);
 	return TEST_SUCCESS;
 }
 
@@ -139,6 +143,12 @@ TEST(list_add_before) {
 	tmp = ptr->head;
 	TEST_ASSERT(!strcmp(tmp->member, "Hello4 !\n"), "Order is wrong.");
 	TEST_ASSERT(!tmp->prev, "Next pointer is wrong.");
+	list_free(ptr, NULL);
+	ptr = NULL;
+	list_add_before(ptr, ptr, test, sizeof(test));
+	TEST_ASSERT(!strcmp(ptr->member, "Hello !\n"), "Head is wrong.");
+	list_add_before(ptr, NULL, test2, sizeof(test2));
+	TEST_ASSERT(!strcmp(ptr->next->member, "Hello2 !\n"), "Tail is wrong.");
 	list_free(ptr, NULL);
 	return TEST_SUCCESS;
 }
@@ -177,6 +187,33 @@ TEST(list_size) {
 	list_add(ptr, test3, sizeof(test3));
 	TEST_ASSERT(list_size(ptr) == 3, "Size is wrong.");
 	list_free(ptr, NULL);
+	ptr = NULL;
+	TEST_ASSERT(list_size(ptr) == 0, "Size is wrong.");
+	return TEST_SUCCESS;
+}
+
+int		callback_list_free(void *ptr) {
+	static bool		passed = false;
+
+	(void)ptr;
+	if (!passed) {
+		passed = true;
+		return 0;
+	}
+	return 1;
+}
+
+TEST(list_free) {
+	mlist_t		*ptr = NULL;
+	char		test[] = "Toto";
+
+	list_add(ptr, test, sizeof(test));
+	list_add(ptr, test, sizeof(test));
+	list_add(ptr, test, sizeof(test));
+	list_add(ptr, test, sizeof(test));
+	list_add(ptr, test, sizeof(test));
+	list_free(ptr, &callback_list_free);
+	list_free(ptr, &callback_list_free);
 	return TEST_SUCCESS;
 }
 
@@ -191,4 +228,5 @@ void	register_list_tests(void) {
 	reg_test("mlist", list_add_before);
 	reg_test("mlist", list_for_each_rev);
 	reg_test("mlist", list_size);
+	reg_test("mlist", list_free);
 }

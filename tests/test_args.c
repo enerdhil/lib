@@ -90,8 +90,8 @@ TEST(args_unhandled_2) {
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av), av, opt) == 0, "Not handling triple '-' arguments");
-		_exit(0);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling triple '-' arguments");
+		exit(0);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
@@ -111,11 +111,74 @@ TEST(args_unhandled_3) {
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av), av, opt) == 0, "Not handling alone '-' in arguments");
-		_exit(0);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling alone '-' in arguments");
+		exit(0);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
+	}
+	return TEST_SUCCESS;
+}
+
+TEST(args_unhandled_4) {
+	margs_t		opt[] = {
+		{'z', "zoiberg", "No idea.", false, NULL},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "-q"};
+	int			st, fd[2];
+	pid_t		pid;
+
+	pipe(fd);
+	if ((pid = fork()) == 0) {
+		DUP_ALL_OUTPUTS(fd);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling unknown option");
+		exit(0);
+	} else {
+		WAIT_AND_CLOSE(pid, st, fd);
+		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
+	}
+	return TEST_SUCCESS;
+}
+
+TEST(args_unhandled_5) {
+	margs_t		opt[] = {
+		{'z', "zoiberg", "No idea.", false, NULL},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "--"};
+	int			st, fd[2];
+	pid_t		pid;
+
+	pipe(fd);
+	if ((pid = fork()) == 0) {
+		DUP_ALL_OUTPUTS(fd);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling double dash without option");
+		exit(0);
+	} else {
+		WAIT_AND_CLOSE(pid, st, fd);
+		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
+	}
+	return TEST_SUCCESS;
+}
+
+TEST(args_unhandled_6) {
+	margs_t		opt[] = {
+		{'z', "zoiberg", "No idea.", false, NULL},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "-"};
+	int			st, fd[2];
+	pid_t		pid;
+
+	pipe(fd);
+	if ((pid = fork()) == 0) {
+		DUP_ALL_OUTPUTS(fd);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling single dash without option");
+		exit(1);
+	} else {
+		WAIT_AND_CLOSE(pid, st, fd);
+		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
 	}
 	return TEST_SUCCESS;
 }
@@ -132,8 +195,8 @@ TEST(args_help_1) {
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av), av, opt) == 0, "Not handling -h arguments");
-		_exit(5);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling -h arguments");
+		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
@@ -153,8 +216,8 @@ TEST(args_help_2) {
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av), av, opt) == 0, "Not handling --help arguments");
-		_exit(5);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling --help arguments");
+		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
@@ -174,8 +237,8 @@ TEST(args_version_1) {
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av), av, opt) == 0, "Not handling --version arguments");
-		_exit(5);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling --version arguments");
+		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
@@ -195,8 +258,8 @@ TEST(args_version_2) {
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av), av, opt) == 0, "Not handling -v arguments");
-		_exit(5);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling -v arguments");
+		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
@@ -304,7 +367,7 @@ TEST(args_missing_value_1) {
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
 		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling missing argument");
-		_exit(5);
+		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
@@ -323,7 +386,7 @@ TEST(args_missing_value_2) {
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
 		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling missing argument");
-		_exit(5);
+		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
@@ -469,6 +532,9 @@ void		register_args_tests(void) {
 	reg_test("m_args", args_unhandled_1);
 	reg_test("m_args", args_unhandled_2);
 	reg_test("m_args", args_unhandled_3);
+	reg_test("m_args", args_unhandled_4);
+	reg_test("m_args", args_unhandled_5);
+	reg_test("m_args", args_unhandled_6);
 	reg_test("m_args", args_help_1);
 	reg_test("m_args", args_help_2);
 	reg_test("m_args", args_version_1);

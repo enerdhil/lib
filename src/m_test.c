@@ -48,7 +48,7 @@ void	print_result(const char *title, u32_t success, u32_t failed) {
 	fflush(stdout);
 	if (percent == 100) {
 		fprintf(stdout, "\033[1;32m");
-	} else if (percent > 90) {
+	} else if (percent >= 90) {
 		fprintf(stdout, "\033[1;33m");
 	} else {
 		fprintf(stdout, "\033[1;31m");
@@ -104,6 +104,12 @@ mtest_results_t	test_group(char *group) {
 	res.group_name = NULL;
 	title(group);
 
+	if (tests == NULL)
+	{
+		m_warning("Could not find any registered tests in %s group.\n", group);
+		return res;
+	}
+
 	/* Iterate over each test */
 	list_for_each(tests, tmp, ptr) {
 		if (strcmp(ptr->group, group) == 0) {
@@ -126,11 +132,7 @@ mtest_results_t	test_group(char *group) {
 		}
 	}
 
-	if (res.total == 0) {
-		m_warning("Could not find any registered tests in %s group.\n", group);
-	} else {
-		print_result("Group Results", res.success, res.failed);
-	}
+	print_result("Group Results", res.success, res.failed);
 	return res;
 }
 
@@ -144,6 +146,11 @@ u32_t		test_all(void) {
 	mtest_results_t	res, *ptr2;
 	u32_t			total = 0, success = 0, failed = 0;
 
+	if (tests == NULL)
+	{
+		m_warning("No tests registered, skipping.\n");
+		return 0;
+	}
 	list_for_each(tests, tmp, ptr) {
 		if (list_get(groups, ptr->group, strlen(ptr->group)) == NULL) {
 			res = test_group(ptr->group);
@@ -159,14 +166,11 @@ u32_t		test_all(void) {
 	}
 
 	title("Results");
-	if (total == 0)
-		m_warning("No tests registered, skipping.\n");
-	else {
-		list_for_each(tests_results, tmp, ptr2) {
-			print_result(ptr2->group_name, ptr2->success, ptr2->failed);
-		}
-		print_result("Total", success, failed);
+	list_for_each(tests_results, tmp, ptr2) {
+		print_result(ptr2->group_name, ptr2->success, ptr2->failed);
 	}
+	print_result("Total", success, failed);
+
 	list_free(groups, NULL);
 	list_free(tests_results, &single_result_free);
 

@@ -3,6 +3,7 @@
 
 # include <morphux.h>
 # include <unistd.h>
+# include <stdlib.h>
 # include <sys/types.h>
 # include <sys/wait.h>
 
@@ -22,6 +23,8 @@
 void	register_infos_tests(void);
 void	register_args_tests(void);
 void	register_list_tests(void);
+void	register_tests_tests(void);
+void	register_print_tests(void);
 void		callback_q(const char *s);
 void		callback_w(const char *s);
 void		callback_e(const char *s);

@@ -60,5 +60,6 @@ u32_t			test_all(void);
 void			test_free(void);
 int				single_test_free(void *ptr);
 int				single_result_free(void *ptr);
+void			print_result(const char *title, u32_t success, u32_t failed);
 
 #endif /* M_TEST_H */
