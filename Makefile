@@ -36,7 +36,7 @@ doc:
 coverage:
 	$(MAKE) fclean all CFLAGS="-Wall -Wextra -Werror -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -lgcov"
 	make -C tests coverage check
-	gcov $(SRCS)
+	gcov -o src/ $(SRCS)
 
 clean:
 	rm -f $(OBJS)
