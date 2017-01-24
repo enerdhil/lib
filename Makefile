@@ -33,8 +33,16 @@ check: all
 doc:
 	doxygen docs/doxyfile
 
+coverage:
+	$(MAKE) fclean all CFLAGS="-Wall -Wextra -Werror -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -lgcov"
+	make -C tests coverage check
+	gcov $(SRCS)
+
 clean:
 	rm -f $(OBJS)
+	rm -f *.gcov
+	rm -f src/*.gcno
+	rm -f src/*.gcda
 
 fclean: clean
 	rm -f $(NAME)

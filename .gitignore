@@ -32,6 +32,11 @@
 *.dSYM/
 *.su
 
+# Coverage
+*.gcov
+*.gcno
+*.gcda
+
 # Test
 tests/test
 tests/.gdb_history
