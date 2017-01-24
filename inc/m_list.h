@@ -49,6 +49,8 @@ typedef struct		s_list {
 
 # define list_add_before(org_list, p_tr1, p_tr2, sizeZ) org_list = list_insert_before(org_list, p_tr1, p_tr2, sizeZ);
 
+# define list_del(org_list, p_tr1, sizeZ, fn) org_list = list_remove(org_list, p_tr1, sizeZ, fn);
+
 
 /* Functions */
 mlist_t		*list_add_member(mlist_t *list, void *member, u32_t size);
@@ -58,5 +60,7 @@ mlist_t		*list_insert_before(mlist_t *org, mlist_t *ptr, void *member, u32_t siz
 u32_t		list_size(mlist_t *list);
 mlist_t		*list_free(mlist_t *list, int (*free_fn)(void *member));
 void		*list_get(mlist_t *list, void *member, size_t size);
+mlist_t		*list_remove(mlist_t *list, void *member, size_t size,
+					int (*free_fn)(void *member));
 
 #endif

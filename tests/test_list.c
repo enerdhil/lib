@@ -217,6 +217,39 @@ TEST(list_free) {
 	return TEST_SUCCESS;
 }
 
+int		callback_list_free_2(void *ptr) {
+	free(ptr);
+	printf("Sup ?!\n");
+	return 1;
+}
+
+TEST(list_remove) {
+	mlist_t	*ptr = NULL;
+	char	test[] = "Hello !\n";
+	char	test2[] = "Hello2 !\n";
+	char	test3[] = "Hello3 !\n";
+	char	test4[] = "Hello4 !\n";
+
+	list_add(ptr, test, sizeof(test));
+	list_add(ptr, test2, sizeof(test2));
+	list_add(ptr, test3, sizeof(test3));
+
+	list_del(ptr, test2, sizeof(test2), NULL);
+	TEST_ASSERT(strcmp(ptr->next->member, test3) == 0, "List order is wrong");
+	list_add(ptr, test3, sizeof(test3));
+
+	list_del(ptr, test, sizeof(test), &callback_list_free_2);
+	TEST_ASSERT(strcmp(ptr->member, test3) == 0, "List order is wrong");
+	
+	list_del(ptr, test4, sizeof(test4), NULL);
+	TEST_ASSERT(strcmp(ptr->member, test3) == 0, "List order is wrong");
+
+	list_free(ptr, NULL);
+	ptr = NULL;
+	list_del(ptr, test, sizeof(test), NULL);
+	return TEST_SUCCESS;
+}
+
 void	register_list_tests(void) {
 	reg_test("mlist", list_add_null);
 	reg_test("mlist", list_add_member);
@@ -229,4 +262,5 @@ void	register_list_tests(void) {
 	reg_test("mlist", list_for_each_rev);
 	reg_test("mlist", list_size);
 	reg_test("mlist", list_free);
+	reg_test("mlist", list_remove);
 }

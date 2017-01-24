@@ -252,3 +252,52 @@ void		*list_get(mlist_t *list, void *member, size_t size) {
 	}
 	return NULL;
 }
+
+/*!
+ * \brief Remove a member from the list
+ * \param list List head
+ * \param member Member to remove
+ * \param size Size of the member (Used for memcmp)
+ * \param free_fn Function use to free the member
+ *
+ * Remove a member in a list.
+ */
+mlist_t		*list_remove(mlist_t *list, void *member, size_t size,
+	int (*free_fn)(void *member)) {
+	mlist_t		*tmp, *tmp2;
+	void		*ptr;
+
+	if (list == NULL)
+		return NULL;
+
+	/* Search for the member */
+	list_for_each(list, tmp2, ptr) {
+		if (memcmp(member, ptr, size) == 0)
+			break ;
+	}
+
+	/* We can't find the member */
+	if (tmp2 == NULL) {
+		return list;
+	}
+
+	if (tmp2 == list) {
+		/* Replace the head */
+		list = tmp2->next;
+
+		/* Update the head in all other members */
+		list_for_each(list, tmp, ptr) {
+			tmp->head = list;
+		}
+	} else {
+		tmp2->prev->next = tmp2->next;
+	}
+
+	if (free_fn != NULL) {
+		free_fn(tmp2->member);
+	} else {
+		free(tmp2->member);
+	}
+	free(tmp2);
+	return list;
+}
