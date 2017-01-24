@@ -160,7 +160,7 @@ void		opt_help(const margs_t *args, u8_t ret) {
 	m_info("If an argument requires a value, you can set it two ways:\n");
 	m_info("\t-o value\n");
 	m_info("\t--option=value\n");
-	_exit(ret);
+	exit(ret);
 }
 
 /*!
@@ -171,5 +171,5 @@ void		p_version(u8_t ret) {
 	m_info("Program: %s\n", get_program_name());
 	m_info("Version: %s\n", get_version());
 	m_info("%s\n", get_maintainer());
-	_exit(ret);
+	exit(ret);
 }

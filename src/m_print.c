@@ -17,7 +17,7 @@
 #include <m_print.h>
 
 /*!
- * \brief Print a string in an error fomat, then call _exit with 1
+ * \brief Print a string in an error fomat, then call exit with 1
  * \note Support printf format
  */
 void		m_panic(const char *str, ...) {
@@ -29,7 +29,7 @@ void		m_panic(const char *str, ...) {
 	va_end(ap);
 	if (str[strlen(str) - 1] != '\n')
 		fprintf(stderr, "\n");
-	_exit(1);
+	exit(1);
 }
 
 /*!

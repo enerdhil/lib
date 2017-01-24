@@ -18,6 +18,7 @@
 # define M_ARGS_H
 
 # include <stdbool.h>
+# include <stdlib.h>
 # include <m_types.h>
 # include <m_print.h>
 # include <m_infos.h>
