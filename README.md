@@ -8,6 +8,9 @@
 <a href="https://scan.coverity.com/projects/lib">
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/11517/badge.svg"/>
+</a>&nbsp;
+<a href="https://codecov.io/gh/Morphux/lib">
+  <img src="https://codecov.io/gh/Morphux/lib/branch/master/graph/badge.svg" alt="Codecov" />
 </a>
 <br />
 <h1 align="center" style="border:none">Morphux/lib</h1>
