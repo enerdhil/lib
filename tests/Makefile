@@ -16,7 +16,10 @@ valgrind: $(NAME)
 	valgrind --leak-check=full --error-exitcode=1 ./$(NAME)
 
 coverage:
-	$(MAKE) fclean all CFLAGS="-Wall -Wextra -Wno-unused-result -g -O0 -coverage -I../inc -lmorphux -coverage"
+	ifeq ($(OSTYPE), Linux)
+		$(MAKE) fclean all CFLAGS="-Wall -Wextra -Wno-unused-result -g -O0 -coverage -I../inc -lmorphux -lgcov"
+	elif ($(OSTYPE), Darwin)
+		$(MAKE) fclean all CFLAGS="-Wall -Wextra -Wno-unused-result -g -O0 -coverage -I../inc -lmorphux -coverage"
 
 clean:
 	rm -f $(OBJS)

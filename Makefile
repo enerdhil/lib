@@ -15,6 +15,7 @@
 ################################################################################
 
 NAME=		libmorphux.a
+OSTYPE= $(shell uname)
 CC =		gcc
 LIB =		ar
 CFLAGS =	-Wall -Wextra -Werror -Wno-unused-result -I inc/ -std=c99 -g -O3
@@ -34,7 +35,11 @@ doc:
 	doxygen docs/doxyfile
 
 coverage:
-	$(MAKE) fclean all CFLAGS="-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage "
+	ifeq ($(OSTYPE), Linux)
+		$(MAKE) fclean all CFLAGS="-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -lgcov"
+	elif ($(OSTYPE), Darwin)
+		$(MAKE) fclean all CFLAGS="-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage"
+	endif
 	make -C tests coverage check
 	gcov -o src/ $(SRCS)
 
