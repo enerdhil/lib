@@ -25,7 +25,7 @@ OBJS =		$(SRCS:%.c=%.o)
 OSTYPE =	$(shell uname)
 ifeq ($(OSTYPE), Linux)
 COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -lgcov"
-elif ($(OSTYPE), Darwin)
+else ifeq ($(OSTYPE), Darwwdin)
 COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage"
 endif
 
@@ -43,7 +43,6 @@ doc:
 coverage:
 	$(MAKE) fclean all $(COVFLAGS)
 	$(MAKE) fclean all $(COVFLAGS)
-	endif
 	make -C tests coverage check
 	gcov -o src/ $(SRCS)
 
