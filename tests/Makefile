@@ -24,8 +24,7 @@ valgrind: $(NAME)
 	valgrind --leak-check=full --error-exitcode=1 ./$(NAME)
 
 coverage:
-	$(MAKE) fclean all $(COVFLAGS)
-	$(MAKE) fclean all $(COVFLAGS)
+	$(MAKE) fclean all CFLAGS=$(COVFLAGS)
 
 clean:
 	rm -f $(OBJS)

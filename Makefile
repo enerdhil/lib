@@ -25,7 +25,7 @@ OBJS =		$(SRCS:%.c=%.o)
 OSTYPE =	$(shell uname)
 ifeq ($(OSTYPE), Linux)
 COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -lgcov"
-else ifeq ($(OSTYPE), Darwwdin)
+else ifeq ($(OSTYPE), Darwin)
 COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage"
 endif
 
@@ -41,8 +41,7 @@ doc:
 	doxygen docs/doxyfile
 
 coverage:
-	$(MAKE) fclean all $(COVFLAGS)
-	$(MAKE) fclean all $(COVFLAGS)
+	$(MAKE) fclean all CFLAGS=$(COVFLAGS)
 	make -C tests coverage check
 	gcov -o src/ $(SRCS)
 
