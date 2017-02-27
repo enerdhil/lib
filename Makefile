@@ -32,7 +32,7 @@ endif
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(AR) $(ARFLAGS) $(NAME) $(OBJS)
+	$(LIB) $(LFLAGS) $(NAME) $(OBJS)
 
 check: all
 	make -C tests check
