@@ -230,7 +230,7 @@ TEST(args_version_1) {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
-	char		*av[] = {"./test", "-v"};
+	char		*av[] = {"./test", "-V"};
 	int			st, fd[2];
 	pid_t		pid;
 

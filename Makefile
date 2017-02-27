@@ -34,7 +34,7 @@ doc:
 	doxygen docs/doxyfile
 
 coverage:
-	$(MAKE) fclean all CFLAGS="-Wall -Wextra -Werror -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -lgcov"
+	$(MAKE) fclean all CFLAGS="-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage "
 	make -C tests coverage check
 	gcov -o src/ $(SRCS)
 

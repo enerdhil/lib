@@ -45,7 +45,7 @@ typedef struct		s_test_results {
 # define TEST(name) char		*test_##name(void)
 # define reg_test(group, name) register_test(group, &test_##name, #name);
 # define TEST_ASSERT(condition, error_name) {\
-	if (!condition) {\
+	if (!(condition)) {\
 		char *ret = NULL; \
 		asprintf(&ret, "\t%s: Test: '%s', File %s:%d", error_name, #condition, __FILE__, __LINE__);\
 		return ret;\
