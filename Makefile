@@ -14,19 +14,25 @@
 #                       limitations under the License.                         #
 ################################################################################
 
-NAME=		libmorphux.a
-OSTYPE= $(shell uname)
+NAME =		libmorphux.a
 CC =		gcc
-LIB =		ar
+AR =		ar
 CFLAGS =	-Wall -Wextra -Werror -Wno-unused-result -I inc/ -std=c99 -g -O3
-LFLAGS =	-cq
+ARFLAGS =	-cq
 SRCS =		$(wildcard src/*.c)
 OBJS =		$(SRCS:%.c=%.o)
+
+OSTYPE =	$(shell uname)
+ifeq ($(OSTYPE), Linux)
+COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -lgcov"
+elif ($(OSTYPE), Darwin)
+COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage"
+endif
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(LIB) $(LFLAGS) $(NAME) $(OBJS)
+	$(AR) $(ARFLAGS) $(NAME) $(OBJS)
 
 check: all
 	make -C tests check
@@ -35,10 +41,8 @@ doc:
 	doxygen docs/doxyfile
 
 coverage:
-	ifeq ($(OSTYPE), Linux)
-		$(MAKE) fclean all CFLAGS="-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -lgcov"
-	elif ($(OSTYPE), Darwin)
-		$(MAKE) fclean all CFLAGS="-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage"
+	$(MAKE) fclean all $(COVFLAGS)
+	$(MAKE) fclean all $(COVFLAGS)
 	endif
 	make -C tests coverage check
 	gcov -o src/ $(SRCS)
