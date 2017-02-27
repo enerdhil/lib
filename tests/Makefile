@@ -8,7 +8,7 @@ OBJS =		$(SRCS:%.c=%.o)
 OSTYPE =	$(shell uname)
 ifeq ($(OSTYPE), Linux)
 COVFLAGS =	"-Wall -Wextra -Wno-unused-result -g -O0 -coverage -I../inc -lmorphux -lgcov"
-elif ($(OSTYPE), Darwin)
+else ifeq ($(OSTYPE), Darwin)
 COVFLAGS =	"-Wall -Wextra -Wno-unused-result -g -O0 -coverage -I../inc -lmorphux -coverage"
 endif
 
