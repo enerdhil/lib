@@ -14,13 +14,20 @@
 #                       limitations under the License.                         #
 ################################################################################
 
-NAME=		libmorphux.a
+NAME =		libmorphux.a
 CC =		gcc
 LIB =		ar
 CFLAGS =	-Wall -Wextra -Werror -Wno-unused-result -I inc/ -std=c99 -g -O3
 LFLAGS =	-cq
 SRCS =		$(wildcard src/*.c)
 OBJS =		$(SRCS:%.c=%.o)
+
+OSTYPE =	$(shell uname)
+ifeq ($(OSTYPE), Linux)
+COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -lgcov"
+else ifeq ($(OSTYPE), Darwin)
+COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage"
+endif
 
 all: $(NAME)
 
@@ -34,7 +41,7 @@ doc:
 	doxygen docs/doxyfile
 
 coverage:
-	$(MAKE) fclean all CFLAGS="-Wall -Wextra -Werror -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -lgcov"
+	$(MAKE) fclean all CFLAGS=$(COVFLAGS)
 	make -C tests coverage check
 	gcov -o src/ $(SRCS)
 
