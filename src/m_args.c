@@ -15,6 +15,10 @@
 \******************************************************************************/
 
 #include <m_args.h>
+#define LIB_OPT_TOKEN_HELP 'h'
+#define LIB_OPT_STRING_HELP "help"
+#define LIB_OPT_TOKEN_VERSION 'V'
+#define LIB_OPT_STRING_VERSION "version"
 
 /*!
  * \brief Read the options given by the program
@@ -63,9 +67,9 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 			}
 
 			/* Builtins options */
-			if (av[i][1] == 'h')
+			if (av[i][1] == LIB_OPT_TOKEN_HELP)
 				opt_help(args, 0);
-			else if (av[i][1] == 'v')
+			else if (av[i][1] == LIB_OPT_TOKEN_VERSION)
 				p_version(0);
 
 			/* Search the option in the args array */
@@ -105,9 +109,9 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
 			}
 
 			/* Builtins options */
-			if (strcmp(&(av[i][2]), "help") == 0)
+			if (strcmp(&(av[i][2]), LIB_OPT_STRING_HELP) == 0)
 				opt_help(args, 0);
-			else if (strcmp(&(av[i][2]), "version") == 0)
+			else if (strcmp(&(av[i][2]), LIB_OPT_STRING_VERSION) == 0)
 				p_version(0);
 
 			/* Look for an argument */
