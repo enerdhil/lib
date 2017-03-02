@@ -17,16 +17,27 @@
 #ifndef M_PRINT_H
 # define M_PRINT_H
 
+# define _XOPEN_SOURCE 700 
+
 # include <stdarg.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <fcntl.h>
 # include <string.h>
 # include <unistd.h>
+# include <stdbool.h>
+# include <m_types.h>
+
+# define M_LOG_NONE (1 << 0)
+# define M_LOG_FORCE (1 << 2)
+# define M_LOG_TRUNC (1 << 3)
 
 void		m_panic(const char *str, ...);
 void		m_error(const char *str, ...);
 void		m_warning(const char *str, ...);
 void		m_info(const char *str, ...);
+bool        m_log(const char *str, ...);
+bool        m_init_log(const char *str, u8_t flags);
+bool        m_clean_log(void);
 
 #endif /* M_PRINT_H */
