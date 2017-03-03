@@ -79,6 +79,7 @@ TEST(print_log_1) {
 
     TEST_ASSERT(fd != 0, "Can't open the log file");
     TEST_ASSERT(read(fd, buf, 8) == 8, "Read return is wrong");
+    close(fd);
     TEST_ASSERT(memcmp(buf, "Test 123", 8) == 0, "Content of the file is wrong");
     return TEST_SUCCESS;
 }
@@ -119,6 +120,7 @@ TEST(print_log_minfo) {
 
     TEST_ASSERT(fd != 0, "Can't open the log file");
     TEST_ASSERT(read(fd, buf, 8) == 8, "Read return is wrong");
+    close(fd);
     TEST_ASSERT(memcmp(buf, "Test 123", 8) == 0, "Content of the file is wrong");
     TEST_ASSERT(m_clean_log() == true, "Return is wrong");
     return TEST_SUCCESS;
@@ -134,6 +136,7 @@ TEST(print_log_mwarning) {
     TEST_ASSERT(fd != 0, "Can't open the log file");
     TEST_ASSERT(read(fd, buf, 8) == 8, "Read return is wrong");
     TEST_ASSERT(memcmp(buf, "Test 123", 8) == 0, "Content of the file is wrong");
+    close(fd);
     TEST_ASSERT(m_clean_log() == true, "Return is wrong");
     return TEST_SUCCESS;
 }
@@ -148,6 +151,7 @@ TEST(print_log_merror) {
     TEST_ASSERT(fd != 0, "Can't open the log file");
     TEST_ASSERT(read(fd, buf, 8) == 8, "Read return is wrong");
     TEST_ASSERT(memcmp(buf, "Test 123", 8) == 0, "Content of the file is wrong");
+    close(fd);
     TEST_ASSERT(m_clean_log() == true, "Return is wrong");
     return TEST_SUCCESS;
 }
@@ -172,6 +176,7 @@ TEST(print_log_mpanic) {
 
     TEST_ASSERT(fd != 0, "Can't open the log file");
     TEST_ASSERT(read(fd, buf, 8) == 8, "Read return is wrong");
+    close(fd);
     TEST_ASSERT(memcmp(buf, "Test 123", 8) == 0, "Content of the file is wrong");
     TEST_ASSERT(m_clean_log() == true, "Return is wrong");
     return TEST_SUCCESS;
