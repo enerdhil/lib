@@ -14,20 +14,25 @@
 *                       limitations under the License.                         *
 \******************************************************************************/
 
-#ifndef M_INFOS_H
-# define M_INFOS_H
+#ifdef COMPILE_WITH_TEST
+# ifndef M_FAIL_TEST_H
+#  define M_FAIL_TEST_H
 
-# include <stdio.h>
-# include <string.h>
-# include <morphux.h>
+# define malloc(x) fl_malloc(x)
+# define write(fd, ptr, len) fl_write(fd, ptr, len)
+# define read(fd, ptr, len) fl_read(fd, ptr, len)
+# define close(fd) fl_close(fd)
 
-# define INFOS_G_LEN_MAX 150
+void    *fl_malloc(size_t alloc);
+ssize_t fl_write(int fd, const void *ptr, size_t len);
+ssize_t fl_read(int fd, void *ptr, size_t len);
+int     fl_close(int fd);
 
-void	set_program_name(const char *str);
-void	set_version(const char *str);
-void	set_maintainer(const char *str);
-const char	*get_program_name(void);
-const char	*get_version(void);
-const char	*get_maintainer(void);
+void    set_malloc_fail(int val);
+void    set_write_fail(int val);
+void    set_read_fail(int val);
+void    set_close_fail(int val);
 
-#endif /* M_INFOS_H */
+
+# endif /* M_FAIL_TEST_H */
+#endif /* COMPILE_WITH_TEST */

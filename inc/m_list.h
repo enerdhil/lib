@@ -21,6 +21,7 @@
 # include <stdlib.h> /* malloc */
 # include <assert.h> /* assert */
 # include <string.h> /* mem{cpy,move,cmp} */
+# include <morphux.h>
 
 /* Linked list */
 typedef struct		s_list {

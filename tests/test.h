@@ -1,5 +1,6 @@
 #ifndef TEST_H
 # define TEST_H
+# define COMPILE_WITH_TEST
 
 # include <morphux.h>
 # include <unistd.h>

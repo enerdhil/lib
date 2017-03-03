@@ -27,6 +27,7 @@
 # include <unistd.h>
 # include <stdbool.h>
 # include <m_types.h>
+# include <morphux.h>
 
 # define M_LOG_NONE (1 << 0)
 # define M_LOG_FORCE (1 << 2)
