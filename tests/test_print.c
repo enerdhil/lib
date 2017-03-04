@@ -182,7 +182,10 @@ TEST(print_log_mpanic) {
     return TEST_SUCCESS;
 }
 
-
+TEST(print_log_cleanup) {
+	unlink(TEST_LOG_FN);
+	return TEST_SUCCESS;
+}
 
 void	register_print_tests(void) {
     reg_test("mprint", print_info);
@@ -201,4 +204,5 @@ void	register_print_tests(void) {
     reg_test("mprint", print_log_mwarning);
     reg_test("mprint", print_log_merror);
     reg_test("mprint", print_log_mpanic);
+    reg_test("mprint", print_log_cleanup);
 }
