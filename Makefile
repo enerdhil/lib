@@ -44,7 +44,6 @@ doc:
 coverage:
 	$(MAKE) fclean all CFLAGS=$(COVFLAGS)
 	make -C tests coverage check
-	rm src/test.gc*
 	gcov -o src/ $(SRCS)
 
 clean:
