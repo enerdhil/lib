@@ -24,7 +24,7 @@
 # include <m_infos.h>
 # include <morphux.h>
 
-typedef struct		s_args {
+typedef struct args_s {
 	/**
 	 * Single letter option
 	 * Example: -f, -s
@@ -52,7 +52,7 @@ typedef struct		s_args {
 	 * Callback of the option
 	 */
 	void	(*callback)(const char *);
-}					margs_t;
+} margs_t;
 
 #define ARGS_EOL {0, NULL, NULL, false, NULL}
 #define IS_EOL(lst) (lst.opt == 0 && lst.s_opt == NULL && lst.desc == NULL && \
@@ -74,19 +74,19 @@ typedef struct		s_args {
  * \note Only the arguments beginning with - are parsed.
  * \return Number of options read
  */
-u32_t			read_opt(const int ac, char **av, const margs_t *args);
+u32_t read_opt(const int ac, char **av, const margs_t *args);
 
 /*!
  * \brief Print helps with a list of argument, and exit
  * \param[in] args List of arguments to print
  * \param[in] ret Return code of the exit
  */
-void			opt_help(const margs_t *args, u8_t ret);
+void opt_help(const margs_t *args, u8_t ret);
 
 /*!
  * \brief Print the program name, the version and the maintainer, then exit
  * \param[in] ret Return code of the exit
  */
-void			p_version(u8_t ret);
+void p_version(u8_t ret);
 
 #endif /* M_ARGS_H */

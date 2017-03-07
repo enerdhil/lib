@@ -20,9 +20,9 @@
 #define LIB_OPT_TOKEN_VERSION 'V'
 #define LIB_OPT_STRING_VERSION "version"
 
-u32_t		read_opt(const int ac, char **av, const margs_t *args) {
-    u32_t		ret = 0, it, k;
-    u8_t		n_dash;
+u32_t read_opt(const int ac, char **av, const margs_t *args) {
+    u32_t   ret = 0, it, k;
+    u8_t    n_dash;
 
     if (ac == 0 || av == NULL || args == NULL)
         return ret;
@@ -134,7 +134,7 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
     return ret;
 }
 
-void		opt_help(const margs_t *args, u8_t ret) {
+void opt_help(const margs_t *args, u8_t ret) {
     m_info("Help:\n");
     for (u32_t i = 0; args[i].opt != 0; i++) {
         m_info("\t-%c | --%s : %s\n", args[i].opt, args[i].s_opt, args[i].desc);
@@ -146,7 +146,7 @@ void		opt_help(const margs_t *args, u8_t ret) {
     exit(ret);
 }
 
-void		p_version(u8_t ret) {
+void p_version(u8_t ret) {
     m_info("Program: %s\n", get_program_name());
     m_info("Version: %s\n", get_version());
     m_info("%s\n", get_maintainer());

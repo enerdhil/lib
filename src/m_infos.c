@@ -18,14 +18,11 @@
 
 
 /* Globals */
-static char		program[INFOS_G_LEN_MAX] = "";
-static char		version[INFOS_G_LEN_MAX] = "";
-static char		maintainer[INFOS_G_LEN_MAX] = "";
+static char     program[INFOS_G_LEN_MAX] = "";
+static char     version[INFOS_G_LEN_MAX] = "";
+static char     maintainer[INFOS_G_LEN_MAX] = "";
 
-/*!
- * Set the program name to a string
- */
-void	set_program_name(const char *str) {
+void set_program_name(const char *str) {
     if (str == NULL) {
         strcpy(program, "");
     } else if (strlen(str) < INFOS_G_LEN_MAX) {
@@ -33,10 +30,7 @@ void	set_program_name(const char *str) {
     }
 }
 
-/*!
- * Set the version name to a string
- */
-void	set_version(const char *str) {
+void set_version(const char *str) {
     if (str == NULL) {
         strcpy(version, "");
     } else if (strlen(str) < INFOS_G_LEN_MAX) {
@@ -44,10 +38,7 @@ void	set_version(const char *str) {
     }
 }
 
-/*!
- * Set the maintainer name to a string
- */
-void	set_maintainer(const char *str) {
+void set_maintainer(const char *str) {
     if (str == NULL) {
         strcpy(maintainer, "");
     } else if (strlen(str) < INFOS_G_LEN_MAX) {
@@ -55,31 +46,19 @@ void	set_maintainer(const char *str) {
     }
 }
 
-/*!
- * Get the program name
- * \note If the program is not set, return NULL
- */
-const char	*get_program_name(void) {
+const char *get_program_name(void) {
     if (strlen(program) != 0)
         return program;
     return NULL;
 }
 
-/*!
- * Get the version
- * \note If the version is not set, return NULL
- */
-const char	*get_version(void) {
+const char *get_version(void) {
     if (strlen(version) != 0)
         return version;
     return NULL;
 }
 
-/*!
- * Get the maintainer
- * \note If the maintainer is not set, return NULL
- */
-const char	*get_maintainer(void) {
+const char *get_maintainer(void) {
     if (strlen(maintainer) != 0)
         return maintainer;
     return NULL;
