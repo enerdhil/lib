@@ -19,26 +19,18 @@
 static int      g_log_fd = 0;
 static u8_t     g_log_flags = M_LOG_NONE;
 
-/*!
- * \brief Initialize the logging for the program
- * \param file File path
- * \param force Flag (see defines M_LOG_* in m_print.h)
- *
- * Open a file with O_APPEN flag, and keep it open.
- * If the M_LOG_FORCE flag is true, all the calls to m_{panic,error,warning,info}
- * will be written in the log file.
- */
-bool        m_init_log(const char *file, u8_t flags) {
+bool m_init_log(const char *file, u8_t flags) {
     u32_t    open_flags = O_CREAT | O_WRONLY | O_ASYNC;
     int     fd;
 
-    if (flags & M_LOG_TRUNC) {
+    if (flags & M_LOG_TRUNC)
         open_flags |= O_TRUNC;
-    } else {
+    else
         open_flags |= O_APPEND;
-    }
+
     fd = open(file, open_flags, 0662);
-    if (fd != -1) {
+    if (fd != -1)
+    {
         if (flags & M_LOG_FORCE)
             g_log_flags |= M_LOG_FORCE;
         g_log_fd = fd;
@@ -47,11 +39,10 @@ bool        m_init_log(const char *file, u8_t flags) {
     return false;
 }
 
-/*!
- * \brief Close a log file descriptor and reset the flags
- */
-bool        m_clean_log(void) {
-    if (g_log_fd != 0) {
+
+bool m_clean_log(void) {
+    if (g_log_fd != 0)
+    {
         if (close(g_log_fd) != 0)
             return false;
         g_log_fd = 0;
@@ -67,17 +58,17 @@ static bool m_log_v(const char *str, va_list ap) {
     return true;
 }
 
-/*!
- * \brief Print a string in an error fomat, then call exit with 1
- * \note Support printf format
- */
-void		m_panic(const char *str, ...) {
-    va_list		ap;
+
+void m_panic(const char *str, ...) {
+    va_list     ap;
 
     va_start(ap, str);
-    if (g_log_flags & M_LOG_FORCE) {
+    if (g_log_flags & M_LOG_FORCE)
+    {
         m_log_v(str, ap);
-    } else {
+    }
+    else
+    {
         write(2, "\033[0;31m> \033[0m", 13);
         vfprintf(stderr, str, ap);
         if (str[strlen(str) - 1] != '\n')
@@ -87,17 +78,17 @@ void		m_panic(const char *str, ...) {
     exit(1);
 }
 
-/*!
- * \brief Print a string with an error format
- * \note Support printf format
- */
-void		m_error(const char *str, ...) {
-    va_list		ap;
+
+void m_error(const char *str, ...) {
+    va_list     ap;
 
     va_start(ap, str);
-    if (g_log_flags & M_LOG_FORCE) {
+    if (g_log_flags & M_LOG_FORCE)
+    {
         m_log_v(str, ap);
-    } else {
+    }
+    else
+    {
         write(2, "\033[0;31m> \033[0m", 13);
         vfprintf(stderr, str, ap);
         if (str[strlen(str) - 1] != '\n')
@@ -106,45 +97,40 @@ void		m_error(const char *str, ...) {
     va_end(ap);
 }
 
-/*!
- * \brief Print a string with a warning format
- * \note Support printf format
- */
-void		m_warning(const char *str, ...) {
-    va_list		ap;
+
+void m_warning(const char *str, ...) {
+    va_list     ap;
 
     va_start(ap, str);
-    if (g_log_flags & M_LOG_FORCE) {
+    if (g_log_flags & M_LOG_FORCE)
+    {
         m_log_v(str, ap);
-    } else {
+    }
+    else
+    {
         write(2, "\033[0;31m> \033[0m", 13);
         vfprintf(stderr, str, ap);
     }
     va_end(ap);
 }
 
-/*!
- * \brief Print a string with an information format
- * \note Support printf format
- */
-void		m_info(const char *str, ...) {
-    va_list		ap;
+void m_info(const char *str, ...) {
+    va_list     ap;
 
     va_start(ap, str);
-    if (g_log_flags & M_LOG_FORCE) {
+    if (g_log_flags & M_LOG_FORCE)
+    {
         m_log_v(str, ap);
-    } else {
+    }
+    else
+    {
         write(1, "\033[0;34m> \033[0m", 13);
         vprintf(str, ap);
     }
     va_end(ap);
 }
 
-/*!
- * \brief Write a string in an already opened log file
- * \return true on success, false on failure
- */
-bool        m_log(const char *str, ...) {
+bool m_log(const char *str, ...) {
     va_list     ap;
     bool        ret;
 
