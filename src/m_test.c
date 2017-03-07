@@ -16,15 +16,11 @@
 
 #include <m_test.h>
 
-static mlist_t		*tests = NULL;
+static mlist_t      *tests = NULL;
 
-/*!
- * \brief Print a title
- * \param s Title name
- */
-void	title(char *s) {
-    u8_t			len = TITLE_LEN;
-    int				i;
+void title(char *s) {
+    u8_t    len = TITLE_LEN;
+    int     i;
 
     len -= strlen(s);
     for (i = 0; i < len / 2; i++, write(1, "=", 1))
@@ -36,9 +32,9 @@ void	title(char *s) {
     write(1, "\n", 1);
 }
 
-void	print_result(const char *title, u32_t success, u32_t failed) {
-    u32_t	total = success + failed;
-    u32_t	percent = success * 100 / total;
+void print_result(const char *title, u32_t success, u32_t failed) {
+    u32_t   total = success + failed;
+    u32_t   percent = success * 100 / total;
 
     m_info("%s:", title);
     fflush(stdout);
@@ -46,28 +42,19 @@ void	print_result(const char *title, u32_t success, u32_t failed) {
         write(1, " ", 1);
     fprintf(stdout, "%02d/%02d [", success, total);
     fflush(stdout);
-    if (percent == 100) {
+    if (percent == 100)
         fprintf(stdout, "\033[1;32m");
-    } else if (percent >= 90) {
+    else if (percent >= 90)
         fprintf(stdout, "\033[1;33m");
-    } else {
+    else
         fprintf(stdout, "\033[1;31m");
-    }
     fflush(stdout);
     fprintf(stdout, "%03d%%\033[0;m]\n", percent);
     fflush(stdout);
 }
 
-/*!
- * \brief Register a test
- * \param group Group name
- * \param fn_test Test function
- * \param name Test name
- *
- * \note Do not call this function directly, use test_reg macro instead.
- */
-void		register_test(char *group, char *(*fn_test)(void), char *name) {
-    mtest_t		*ptr;
+void register_test(char *group, char *(*fn_test)(void), char *name) {
+    mtest_t     *ptr;
 
     /* Allocate test */
     ptr = malloc(sizeof(mtest_t));
@@ -89,16 +76,12 @@ void		register_test(char *group, char *(*fn_test)(void), char *name) {
     free(ptr);
 }
 
-/*!
- * \brief Test an entire group of tests
- * \param group Group name
- */
-mtest_results_t	test_group(char *group) {
-    mlist_t			*tmp;
-    mtest_t			*ptr;
-    mtest_results_t	res;
-    u32_t			tab;
-    char			*s_tmp;
+mtest_results_t test_group(char *group) {
+    mlist_t         *tmp;
+    mtest_t         *ptr;
+    mtest_results_t res;
+    u32_t           tab;
+    char            *s_tmp;
 
     res.total = res.success = res.failed = 0;
     res.group_name = NULL;
@@ -111,21 +94,25 @@ mtest_results_t	test_group(char *group) {
     }
 
     /* Iterate over each test */
-    list_for_each(tests, tmp, ptr) {
-        if (strcmp(ptr->group, group) == 0) {
+    list_for_each(tests, tmp, ptr)
+    {
+        if (strcmp(ptr->group, group) == 0)
+        {
             res.total++;
             m_info("Testing %s ...", ptr->name);
-
             for (tab = strlen(ptr->name); tab < TITLE_LEN - 18;
                     tab++, printf(" "))
                 ;
 
-            if ((s_tmp = ptr->fn_test()) != TEST_SUCCESS) {
+            if ((s_tmp = ptr->fn_test()) != TEST_SUCCESS)
+            {
                 printf("[ \033[1;31mKO\033[0m ]\n");
                 m_warning("\033[0;37m%s\033[0m\n", s_tmp);
                 free(s_tmp);
                 res.failed++;
-            } else {
+            }
+            else
+            {
                 printf("[ \033[1;32mOK\033[0m ]\n");
                 res.success++;
             }
@@ -136,23 +123,21 @@ mtest_results_t	test_group(char *group) {
     return res;
 }
 
-/*!
- * \brief Test all registered tests
- * \return Numbers of tests failed
- */
-u32_t		test_all(void) {
-    mlist_t			*tmp, *groups = NULL, *tests_results = NULL;
-    mtest_t			*ptr;
-    mtest_results_t	res, *ptr2;
-    u32_t			total = 0, success = 0, failed = 0;
+u32_t test_all(void) {
+    mlist_t         *tmp, *groups = NULL, *tests_results = NULL;
+    mtest_t         *ptr;
+    mtest_results_t res, *ptr2;
+    u32_t           total = 0, success = 0, failed = 0;
 
     if (tests == NULL)
     {
         m_warning("No tests registered, skipping.\n");
         return 0;
     }
-    list_for_each(tests, tmp, ptr) {
-        if (list_get(groups, ptr->group, strlen(ptr->group)) == NULL) {
+    list_for_each(tests, tmp, ptr)
+    {
+        if (list_get(groups, ptr->group, strlen(ptr->group)) == NULL)
+        {
             res = test_group(ptr->group);
 
             res.group_name = malloc(sizeof(char) * strlen(ptr->group) + 1);
@@ -166,7 +151,8 @@ u32_t		test_all(void) {
     }
 
     title("Results");
-    list_for_each(tests_results, tmp, ptr2) {
+    list_for_each(tests_results, tmp, ptr2)
+    {
         print_result(ptr2->group_name, ptr2->success, ptr2->failed);
     }
     print_result("Total", success, failed);
@@ -177,35 +163,26 @@ u32_t		test_all(void) {
     return failed;
 }
 
-/*!
- * \brief Free all the test
- */
-void	test_free(void) {
+void test_free(void) {
     list_free(tests, &single_test_free);
     tests = NULL;
 }
 
-/*!
- * \brief Free a single test
- * \note Used in test_free, as a list_free callback
- */
-int		single_test_free(void *ptr) {
-    mtest_t		*tmp = ptr;
+int single_test_free(void *ptr) {
+    mtest_t     *tmp = ptr;
 
-    if (ptr) {
+    if (ptr)
+    {
         free(tmp->group);
         free(tmp->name);
     }
     return 1;
 }
 
-/*!
- * \brief Free a mtest_results_t
- * \note Used in test_all, as a list_free callback
- */
-int		single_result_free(void *ptr) {
-    mtest_results_t		*tmp = ptr;
-    if (ptr) {
+int single_result_free(void *ptr) {
+    mtest_results_t     *tmp = ptr;
+    if (ptr)
+    {
         free(tmp->group_name);
     }
     return 1;

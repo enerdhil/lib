@@ -23,43 +23,80 @@
 # include <m_list.h>
 # include <m_print.h>
 
-typedef struct		s_test {
-	char				*(*fn_test)(void);
-	char				*group;
-	char				*name;
-}					mtest_t;
+typedef struct test_s {
+    char    *(*fn_test)(void);
+    char    *group;
+    char    *name;
+} mtest_t;
 
-typedef struct		s_test_results {
-	char				*group_name;
-	u32_t				success;
-	u32_t				failed;
-	u32_t				total;
-}					mtest_results_t;
+typedef struct test_results_s {
+    char    *group_name;
+    u32_t   success;
+    u32_t   failed;
+    u32_t   total;
+} mtest_results_t;
 
 
 /* Defines */
-# define TEST_SUCCESS		0x0
-# define LINE_SIZE			80
-# define TITLE_LEN			LINE_SIZE
+# define TEST_SUCCESS       0x0
+# define LINE_SIZE          80
+# define TITLE_LEN          LINE_SIZE
 
-# define TEST(name) char		*test_##name(void)
+# define TEST(name) char *test_##name(void)
 # define reg_test(group, name) register_test(group, &test_##name, #name);
 # define TEST_ASSERT(condition, error_name) {\
-	if (!(condition)) {\
-		char *ret = NULL; \
-		asprintf(&ret, "\t%s: Test: '%s', File %s:%d", error_name, #condition, __FILE__, __LINE__);\
-		return ret;\
-	}\
+    if (!(condition)) {\
+        char *ret = NULL; \
+        asprintf(&ret, "\t%s: Test: '%s', File %s:%d", error_name, #condition, __FILE__, __LINE__);\
+        return ret;\
+    }\
 }
 
-/* Functions */
-void			title(char *s);
-void			register_test(char *group, char *(*fn_test)(void), char *name);
-mtest_results_t	test_group(char *group);
-u32_t			test_all(void);
-void			test_free(void);
-int				single_test_free(void *ptr);
-int				single_result_free(void *ptr);
-void			print_result(const char *title, u32_t success, u32_t failed);
+/*!
+ * \brief Print a title
+ * \param s Title name
+ */
+void title(char *s);
+
+/*!
+ * \brief Register a test
+ * \param group Group name
+ * \param fn_test Test function
+ * \param name Test name
+ *
+ * \note Do not call this function directly, use test_reg macro instead.
+ */
+void register_test(char *group, char *(*fn_test)(void), char *name);
+
+/*!
+ * \brief Test an entire group of tests
+ * \param group Group name
+ */
+mtest_results_t test_group(char *group);
+
+/*!
+ * \brief Test all registered tests
+ * \return Numbers of tests failed
+ */
+u32_t test_all(void);
+
+/*!
+ * \brief Free all the test
+ */
+void test_free(void);
+
+/*!
+ * \brief Free a single test
+ * \note Used in test_free, as a list_free callback
+ */
+int single_test_free(void *ptr);
+
+/*!
+ * \brief Free a mtest_results_t
+ * \note Used in test_all, as a list_free callback
+ */
+int single_result_free(void *ptr);
+
+void print_result(const char *title, u32_t success, u32_t failed);
 
 #endif /* M_TEST_H */
