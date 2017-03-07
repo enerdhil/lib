@@ -20,22 +20,6 @@
 #define LIB_OPT_TOKEN_VERSION 'V'
 #define LIB_OPT_STRING_VERSION "version"
 
-/*!
- * \brief Read the options given by the program
- * \param ac Number of argument in av
- * \param av Array of string, containing the arguments
- * \param args Array of margs_t, containing the preset options. Must end with
- * an empty structure.
- * \return Number of options read
- *
- * The read_opt function reads a given list of arguments, and parse the options
- * in it. The options are read from the args array.
- * If an option is not known, the function calls the help and quit.
- * If the option -h | --help is passed, the function call the help and quit.
- * If the option -v | --version is passed, the function call the version and quit.
- *
- * \note Only the arguments beginning with - are parsed.
- */
 u32_t		read_opt(const int ac, char **av, const margs_t *args) {
     u32_t		ret = 0, it, k;
     u8_t		n_dash;
@@ -150,11 +134,6 @@ u32_t		read_opt(const int ac, char **av, const margs_t *args) {
     return ret;
 }
 
-/*!
- * \brief Print helps with a list of argument, and exit
- * \param args List of arguments to print
- * \param ret Return code of the exit
- */
 void		opt_help(const margs_t *args, u8_t ret) {
     m_info("Help:\n");
     for (u32_t i = 0; args[i].opt != 0; i++) {
@@ -167,10 +146,6 @@ void		opt_help(const margs_t *args, u8_t ret) {
     exit(ret);
 }
 
-/*!
- * \brief Print the program name, the version and the maintainer, then exit
- * \param ret Return code of the exit
- */
 void		p_version(u8_t ret) {
     m_info("Program: %s\n", get_program_name());
     m_info("Version: %s\n", get_version());

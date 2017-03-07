@@ -58,9 +58,35 @@ typedef struct		s_args {
 #define IS_EOL(lst) (lst.opt == 0 && lst.s_opt == NULL && lst.desc == NULL && \
 						lst.take_arg == false && lst.callback == NULL)
 
-
+/*!
+ * \brief Read the options given by the program
+ * \param[in] ac Number of argument in av
+ * \param[in] av Array of string, containing the arguments
+ * \param[in] args Array of margs_t, containing the preset options. Must end with
+ * an empty structure.
+ *
+ * The read_opt function reads a given list of arguments, and parse the options
+ * in it. The options are read from the args array.
+ * If an option is not known, the function calls the help and quit.
+ * If the option -h | --help is passed, the function call the help and quit.
+ * If the option -v | --version is passed, the function call the version and quit.
+ *
+ * \note Only the arguments beginning with - are parsed.
+ * \return Number of options read
+ */
 u32_t			read_opt(const int ac, char **av, const margs_t *args);
+
+/*!
+ * \brief Print helps with a list of argument, and exit
+ * \param[in] args List of arguments to print
+ * \param[in] ret Return code of the exit
+ */
 void			opt_help(const margs_t *args, u8_t ret);
+
+/*!
+ * \brief Print the program name, the version and the maintainer, then exit
+ * \param[in] ret Return code of the exit
+ */
 void			p_version(u8_t ret);
 
 #endif /* M_ARGS_H */
