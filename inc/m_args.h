@@ -56,7 +56,7 @@ typedef struct args_s {
 
 #define ARGS_EOL {0, NULL, NULL, false, NULL}
 #define IS_EOL(lst) (lst.opt == 0 && lst.s_opt == NULL && lst.desc == NULL && \
-						lst.take_arg == false && lst.callback == NULL)
+                        lst.take_arg == false && lst.callback == NULL)
 
 /*!
  * \brief Read the options given by the program

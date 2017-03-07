@@ -23,27 +23,24 @@ static char     version[INFOS_G_LEN_MAX] = "";
 static char     maintainer[INFOS_G_LEN_MAX] = "";
 
 void set_program_name(const char *str) {
-    if (str == NULL) {
+    if (str == NULL)
         strcpy(program, "");
-    } else if (strlen(str) < INFOS_G_LEN_MAX) {
+    else if (strlen(str) < INFOS_G_LEN_MAX)
         strcpy(program, str);
-    }
 }
 
 void set_version(const char *str) {
-    if (str == NULL) {
+    if (str == NULL)
         strcpy(version, "");
-    } else if (strlen(str) < INFOS_G_LEN_MAX) {
+    else if (strlen(str) < INFOS_G_LEN_MAX)
         strcpy(version, str);
-    }
 }
 
 void set_maintainer(const char *str) {
-    if (str == NULL) {
+    if (str == NULL)
         strcpy(maintainer, "");
-    } else if (strlen(str) < INFOS_G_LEN_MAX) {
+    else if (strlen(str) < INFOS_G_LEN_MAX)
         strcpy(maintainer, str);
-    }
 }
 
 const char *get_program_name(void) {
