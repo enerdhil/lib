@@ -19,11 +19,13 @@
 
 # include <stdbool.h>
 # include <stdlib.h>
+# include <errno.h>
 # include <m_types.h>
 # include <m_print.h>
 # include <m_infos.h>
+# include <m_list.h>
 
-typedef struct		s_args {
+typedef struct		s_opts {
 	/**
 	 * Single letter option
 	 * Example: -f, -s
@@ -45,21 +47,22 @@ typedef struct		s_args {
 	/**
 	 * Boolean that describe if the option must take an argument
 	 */
-	bool		take_arg;
+	bool	take_arg;
 
 	/**
 	 * Callback of the option
 	 */
 	void	(*callback)(const char *);
-}					margs_t;
+}					mopts_t;
 
 #define ARGS_EOL {0, NULL, NULL, false, NULL}
 #define IS_EOL(lst) (lst.opt == 0 && lst.s_opt == NULL && lst.desc == NULL && \
 						lst.take_arg == false && lst.callback == NULL)
 
 
-u32_t			read_opt(const int ac, char **av, const margs_t *args);
-void			opt_help(const margs_t *args, u8_t ret);
+u32_t			read_opt(const int ac, char **av, const mopts_t *opts, \
+							mlist_t **args);
+void			opt_help(const mopts_t *opts, u8_t ret);
 void			p_version(u8_t ret);
 
 #endif /* M_ARGS_H */
