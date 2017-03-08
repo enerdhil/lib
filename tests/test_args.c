@@ -3,44 +3,63 @@
 static struct margs_tests	args;
 
 TEST(args_NULL) {
-	TEST_ASSERT(read_opt(0, NULL, NULL) == 0, "Not handling null arguments");
-	return TEST_SUCCESS;
-}
-
-TEST(args_NULL_1) {
-	TEST_ASSERT(read_opt(10, NULL, NULL) == 0, "Not handling null arguments");
-	return TEST_SUCCESS;
-}
-
-TEST(args_NULL_2) {
 	char	*tab[] = {"test", "test2"};
-	TEST_ASSERT(read_opt(0, tab, NULL) == 0, "Not handling null arguments");
-	return TEST_SUCCESS;
-}
+	mopts_t	t;
+	mlist_t	*lst;
 
-TEST(args_NULL_3) {
-	char	*tab[] = {"test", "test2"};
-	TEST_ASSERT(read_opt(10, tab, NULL) == 0, "Not handling null arguments");
-	return TEST_SUCCESS;
-}
+	lst = malloc(sizeof(mlist_t));
 
-TEST(args_NULL_4) {
-	char	*tab[] = {"test", "test2"};
-	margs_t	t;
+	/* 0 0 0 0 */
+	TEST_ASSERT(read_opt(0, NULL, NULL, NULL) == 0,
+				"Not handling null arguments");
+	/* 0 0 0 1 */
+	TEST_ASSERT(read_opt(0, NULL, NULL, &lst) == 0,
+				"Not handling null arguments");
+	/* 0 0 1 0 */
+	TEST_ASSERT(read_opt(0, NULL, &t, NULL) == 0,
+				"Not handling null arguments");
+	/* 0 0 1 1 */
+	TEST_ASSERT(read_opt(0, NULL, &t, &lst) == 0,
+				"Not handling null arguments");
+	/* 0 1 0 0 */
+	TEST_ASSERT(read_opt(0, tab, NULL, NULL) == 0,
+				"Not handling null arguments");
+	/* 0 1 0 1 */
+	TEST_ASSERT(read_opt(0, tab, NULL, &lst) == 0,
+				"Not handling null arguments");
+	/* 0 1 1 0 */
+	TEST_ASSERT(read_opt(0, tab, &t, NULL) == 0,
+				"Not handling null arguments");
+	/* 0 1 1 1 */
+	TEST_ASSERT(read_opt(0, tab, &t, &lst) == 0,
+				"Not handling null arguments");
+	/* 1 0 0 0 */
+	TEST_ASSERT(read_opt(10, NULL, NULL, NULL) == 0,
+				"Not handling null arguments");
+	/* 1 0 0 1 */
+	TEST_ASSERT(read_opt(10, NULL, NULL, &lst) == 0,
+				"Not handling null arguments");
+	/* 1 0 1 0 */
+	TEST_ASSERT(read_opt(10, NULL, &t, NULL) == 0,
+				"Not handling null arguments");
+	/* 1 0 1 1 */
+	TEST_ASSERT(read_opt(10, NULL, &t, &lst) == 0,
+				"Not handling null arguments");
+	/* 1 1 0 0 */
+	TEST_ASSERT(read_opt(10, tab, NULL, NULL) == 0,
+				"Not handling null arguments");
+	/* 1 1 0 1 */
+	TEST_ASSERT(read_opt(10, tab, NULL, &lst) == 0,
+				"Not handling null arguments");
+	/* 1 1 1 0 */
+	TEST_ASSERT(read_opt(10, tab, &t, NULL) == 0,
+				"Not handling null arguments");
 
-	TEST_ASSERT(read_opt(0, tab, &t) == 0, "Not handling null arguments");
-	return TEST_SUCCESS;
-}
-
-TEST(args_NULL_5) {
-	margs_t	t;
-
-	TEST_ASSERT(read_opt(10, NULL, &t) == 0, "Not handling null arguments");
 	return TEST_SUCCESS;
 }
 
 TEST(args_empty_1) {
-	margs_t	t;
+	mopts_t	t;
 	char	*tab[] = {"", "", ""};
 
 	TEST_ASSERT(read_opt(3, tab, &t) == 0, "Not handling null arguments");
@@ -48,16 +67,15 @@ TEST(args_empty_1) {
 }
 
 TEST(args_empty_2) {
-	margs_t	t;
+	mopts_t	t;
 	char	*tab[] = {NULL, NULL, NULL};
 
 	TEST_ASSERT(read_opt(3, tab, &t) == 0, "Not handling null arguments");
 	return TEST_SUCCESS;
 }
 
-
 TEST(args_unhandled_1) {
-	margs_t		opt[] = {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
@@ -70,7 +88,8 @@ TEST(args_unhandled_1) {
 	if ((pid = fork()) == 0) {
 
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av), av, opt) == 0, "Not handling properly unknown arguments");
+		TEST_ASSERT(read_opt(sizeof(av), av, opt) == 0, 
+					"Not handling properly unknown arguments");
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
@@ -79,7 +98,7 @@ TEST(args_unhandled_1) {
 }
 
 TEST(args_unhandled_2) {
-	margs_t		opt[] = {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
@@ -90,7 +109,8 @@ TEST(args_unhandled_2) {
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling triple '-' arguments");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, 
+					"Not handling triple '-' arguments");
 		exit(0);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
@@ -100,7 +120,7 @@ TEST(args_unhandled_2) {
 }
 
 TEST(args_unhandled_3) {
-	margs_t		opt[] = {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
@@ -121,7 +141,7 @@ TEST(args_unhandled_3) {
 }
 
 TEST(args_unhandled_4) {
-	margs_t		opt[] = {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
@@ -142,7 +162,7 @@ TEST(args_unhandled_4) {
 }
 
 TEST(args_unhandled_5) {
-	margs_t		opt[] = {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
@@ -163,7 +183,7 @@ TEST(args_unhandled_5) {
 }
 
 TEST(args_unhandled_6) {
-	margs_t		opt[] = {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
@@ -184,7 +204,7 @@ TEST(args_unhandled_6) {
 }
 
 TEST(args_help_1) {
-	margs_t		opt[] = {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
@@ -205,7 +225,7 @@ TEST(args_help_1) {
 }
 
 TEST(args_help_2) {
-	margs_t		opt[] = {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
@@ -226,7 +246,7 @@ TEST(args_help_2) {
 }
 
 TEST(args_version_1) {
-	margs_t		opt[] = {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
@@ -247,7 +267,7 @@ TEST(args_version_1) {
 }
 
 TEST(args_version_2) {
-	margs_t		opt[] = {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
@@ -268,7 +288,7 @@ TEST(args_version_2) {
 }
 
 TEST(args_base_1) {
-	margs_t		opt[] = OPT_DEF(false);
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-q"};
 
 	reset_args();
@@ -279,7 +299,7 @@ TEST(args_base_1) {
 }
 
 TEST(args_base_2) {
-	margs_t		opt[] = OPT_DEF(false);
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-qw"};
 
 	reset_args();
@@ -291,7 +311,7 @@ TEST(args_base_2) {
 }
 
 TEST(args_base_3) {
-	margs_t		opt[] = OPT_DEF(false);
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-q", "-w"};
 
 	reset_args();
@@ -303,7 +323,7 @@ TEST(args_base_3) {
 }
 
 TEST(args_base_4) {
-	margs_t		opt[] = OPT_DEF(false);
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "--qwerty", "-w"};
 
 	reset_args();
@@ -315,7 +335,7 @@ TEST(args_base_4) {
 }
 
 TEST(args_base_5) {
-	margs_t		opt[] = OPT_DEF(false);
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "--qwerty", "--wertyu"};
 
 	reset_args();
@@ -327,7 +347,7 @@ TEST(args_base_5) {
 }
 
 TEST(args_base_6) {
-	margs_t		opt[] = OPT_DEF(false);
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-qwerty"};
 
 	reset_args();
@@ -342,7 +362,7 @@ TEST(args_base_6) {
 }
 
 TEST(args_base_7) {
-	margs_t		opt[] = OPT_DEF(false);
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "--qwerty", "--wertyu", "--ertyui", "--rtyuio", "--tyuiop", "--yuiop["};
 
 	reset_args();
@@ -357,7 +377,7 @@ TEST(args_base_7) {
 }
 
 TEST(args_missing_value_1) {
-	margs_t		opt[] = OPT_DEF(true);
+	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "-q"};
 	int			st, fd[2];
 	pid_t		pid;
@@ -376,7 +396,7 @@ TEST(args_missing_value_1) {
 }
 
 TEST(args_missing_value_2) {
-	margs_t		opt[] = OPT_DEF(true);
+	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty"};
 	int			st, fd[2];
 	pid_t		pid;
@@ -395,7 +415,7 @@ TEST(args_missing_value_2) {
 }
 
 TEST(args_value_1) {
-	margs_t		opt[] = OPT_DEF(true);
+	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "-q", "toto"};
 
 	reset_args();
@@ -406,7 +426,7 @@ TEST(args_value_1) {
 }
 
 TEST(args_value_2) {
-	margs_t		opt[] = OPT_DEF(true);
+	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto"};
 
 	reset_args();
@@ -417,7 +437,7 @@ TEST(args_value_2) {
 }
 
 TEST(args_value_3) {
-	margs_t		opt[] = OPT_DEF(true);
+	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto", "-w", "tata"};
 
 	reset_args();
@@ -430,7 +450,7 @@ TEST(args_value_3) {
 }
 
 TEST(args_value_4) {
-	margs_t		opt[] = OPT_DEF(true);
+	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto", "--wertyu=tata"};
 
 	reset_args();
@@ -443,7 +463,7 @@ TEST(args_value_4) {
 }
 
 TEST(args_word_only_1) {
-	margs_t		opt[] = {
+	mopts_t		opt[] = {
 		{0, "qwerty", "qwerty", false, &callback_q},
 		ARGS_EOL
 	};
