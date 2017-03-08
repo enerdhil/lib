@@ -65,8 +65,8 @@ bool m_log(const char *str, ...);
 
 /*!
  * \brief Initialize the logging for the program
- * \param[in] file File path
- * \param[in] force Flag (see defines M_LOG_* in m_print.h)
+ * \param[in] str File path
+ * \param[in] flags Flag (see defines M_LOG_* in m_print.h)
  *
  * Open a file with O_APPEN flag, and keep it open.
  * If the M_LOG_FORCE flag is true, all the calls to m_{panic,error,warning,info}
