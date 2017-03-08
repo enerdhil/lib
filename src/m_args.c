@@ -84,6 +84,7 @@ u32_t		read_opt(const int ac, char **av, const mopts_t *opts, \
 
 				/* Can't find the option */
 				if (IS_EOL(opts[it])) {
+					m_info("HEY");
 					m_error("Unknow option -%s\n", &(av[i][z]));
 					opt_help(opts, 1);
 				} else {
@@ -161,6 +162,7 @@ u32_t		read_opt(const int ac, char **av, const mopts_t *opts, \
 	for ( /* Using u32_t i */; i < (u32_t)ac; i++) {
 		list_add_member(*args, av[i], sizeof(av[i]));
 	}
+	m_info("Hey : %d\n", ret);
 	return ret;
 }
 

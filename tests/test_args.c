@@ -55,22 +55,29 @@ TEST(args_NULL) {
 	TEST_ASSERT(read_opt(10, tab, &t, NULL) == 0,
 				"Not handling null arguments");
 
+	free(lst);
 	return TEST_SUCCESS;
 }
 
 TEST(args_empty_1) {
 	mopts_t	t;
 	char	*tab[] = {"", "", ""};
+	mlist_t	*lst;
 
-	TEST_ASSERT(read_opt(3, tab, &t) == 0, "Not handling null arguments");
+	lst = malloc(sizeof(mlist_t));
+	TEST_ASSERT(read_opt(3, tab, &t, &lst) == 0, "Not handling null arguments");
+	free(lst);
 	return TEST_SUCCESS;
 }
 
 TEST(args_empty_2) {
 	mopts_t	t;
 	char	*tab[] = {NULL, NULL, NULL};
+	mlist_t	*lst;
 
-	TEST_ASSERT(read_opt(3, tab, &t) == 0, "Not handling null arguments");
+	lst = malloc(sizeof(mlist_t));
+	TEST_ASSERT(read_opt(3, tab, &t, &lst) == 0, "Not handling null arguments");
+	free(lst);
 	return TEST_SUCCESS;
 }
 
@@ -79,21 +86,24 @@ TEST(args_unhandled_1) {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
-	char		*av[] = {"./tests", "oui", "--allow"};
+	char		*av[] = {"./tests", "oui", "-allow"};
 	pid_t		pid;
 	int			st, fd[2];
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	pipe(fd);
 	fflush(stdout);
 	if ((pid = fork()) == 0) {
 
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av), av, opt) == 0, 
+		TEST_ASSERT(read_opt(sizeof(av), av, opt, &lst) == 0, 
 					"Not handling properly unknown arguments");
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
 	}
+	free(lst);
 	return TEST_SUCCESS;
 }
 
@@ -105,17 +115,20 @@ TEST(args_unhandled_2) {
 	char		*av[] = {"./test", "---wrong-option"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, 
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
 					"Not handling triple '-' arguments");
 		exit(0);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
 	}
+	free(lst);
 	return TEST_SUCCESS;
 }
 
@@ -127,16 +140,20 @@ TEST(args_unhandled_3) {
 	char		*av[] = {"./test", "-", "<-", "Single dash"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling alone '-' in arguments");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling alone '-' in arguments");
 		exit(0);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
 	}
+	free(lst);
 	return TEST_SUCCESS;
 }
 
@@ -148,16 +165,20 @@ TEST(args_unhandled_4) {
 	char		*av[] = {"./test", "-q"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling unknown option");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling unknown option");
 		exit(0);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
 	}
+	free(lst);
 	return TEST_SUCCESS;
 }
 
@@ -169,11 +190,14 @@ TEST(args_unhandled_5) {
 	char		*av[] = {"./test", "--"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling double dash without option");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling double dash without option");
 		exit(0);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
@@ -190,16 +214,20 @@ TEST(args_unhandled_6) {
 	char		*av[] = {"./test", "-"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling single dash without option");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling single dash without option");
 		exit(1);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
 	}
+	free(lst);
 	return TEST_SUCCESS;
 }
 
@@ -211,16 +239,20 @@ TEST(args_help_1) {
 	char		*av[] = {"./test", "-h"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling -h arguments");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling -h arguments");
 		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
 	}
+	free(lst);
 	return TEST_SUCCESS;
 }
 
@@ -232,16 +264,20 @@ TEST(args_help_2) {
 	char		*av[] = {"./test", "--help"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling --help arguments");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling --help arguments");
 		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
 	}
+	free(lst);
 	return TEST_SUCCESS;
 }
 
@@ -253,16 +289,20 @@ TEST(args_version_1) {
 	char		*av[] = {"./test", "-V"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling --version arguments");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling --version arguments");
 		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
 	}
+	free(lst);
 	return TEST_SUCCESS;
 }
 
@@ -274,105 +314,143 @@ TEST(args_version_2) {
 	char		*av[] = {"./test", "--version"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling -v arguments");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling -v arguments");
 		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
 	}
+	free(lst);
 	return TEST_SUCCESS;
 }
 
 TEST(args_base_1) {
 	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-q"};
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	reset_args();
-	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 1), "Wrong return");
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1),
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w != true, "Argument not read");
+	free(lst);
 	return TEST_SUCCESS;
 }
 
 TEST(args_base_2) {
 	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-qw"};
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	reset_args();
-	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2), "Wrong return");
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 2),
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
 	TEST_ASSERT(args.opt_e != true, "Argument not read");
+	free(lst);
 	return TEST_SUCCESS;
 }
 
 TEST(args_base_3) {
 	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-q", "-w"};
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	reset_args();
-	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2), "Wrong return");
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 2),
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
 	TEST_ASSERT(args.opt_e != true, "Argument not read");
+	free(lst);
 	return TEST_SUCCESS;
 }
 
 TEST(args_base_4) {
 	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "--qwerty", "-w"};
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	reset_args();
-	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2), "Wrong return");
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 2),
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
 	TEST_ASSERT(args.opt_e != true, "Argument not read");
+	free(lst);
 	return TEST_SUCCESS;
 }
 
 TEST(args_base_5) {
 	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "--qwerty", "--wertyu"};
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	reset_args();
-	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2), "Wrong return");
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 2),
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
 	TEST_ASSERT(args.opt_e != true, "Argument not read");
+	free(lst);
 	return TEST_SUCCESS;
 }
 
 TEST(args_base_6) {
 	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-qwerty"};
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	reset_args();
-	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 6), "Wrong return");
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 6),
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
 	TEST_ASSERT(args.opt_e == true, "Argument not read");
 	TEST_ASSERT(args.opt_r == true, "Argument not read");
 	TEST_ASSERT(args.opt_t == true, "Argument not read");
 	TEST_ASSERT(args.opt_y == true, "Argument not read");
+	free(lst);
 	return TEST_SUCCESS;
 }
 
 TEST(args_base_7) {
 	mopts_t		opt[] = OPT_DEF(false);
-	char		*av[] = {"./test", "--qwerty", "--wertyu", "--ertyui", "--rtyuio", "--tyuiop", "--yuiop["};
+	char		*av[] = {"./test",
+						"--qwerty",
+						"--wertyu",
+						"--ertyui",
+						"--rtyuio",
+						"--tyuiop",
+						"--yuiop["};
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	reset_args();
-	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 6), "Wrong return");
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 6),
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
 	TEST_ASSERT(args.opt_e == true, "Argument not read");
 	TEST_ASSERT(args.opt_r == true, "Argument not read");
 	TEST_ASSERT(args.opt_t == true, "Argument not read");
 	TEST_ASSERT(args.opt_y == true, "Argument not read");
+	free(lst);
 	return TEST_SUCCESS;
 }
 
@@ -381,17 +459,21 @@ TEST(args_missing_value_1) {
 	char		*av[] = {"./test", "-q"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	reset_args();
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling missing argument");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling missing argument");
 		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
 	}
+	free(lst);
 	return TEST_SUCCESS;
 }
 
@@ -400,48 +482,63 @@ TEST(args_missing_value_2) {
 	char		*av[] = {"./test", "--qwerty"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	reset_args();
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling missing argument");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling missing argument");
 		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
 	}
+	free(lst);
 	return TEST_SUCCESS;
 }
 
 TEST(args_value_1) {
 	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "-q", "toto"};
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	reset_args();
-	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 1, "Wrong return");
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1,
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(strcmp(args.str_q, "toto") == 0, "Value not read");
+	free(lst);
 	return TEST_SUCCESS;
 }
 
 TEST(args_value_2) {
 	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto"};
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	reset_args();
-	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 1, "Wrong return");
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1,
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(strcmp(args.str_q, "toto") == 0, "Value not read");
+	free(lst);
 	return TEST_SUCCESS;
 }
 
 TEST(args_value_3) {
 	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto", "-w", "tata"};
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	reset_args();
-	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2, "Wrong return");
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 2,
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(strcmp(args.str_q, "toto") == 0, "Value not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
@@ -452,13 +549,17 @@ TEST(args_value_3) {
 TEST(args_value_4) {
 	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto", "--wertyu=tata"};
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	reset_args();
-	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2, "Wrong return");
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 2,
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(strcmp(args.str_q, "toto") == 0, "Value not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
 	TEST_ASSERT(strcmp(args.str_w, "tata") == 0, "Value not read");
+	free(lst);
 	return TEST_SUCCESS;
 }
 
@@ -468,11 +569,15 @@ TEST(args_word_only_1) {
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "--qwerty"};
+	mlist_t		*lst;
 
+	lst = malloc(sizeof(mlist_t));
 	reset_args();
-	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 1, "Wrong return");
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1,
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w == false, "Wrong argument");
+	free(lst);
 	return TEST_SUCCESS;
 }
 
@@ -542,11 +647,6 @@ void		reset_args(void) {
 
 void		register_args_tests(void) {
 	reg_test("m_args", args_NULL);
-	reg_test("m_args", args_NULL_1);
-	reg_test("m_args", args_NULL_2);
-	reg_test("m_args", args_NULL_3);
-	reg_test("m_args", args_NULL_4);
-	reg_test("m_args", args_NULL_5);
 	reg_test("m_args", args_empty_1);
 	reg_test("m_args", args_empty_2);
 	reg_test("m_args", args_unhandled_1);
