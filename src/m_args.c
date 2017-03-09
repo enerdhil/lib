@@ -67,7 +67,6 @@ u32_t		read_opt(const int ac, char **av, const mopts_t *opts, \
 		if (n_dash == 1) {
 
 			if (strlen(av[i]) < 2) {
-				i++;
 				break ;
 			}
 

@@ -141,6 +141,7 @@ TEST(args_unhandled_3) {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
 	}
+	list_free(lst, NULL);
 	return TEST_SUCCESS;
 }
 
