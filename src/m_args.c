@@ -158,7 +158,7 @@ u32_t		read_opt(const int ac, char **av, const mopts_t *opts, \
 
 	/* If reading of flags is stopped by '--' get the rest of the args */
 	for ( /* Using u32_t i */; i < (u32_t)ac; i++) {
-		list_add_member(*args, av[i], sizeof(av[i]));
+		list_add_member(*args, av[i], strlen(av[i] + 1));
 	}
 	return ret;
 }
