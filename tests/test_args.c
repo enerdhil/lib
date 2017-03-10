@@ -2,6 +2,7 @@
 
 static struct margs_tests	args;
 
+/* Testing all possibilities with a NULL args somewhere */
 TEST(args_NULL) {
 	char	*tab[] = {"test", "test2"};
 	mopts_t	t;
@@ -56,6 +57,7 @@ TEST(args_NULL) {
 	return TEST_SUCCESS;
 }
 
+/* Testing with av being an array full of empty strings */
 TEST(args_empty_1) {
 	mopts_t	t;
 	char	*tab[] = {"", "", ""};
@@ -65,6 +67,7 @@ TEST(args_empty_1) {
 	return TEST_SUCCESS;
 }
 
+/* Testing with av being an array full of NULLs */
 TEST(args_empty_2) {
 	mopts_t	t;
 	char	*tab[] = {NULL, NULL, NULL};
@@ -74,7 +77,32 @@ TEST(args_empty_2) {
 	return TEST_SUCCESS;
 }
 
+/* Testing with unknown single dash option */
 TEST(args_unhandled_1) {
+	mopts_t		opt[] = {
+		{'z', "zoiberg", "No idea.", false, NULL},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "-q"};
+	int			st, fd[2];
+	pid_t		pid;
+	mlist_t		*lst = NULL;
+
+	pipe(fd);
+	if ((pid = fork()) == 0) {
+		DUP_ALL_OUTPUTS(fd);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling unknown option");
+		exit(0);
+	} else {
+		WAIT_AND_CLOSE(pid, st, fd);
+		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
+	}
+	return TEST_SUCCESS;
+}
+
+/* Testing with unknown double dash option */
+TEST(args_unhandled_2) {
 	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
@@ -98,7 +126,32 @@ TEST(args_unhandled_1) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_unhandled_2) {
+/*TEST(args_unhandled_3) {*/
+	/*mopts_t		opt[] = {*/
+		/*{'z', "zoiberg", "No idea.", false, NULL},*/
+		/*ARGS_EOL*/
+	/*};*/
+	/*char		*av[] = {"./test", "-", "<-", "Single dash"};*/
+	/*int			st, fd[2];*/
+	/*pid_t		pid;*/
+	/*mlist_t		*lst = NULL;*/
+
+	/*pipe(fd);*/
+	/*if ((pid = fork()) == 0) {*/
+		/*DUP_ALL_OUTPUTS(fd);*/
+		/*TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,*/
+					/*"Not handling alone '-' in arguments");*/
+		/*exit(0);*/
+	/*} else {*/
+		/*WAIT_AND_CLOSE(pid, st, fd);*/
+		/*TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");*/
+	/*}*/
+	/*list_free(lst, NULL);*/
+	/*return TEST_SUCCESS;*/
+/*}*/
+
+/* Testing with triple dash */
+TEST(args_unhandled_3) {
 	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
@@ -117,53 +170,6 @@ TEST(args_unhandled_2) {
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
-	}
-	return TEST_SUCCESS;
-}
-
-TEST(args_unhandled_3) {
-	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
-		ARGS_EOL
-	};
-	char		*av[] = {"./test", "-", "<-", "Single dash"};
-	int			st, fd[2];
-	pid_t		pid;
-	mlist_t		*lst = NULL;
-
-	pipe(fd);
-	if ((pid = fork()) == 0) {
-		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
-					"Not handling alone '-' in arguments");
-		exit(0);
-	} else {
-		WAIT_AND_CLOSE(pid, st, fd);
-		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
-	}
-	list_free(lst, NULL);
-	return TEST_SUCCESS;
-}
-
-TEST(args_unhandled_4) {
-	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
-		ARGS_EOL
-	};
-	char		*av[] = {"./test", "-q"};
-	int			st, fd[2];
-	pid_t		pid;
-	mlist_t		*lst = NULL;
-
-	pipe(fd);
-	if ((pid = fork()) == 0) {
-		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
-					"Not handling unknown option");
-		exit(0);
-	} else {
-		WAIT_AND_CLOSE(pid, st, fd);
-		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
 	}
 	return TEST_SUCCESS;
 }

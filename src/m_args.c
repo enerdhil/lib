@@ -59,8 +59,8 @@ u32_t		read_opt(const int ac, char **av, const mopts_t *opts, \
 
 		/* Argument have more than two '-' */
 		if (n_dash > 2) {
-			m_error("Malformed option: %s\n", av[i]);
-			continue ;
+			m_error("Unknow option -%s\n", &(av[i][z]));
+			opt_help(opts, 1);
 		}
 
 		/* Single letter option */
