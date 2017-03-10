@@ -31,5 +31,8 @@ clean:
 
 fclean: clean
 	rm -f $(NAME)
+	rm -f *.gcov
+	rm -f *.gcno
+	rm -f *.gcda
 
 re: fclean all
