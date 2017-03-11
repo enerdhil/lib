@@ -126,30 +126,6 @@ TEST(args_unhandled_2) {
 	return TEST_SUCCESS;
 }
 
-/*TEST(args_unhandled_3) {*/
-	/*mopts_t		opt[] = {*/
-		/*{'z', "zoiberg", "No idea.", false, NULL},*/
-		/*ARGS_EOL*/
-	/*};*/
-	/*char		*av[] = {"./test", "-", "<-", "Single dash"};*/
-	/*int			st, fd[2];*/
-	/*pid_t		pid;*/
-	/*mlist_t		*lst = NULL;*/
-
-	/*pipe(fd);*/
-	/*if ((pid = fork()) == 0) {*/
-		/*DUP_ALL_OUTPUTS(fd);*/
-		/*TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,*/
-					/*"Not handling alone '-' in arguments");*/
-		/*exit(0);*/
-	/*} else {*/
-		/*WAIT_AND_CLOSE(pid, st, fd);*/
-		/*TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");*/
-	/*}*/
-	/*list_free(lst, NULL);*/
-	/*return TEST_SUCCESS;*/
-/*}*/
-
 /* Testing with triple dash */
 TEST(args_unhandled_3) {
 	mopts_t		opt[] = {
@@ -170,52 +146,6 @@ TEST(args_unhandled_3) {
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
-	}
-	return TEST_SUCCESS;
-}
-
-TEST(args_unhandled_5) {
-	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
-		ARGS_EOL
-	};
-	char		*av[] = {"./test", "--"};
-	int			st, fd[2];
-	pid_t		pid;
-	mlist_t		*lst = NULL;
-
-	pipe(fd);
-	if ((pid = fork()) == 0) {
-		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
-					"Not handling double dash without option");
-		exit(0);
-	} else {
-		WAIT_AND_CLOSE(pid, st, fd);
-		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
-	}
-	return TEST_SUCCESS;
-}
-
-TEST(args_unhandled_6) {
-	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
-		ARGS_EOL
-	};
-	char		*av[] = {"./test", "-"};
-	int			st, fd[2];
-	pid_t		pid;
-	mlist_t		*lst = NULL;
-
-	pipe(fd);
-	if ((pid = fork()) == 0) {
-		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
-					"Not handling single dash without option");
-		exit(1);
-	} else {
-		WAIT_AND_CLOSE(pid, st, fd);
-		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
 	}
 	return TEST_SUCCESS;
 }
@@ -606,9 +536,6 @@ void		register_args_tests(void) {
 	reg_test("m_args", args_unhandled_1);
 	reg_test("m_args", args_unhandled_2);
 	reg_test("m_args", args_unhandled_3);
-	reg_test("m_args", args_unhandled_4);
-	reg_test("m_args", args_unhandled_5);
-	reg_test("m_args", args_unhandled_6);
 	reg_test("m_args", args_help_1);
 	reg_test("m_args", args_help_2);
 	reg_test("m_args", args_version_1);

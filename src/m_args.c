@@ -57,12 +57,6 @@ u32_t		read_opt(const int ac, char **av, const mopts_t *opts, \
 		for (j = 0; av[i][j] != '\0' && av[i][j] == '-'; j++)
 			n_dash++;
 
-		/* Argument have more than two '-' */
-		if (n_dash > 2) {
-			m_error("Unknow option -%s\n", &(av[i][z]));
-			opt_help(opts, 1);
-		}
-
 		/* Single letter option */
 		if (n_dash == 1) {
 
