@@ -60,7 +60,9 @@ u32_t		read_opt(const int ac, char **av, const mopts_t *opts, \
 		/* Single letter option */
 		if (n_dash == 1) {
 
+			/* If single dash alone, its a parameter */
 			if (strlen(av[i]) < 2) {
+			 	/* And we stop reading options. */
 				break ;
 			}
 
@@ -101,6 +103,7 @@ u32_t		read_opt(const int ac, char **av, const mopts_t *opts, \
 		} else if (n_dash == 2) {
 			bool	got_arg = false;
 
+			/* If double dash alone, skip it and then stop reading options */
 			if (strlen(av[i]) < 3) {
 				i++;
 				break ;
@@ -149,9 +152,9 @@ u32_t		read_opt(const int ac, char **av, const mopts_t *opts, \
 			list_add_member(*args, av[i], sizeof(av[i]));
 		}
 	}
-
-	/* If reading of flags is stopped by '--' get the rest of the args */
-	for ( /* Using u32_t i */; i < (u32_t)ac; i++) {
+	/* If reading of flags is stopped by '-' or '--'
+	 * get the rest of the parameters */
+	for ( /* Using u32_t i */ ; i < (u32_t)ac; i++) {
 		list_add(*args, av[i], strlen(av[i] + 1));
 	}
 	return ret;

@@ -3,7 +3,7 @@
 static struct margs_tests	args;
 
 /* Testing all possibilities with a NULL args somewhere */
-TEST(args_NULL) {
+TEST(opts_NULL) {
 	char	*tab[] = {"test", "test2"};
 	mopts_t	t;
 	mlist_t	*lst = NULL;;
@@ -58,7 +58,7 @@ TEST(args_NULL) {
 }
 
 /* Testing with av being an array full of empty strings */
-TEST(args_empty_1) {
+TEST(opts_empty_1) {
 	mopts_t	t;
 	char	*tab[] = {"", "", ""};
 	mlist_t	*lst = NULL;;
@@ -68,7 +68,7 @@ TEST(args_empty_1) {
 }
 
 /* Testing with av being an array full of NULLs */
-TEST(args_empty_2) {
+TEST(opts_empty_2) {
 	mopts_t	t;
 	char	*tab[] = {NULL, NULL, NULL};
 	mlist_t	*lst = NULL;;
@@ -78,7 +78,7 @@ TEST(args_empty_2) {
 }
 
 /* Testing with unknown single dash option */
-TEST(args_unhandled_1) {
+TEST(opts_unhandled_1) {
 	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
@@ -102,7 +102,7 @@ TEST(args_unhandled_1) {
 }
 
 /* Testing with unknown double dash option */
-TEST(args_unhandled_2) {
+TEST(opts_unhandled_2) {
 	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
@@ -127,7 +127,7 @@ TEST(args_unhandled_2) {
 }
 
 /* Testing with triple dash */
-TEST(args_unhandled_3) {
+TEST(opts_unhandled_3) {
 	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
@@ -150,7 +150,8 @@ TEST(args_unhandled_3) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_help_1) {
+/* Testing a call to -h builtin option */
+TEST(opts_help_1) {
 	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
@@ -173,7 +174,8 @@ TEST(args_help_1) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_help_2) {
+/* Testing a call to --help builtin option */
+TEST(opts_help_2) {
 	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
@@ -196,7 +198,32 @@ TEST(args_help_2) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_version_1) {
+/* Testing that --help properly exits instantly */
+TEST(opts_help_3) {
+	mopts_t		opt[] = {
+		{'z', "zoiberg", "No idea.", false, NULL},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "--help", "--zoiberg"};
+	int			st, fd[2];
+	pid_t		pid;
+	mlist_t		*lst = NULL;
+
+	pipe(fd);
+	if ((pid = fork()) == 0) {
+		DUP_ALL_OUTPUTS(fd);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling --help arguments");
+		exit(5);
+	} else {
+		WAIT_AND_CLOSE(pid, st, fd);
+		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
+	}
+	return TEST_SUCCESS;
+}
+
+/* Testing a call to -V builtin option */
+TEST(opts_version_1) {
 	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
@@ -219,7 +246,8 @@ TEST(args_version_1) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_version_2) {
+/* Testing a call to --version builtin option */
+TEST(opts_version_2) {
 	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
@@ -242,7 +270,32 @@ TEST(args_version_2) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_base_1) {
+/* Testing that --version properly exit instantly */
+TEST(opts_version_3) {
+	mopts_t		opt[] = {
+		{'z', "zoiberg", "No idea.", false, NULL},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "--version", "--zoiberg"};
+	int			st, fd[2];
+	pid_t		pid;
+	mlist_t		*lst = NULL;
+
+	pipe(fd);
+	if ((pid = fork()) == 0) {
+		DUP_ALL_OUTPUTS(fd);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling -v arguments");
+		exit(5);
+	} else {
+		WAIT_AND_CLOSE(pid, st, fd);
+		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
+	}
+	return TEST_SUCCESS;
+}
+
+/* Testing reading of 1 option without parameters */
+TEST(opts_base_1) {
 	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-q"};
 	mlist_t		*lst = NULL;
@@ -255,7 +308,8 @@ TEST(args_base_1) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_base_2) {
+/* Testing reading of 2 packed options without parameters */
+TEST(opts_base_2) {
 	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-qw"};
 	mlist_t		*lst = NULL;
@@ -269,7 +323,8 @@ TEST(args_base_2) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_base_3) {
+/* Testing reading of 2 separated options without parameters */
+TEST(opts_base_3) {
 	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-q", "-w"};
 	mlist_t		*lst = NULL;
@@ -283,7 +338,8 @@ TEST(args_base_3) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_base_4) {
+/* Testing reading of 1 long and 1 short options without parameters */
+TEST(opts_base_4) {
 	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "--qwerty", "-w"};
 	mlist_t		*lst = NULL;
@@ -297,7 +353,8 @@ TEST(args_base_4) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_base_5) {
+/* Testing reading of 2 long options without parameters */
+TEST(opts_base_5) {
 	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "--qwerty", "--wertyu"};
 	mlist_t		*lst = NULL;
@@ -311,7 +368,8 @@ TEST(args_base_5) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_base_6) {
+/* Testing reading 6 packed options that makes the name of a long option */
+TEST(opts_base_6) {
 	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-qwerty"};
 	mlist_t		*lst = NULL;
@@ -328,7 +386,8 @@ TEST(args_base_6) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_base_7) {
+/* Testing reading of 6 long options without parameters */
+TEST(opts_base_7) {
 	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test",
 						"--qwerty",
@@ -351,7 +410,8 @@ TEST(args_base_7) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_missing_value_1) {
+/* Testing missing argument in short options-argument pair */
+TEST(opts_missing_value_1) {
 	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "-q"};
 	int			st, fd[2];
@@ -372,7 +432,8 @@ TEST(args_missing_value_1) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_missing_value_2) {
+/* Testing missing argument in long options-argument pair */
+TEST(opts_missing_value_2) {
 	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty"};
 	int			st, fd[2];
@@ -393,7 +454,8 @@ TEST(args_missing_value_2) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_value_1) {
+/* Testing good reading of short options-argument pair */
+TEST(opts_value_1) {
 	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "-q", "toto"};
 	mlist_t		*lst = NULL;
@@ -406,7 +468,8 @@ TEST(args_value_1) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_value_2) {
+/* Testing good reading of long options-argument pair */
+TEST(opts_value_2) {
 	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto"};
 	mlist_t		*lst = NULL;
@@ -419,7 +482,8 @@ TEST(args_value_2) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_value_3) {
+/* Mixing both tests above */
+TEST(opts_value_3) {
 	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto", "-w", "tata"};
 	mlist_t		*lst = NULL;
@@ -434,7 +498,8 @@ TEST(args_value_3) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_value_4) {
+/* Testing good reading of multiple long options-argument pair */
+TEST(opts_value_4) {
 	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto", "--wertyu=tata"};
 	mlist_t		*lst = NULL;
@@ -449,7 +514,8 @@ TEST(args_value_4) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_word_only_1) {
+/* Testing existence of long-only options */
+TEST(opts_long_only_1) {
 	mopts_t		opt[] = {
 		{0, "qwerty", "qwerty", false, &callback_q},
 		ARGS_EOL
@@ -465,6 +531,22 @@ TEST(args_word_only_1) {
 	return TEST_SUCCESS;
 }
 
+/* Testing existence of short-only options */
+TEST(opts_short_only_1) {
+	mopts_t		opt[] = {
+		{'q', NULL, "qwerty", false, &callback_q},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "-q"};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == true, "Argument not read");
+	TEST_ASSERT(args.opt_w == false, "Wrong argument");
+	return TEST_SUCCESS;
+}
 
 void		callback_q(const char *s) {
 	args.opt_q = true;
@@ -530,28 +612,58 @@ void		reset_args(void) {
 }
 
 void		register_args_tests(void) {
-	reg_test("m_args", args_NULL);
-	reg_test("m_args", args_empty_1);
-	reg_test("m_args", args_empty_2);
-	reg_test("m_args", args_unhandled_1);
-	reg_test("m_args", args_unhandled_2);
-	reg_test("m_args", args_unhandled_3);
-	reg_test("m_args", args_help_1);
-	reg_test("m_args", args_help_2);
-	reg_test("m_args", args_version_1);
-	reg_test("m_args", args_version_2);
-	reg_test("m_args", args_base_1);
-	reg_test("m_args", args_base_2);
-	reg_test("m_args", args_base_3);
-	reg_test("m_args", args_base_4);
-	reg_test("m_args", args_base_5);
-	reg_test("m_args", args_base_6);
-	reg_test("m_args", args_base_7);
-	reg_test("m_args", args_missing_value_1);
-	reg_test("m_args", args_missing_value_2);
-	reg_test("m_args", args_value_1);
-	reg_test("m_args", args_value_2);
-	reg_test("m_args", args_value_3);
-	reg_test("m_args", args_value_4);
-	reg_test("m_args", args_word_only_1);
+/* Testing all possibilities with a NULL args somewhere */
+	reg_test("m_args", opts_NULL);
+/* Testing with av being an array full of empty strings */
+	reg_test("m_args", opts_empty_1);
+/* Testing with av being an array full of NULLs */
+	reg_test("m_args", opts_empty_2);
+/* Testing with unknown single dash option */
+	reg_test("m_args", opts_unhandled_1);
+/* Testing with unknown double dash option */
+	reg_test("m_args", opts_unhandled_2);
+/* Testing with triple dash */
+	reg_test("m_args", opts_unhandled_3);
+/* Testing a call to -h builtin option */
+	reg_test("m_args", opts_help_1);
+/* Testing a call to --help builtin option */
+	reg_test("m_args", opts_help_2);
+/* Testing that --help properly exits instantly */
+	reg_test("m_args", opts_help_3);
+/* Testing a call to -V builtin option */
+	reg_test("m_args", opts_version_1);
+/* Testing a call to --version builtin option */
+	reg_test("m_args", opts_version_2);
+/* Testing that --version properly exit instantly */
+	reg_test("m_args", opts_version_3);
+/* Testing reading of 1 option without parameters */
+	reg_test("m_args", opts_base_1);
+/* Testing reading of 2 packed options without parameters */
+	reg_test("m_args", opts_base_2);
+/* Testing reading of 2 separated options without parameters */
+	reg_test("m_args", opts_base_3);
+/* Testing reading of 1 long and 1 short options without parameters */
+	reg_test("m_args", opts_base_4);
+/* Testing reading of 2 long options without parameters */
+	reg_test("m_args", opts_base_5);
+/* Testing reading 6 packed options that makes the name of a long option */
+	reg_test("m_args", opts_base_6);
+/* Testing reading of 6 long options without parameters */
+	reg_test("m_args", opts_base_7);
+/* Testing missing argument in short options-argument pair */
+	reg_test("m_args", opts_missing_value_1);
+/* Testing missing argument in long options-argument pair */
+	reg_test("m_args", opts_missing_value_2);
+/* Testing good reading of short options-argument pair */
+	reg_test("m_args", opts_value_1);
+/* Testing good reading of long options-argument pair */
+	reg_test("m_args", opts_value_2);
+/* Mixing both tests above */
+	reg_test("m_args", opts_value_3);
+/* Testing good reading of multiple long options-argument pair */
+	reg_test("m_args", opts_value_4);
+/* Testing existence of long-only options */
+	reg_test("m_args", opts_long_only_1);
+/* Testing existence of short-only options */
+	reg_test("m_args", opts_short_only_1);
 }
