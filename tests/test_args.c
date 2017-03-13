@@ -516,10 +516,7 @@ TEST(opts_value_4) {
 
 /* Testing existence of long-only options */
 TEST(opts_long_only_1) {
-	mopts_t		opt[] = {
-		{0, "qwerty", "qwerty", false, &callback_q},
-		ARGS_EOL
-	};
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "--qwerty"};
 	mlist_t		*lst = NULL;
 
@@ -533,10 +530,7 @@ TEST(opts_long_only_1) {
 
 /* Testing existence of short-only options */
 TEST(opts_short_only_1) {
-	mopts_t		opt[] = {
-		{'q', NULL, "qwerty", false, &callback_q},
-		ARGS_EOL
-	};
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-q"};
 	mlist_t		*lst = NULL;
 
@@ -550,10 +544,7 @@ TEST(opts_short_only_1) {
 
 /* Testing reading of a params alone */
 TEST(params_reading_1) {
-	mopts_t		opt[] = {
-		{'q', NULL, "qwerty", false, &callback_q},
-		ARGS_EOL
-	};
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "hey"};
 	mlist_t		*lst = NULL;
 
@@ -569,54 +560,41 @@ TEST(params_reading_1) {
 
 /* Testing reading of a params then a short option */
 TEST(params_reading_2) {
-	mopts_t		opt[] = {
-		{'q', NULL, "qwerty", false, &callback_q},
-		ARGS_EOL
-	};
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "hey", "-q"};
 	mlist_t		*lst = NULL;
 
 	reset_args();
-	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1,
 				"Wrong return");
-	TEST_ASSERT(args.opt_q == false, "Wrong argument");
+	TEST_ASSERT(args.opt_q == true, "Didn't parsed option");
 	TEST_ASSERT(lst, "List not created");
 	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
 	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
-	TEST_ASSERT(lst->next, "Node not created");
-	TEST_ASSERT(!strcmp(lst->next->member, "-q"), "Parameter not read");
-	TEST_ASSERT(lst->next->size == strlen(av[2]) + 1, "Wrong size allocated");
+	TEST_ASSERT(!lst->next, "Unwanted node created");
 	return TEST_SUCCESS;
 }
 
 /* Testing reading of a params then a long option */
 TEST(params_reading_3) {
-	mopts_t		opt[] = {
-		{'q', NULL, "qwerty", false, &callback_q},
-		ARGS_EOL
-	};
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "hey", "--qwerty"};
 	mlist_t		*lst = NULL;
 
 	reset_args();
-	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1,
 				"Wrong return");
-	TEST_ASSERT(args.opt_q == false, "Wrong argument");
+	TEST_ASSERT(args.opt_q == true, "Didn't parsed option");
 	TEST_ASSERT(lst, "List not created");
 	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
 	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
-	TEST_ASSERT(lst->next, "Node not created");
-	TEST_ASSERT(!strcmp(lst->next->member, "--qwerty"), "Parameter not read");
-	TEST_ASSERT(lst->next->size == strlen(av[2]) + 1, "Wrong size allocated");
+	TEST_ASSERT(!lst->next, "Unwanted node created");
 	return TEST_SUCCESS;
 }
 
 /* Testing with empty param */
 TEST(empty_param_1) {
-	mopts_t		opt[] = {
-		{'q', NULL, "qwerty", false, &callback_q},
-		ARGS_EOL
-	};
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", ""};
 	mlist_t		*lst = NULL;
 
@@ -630,10 +608,7 @@ TEST(empty_param_1) {
 
 /* Testing with null param */
 TEST(empty_param_2) {
-	mopts_t		opt[] = {
-		{'q', NULL, "qwerty", false, &callback_q},
-		ARGS_EOL
-	};
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", NULL};
 	mlist_t		*lst = NULL;
 
@@ -661,6 +636,36 @@ TEST(empty_param_3) {
 	TEST_ASSERT(lst, "List not created");
 	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
 	TEST_ASSERT(lst->size == strlen(av[2]) + 1, "Wrong size allocated");
+	return TEST_SUCCESS;
+}
+
+/* Testing reading of parameters, options, and empty cases in av */
+TEST(mixed_1) {
+	mopts_t		opt[] = OPT_DEF(false);
+	char		*av[] = {"./test", "hey", "--qwerty", "-q", "-w",
+						"Ne02ptzero", "is", "--rtyuio", "", "-e"};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == true, "Didn't parsed option");
+	TEST_ASSERT(args.opt_w == true, "Didn't parsed option");
+	TEST_ASSERT(args.opt_e == true, "Didn't parsed option");
+	TEST_ASSERT(args.opt_r == true, "Didn't parsed option");
+	TEST_ASSERT(args.opt_t == true, "Didn't parsed option");
+	TEST_ASSERT(lst, "List not created");
+	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
+	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
+	TEST_ASSERT(lst->next, "Node not created");
+	TEST_ASSERT(!strcmp(lst->next->member, "Ne02ptzero"), "Parameter not read");
+	TEST_ASSERT(lst->next->size == strlen(av[5]) + 1, "Wrong size allocated");
+	TEST_ASSERT(lst->next->next, "Node not created");
+	TEST_ASSERT(!strcmp(lst->next->next->member, "is"),
+				"Parameter not read");
+	TEST_ASSERT(lst->next->next->size == strlen(av[6]) + 1,
+				"Wrong size allocated");
+	TEST_ASSERT(!lst->next->next->next, "Unwanted node created");
 	return TEST_SUCCESS;
 }
 
