@@ -17,7 +17,10 @@
 #ifndef M_PRINT_H
 # define M_PRINT_H
 
-# define _XOPEN_SOURCE 700 
+# define _XOPEN_SOURCE 700
+# if defined(__APPLE__)
+#  define _DARWIN_C_SOURCE
+# endif
 
 # include <stdarg.h>
 # include <stdio.h>

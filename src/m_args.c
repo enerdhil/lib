@@ -16,6 +16,7 @@
 
 #include <m_args.h>
 #include <m_list.h>
+
 #define LIB_OPT_TOKEN_HELP 'h'
 #define LIB_OPT_STRING_HELP "help"
 #define LIB_OPT_TOKEN_VERSION 'V'
@@ -28,7 +29,8 @@ u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args) {
     if (ac == 0 || av == NULL || opts == NULL || args == NULL)
         return ret;
 
-    for (/* Using u32_t i */ u32_t j = 0; i < (u32_t)ac; i++) {
+    for (/* Using u32_t i */ u32_t j = 0; i < (u32_t)ac; i++)
+    {
 
         if (av[i] == NULL || strlen(av[i]) == 0)
             continue ;
@@ -38,10 +40,12 @@ u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args) {
             n_dash++;
 
         /* Single letter option */
-        if (n_dash == 1) {
+        if (n_dash == 1)
+        {
 
             /* If single dash alone, its a parameter */
-            if (strlen(av[i]) < 2) {
+            if (strlen(av[i]) < 2)
+            {
                 list_add(*args, av[i], strlen(av[i]) + 1);
                 continue ;
             }
@@ -53,37 +57,50 @@ u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args) {
                 p_version(0);
 
             /* Search the option in the opts array */
-            for (u32_t z = 1; av[i][z] != '\0'; z++) {
+            for (u32_t z = 1; av[i][z] != '\0'; z++)
+            {
                 for (it = 0; !IS_EOL(opts[it]) && opts[it].opt != av[i][z]; it++)
                     ;
 
                 /* Can't find the option */
-                if (IS_EOL(opts[it])) {
+                if (IS_EOL(opts[it]))
+                {
                     m_error("Unknow option -%s\n", &(av[i][z]));
                     opt_help(opts, 1);
-                } else {
-                    if (opts[it].take_arg) {
-                        if (i + 1 < (u32_t)ac) {
+                }
+                else
+                {
+                    if (opts[it].take_arg)
+                    {
+                        if (i + 1 < (u32_t)ac)
+                        {
                             opts[it].callback(av[++i]);
                             ret++;
                             break ;
-                        } else {
+                        }
+                        else
+                        {
                             m_error("Option -%c must take an argument\n",
                                     opts[it].opt);
                             opt_help(opts, 1);
                         }
-                    } else {
+                    }
+                    else
+                    {
                         opts[it].callback(NULL);
                         ret++;
                     }
                 }
             }
-            /* Word option */
-        } else if (n_dash == 2) {
+        /* Word option */
+        }
+        else if (n_dash == 2)
+        {
             bool    got_arg = false;
 
             /* If double dash alone, skip it and then stop reading options */
-            if (strlen(av[i]) < 3) {
+            if (strlen(av[i]) < 3)
+            {
                 i++;
                 break ;
             }
@@ -98,10 +115,13 @@ u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args) {
             for (k = 2; av[i][k] != '\0' && av[i][k] != '='; k++)
                 ;
 
-            if (av[i][k] != '\0') {
+            if (av[i][k] != '\0')
+            {
                 got_arg = true;
                 k -= 2;
-            } else {
+            }
+            else
+            {
                 k = strlen(av[i]) - 2;
             }
 
@@ -111,11 +131,15 @@ u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args) {
                 ;
 
             /* Can't find the option */
-            if (IS_EOL(opts[it])) {
+            if (IS_EOL(opts[it]))
+            {
                 m_error("Unknown option %s\n", av[i]);
                 opt_help(opts, 1);
-            } else {
-                if (opts[it].take_arg && !got_arg) {
+            }
+            else
+            {
+                if (opts[it].take_arg && !got_arg)
+                {
                     m_error("Option %s must take an argument", opts[it].s_opt);
                     opt_help(opts, 1);
                 }
@@ -126,13 +150,16 @@ u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args) {
                 ret++;
             }
             /* Not beginning with a dash */
-        } else {
+        }
+        else
+        {
             /* Stop reading options */
             list_add(*args, av[i], strlen(av[i]) + 1);
         }
     }
     /* If reading of flags is stopped by '--' get the rest of the parameters */
-    for ( /* Using u32_t i */ ; i < (u32_t)ac; i++) {
+    for ( /* Using u32_t i */ ; i < (u32_t)ac; i++)
+    {
         if (av[i] && strlen(av[i]))
             list_add(*args, av[i], strlen(av[i]) + 1);
     }
@@ -141,7 +168,8 @@ u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args) {
 
 void opt_help(const mopts_t *opts, u8_t ret) {
     m_info("Help:\n");
-    for (u32_t i = 0; opts[i].opt != 0; i++) {
+    for (u32_t i = 0; opts[i].opt != 0; i++)
+    {
         m_info("\t-%c | --%s : %s\n", opts[i].opt, opts[i].s_opt, opts[i].desc);
     }
     write(1, "\n", 1);

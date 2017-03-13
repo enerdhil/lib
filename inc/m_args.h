@@ -20,10 +20,6 @@
 # include <stdbool.h>
 # include <stdlib.h>
 # include <errno.h>
-# include <m_types.h>
-# include <m_print.h>
-# include <m_infos.h>
-# include <m_list.h>
 # include <morphux.h>
 
 typedef struct      s_opts {
@@ -76,14 +72,14 @@ typedef struct      s_opts {
  * \note Only the arguments beginning with - are parsed.
  * \return Number of options read
  */
-u32_t read_opt(const int ac, char **av, const margs_t *args);
+u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args);
 
 /*!
  * \brief Print helps with a list of argument, and exit
  * \param[in] args List of arguments to print
  * \param[in] ret Return code of the exit
  */
-void opt_help(const margs_t *args, u8_t ret);
+void opt_help(const mopts_t *opts, u8_t ret);
 
 /*!
  * \brief Print the program name, the version and the maintainer, then exit
