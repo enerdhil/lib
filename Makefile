@@ -24,9 +24,9 @@ OBJS =		$(SRCS:%.c=%.o)
 
 OSTYPE =	$(shell uname)
 ifeq ($(OSTYPE), Linux)
-COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -lgcov"
+COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -lgcov -DCOMPILE_WITH_TEST"
 else ifeq ($(OSTYPE), Darwin)
-COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage"
+COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -DCOMPILE_WITH_TEST"
 endif
 
 all: $(NAME)
@@ -35,7 +35,8 @@ $(NAME): $(OBJS)
 	$(LIB) $(LFLAGS) $(NAME) $(OBJS)
 
 check: all
-	make -C tests check
+	$(MAKE) fclean all CFLAGS="$(CFLAGS) -DCOMPILE_WITH_TEST"
+	make -C tests re check
 
 doc:
 	doxygen docs/doxyfile

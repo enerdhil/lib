@@ -185,7 +185,7 @@ TEST(list_size) {
 	list_add(ptr, test, sizeof(test));
 	list_add(ptr, test2, sizeof(test2));
 	list_add(ptr, test3, sizeof(test3));
-	TEST_ASSERT(list_size(ptr) == 3, "Size is wrong.");
+	TEST_ASSERT((list_size(ptr) == 3), "Size is wrong.");
 	list_free(ptr, NULL);
 	ptr = NULL;
 	TEST_ASSERT(list_size(ptr) == 0, "Size is wrong.");
@@ -219,7 +219,6 @@ TEST(list_free) {
 
 int		callback_list_free_2(void *ptr) {
 	free(ptr);
-	printf("Sup ?!\n");
 	return 1;
 }
 

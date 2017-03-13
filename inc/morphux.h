@@ -26,4 +26,6 @@
 # include <m_list.h>
 # include <m_test.h>
 
+# include <fail_test.h>
+
 #endif /* MORPHUX_H */

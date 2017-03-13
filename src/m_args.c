@@ -1,18 +1,18 @@
 /*********************************** LICENSE **********************************\
-*                            Copyright 2017 Morphux                            *
-*                                                                              *
-*        Licensed under the Apache License, Version 2.0 (the "License");       *
-*        you may not use this file except in compliance with the License.      *
-*                  You may obtain a copy of the License at                     *
-*                                                                              *
-*                 http://www.apache.org/licenses/LICENSE-2.0                   *
-*                                                                              *
-*      Unless required by applicable law or agreed to in writing, software     *
-*       distributed under the License is distributed on an "AS IS" BASIS,      *
-*    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  *
-*        See the License for the specific language governing permissions and   *
-*                       limitations under the License.                         *
-\******************************************************************************/
+ *                            Copyright 2017 Morphux                            *
+ *                                                                              *
+ *        Licensed under the Apache License, Version 2.0 (the "License");       *
+ *        you may not use this file except in compliance with the License.      *
+ *                  You may obtain a copy of the License at                     *
+ *                                                                              *
+ *                 http://www.apache.org/licenses/LICENSE-2.0                   *
+ *                                                                              *
+ *      Unless required by applicable law or agreed to in writing, software     *
+ *       distributed under the License is distributed on an "AS IS" BASIS,      *
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  *
+ *        See the License for the specific language governing permissions and   *
+ *                       limitations under the License.                         *
+ \******************************************************************************/
 
 #include <m_args.h>
 #include <m_list.h>
@@ -21,27 +21,7 @@
 #define LIB_OPT_TOKEN_VERSION 'V'
 #define LIB_OPT_STRING_VERSION "version"
 
-/*!
- * \brief Read the options given by the program
- * \param ac Number of argument in av
- * \param av Array of string, containing the arguments
- * \param args Array of margs_t, containing the preset options. Must end with
- * an empty structure.
- * \param params Adress of linked list, that will be filled with av with
- * flags removed
- * \return Number of options read
- *
- * The read_opt function reads a given list of arguments, and parse the options
- * in it. The options are read from the args array.
- * If an option is not known, the function calls the help and quit.
- * If the option -h | --help is passed, the function call the help and quit.
- * If the option -V | --version is passed, the function display the version
- * and quit.
- *
- * \note Only the arguments beginning with - are parsed.
- */
-u32_t       read_opt(const int ac, char **av, const mopts_t *opts, \
-                        mlist_t **args) {
+u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args) {
     u32_t       ret = 0, i = 1, it, k;
     u8_t        n_dash;
 
@@ -89,7 +69,7 @@ u32_t       read_opt(const int ac, char **av, const mopts_t *opts, \
                             break ;
                         } else {
                             m_error("Option -%c must take an argument\n",
-                                opts[it].opt);
+                                    opts[it].opt);
                             opt_help(opts, 1);
                         }
                     } else {
@@ -98,8 +78,7 @@ u32_t       read_opt(const int ac, char **av, const mopts_t *opts, \
                     }
                 }
             }
-
-        /* Word option */
+            /* Word option */
         } else if (n_dash == 2) {
             bool    got_arg = false;
 
@@ -128,7 +107,7 @@ u32_t       read_opt(const int ac, char **av, const mopts_t *opts, \
 
             /* Search the option in the opts array */
             for (it = 0; !IS_EOL(opts[it]) &&
-                        (strncmp(opts[it].s_opt, &(av[i][2]), k) != 0); it++)
+                    (strncmp(opts[it].s_opt, &(av[i][2]), k) != 0); it++)
                 ;
 
             /* Can't find the option */
@@ -146,7 +125,7 @@ u32_t       read_opt(const int ac, char **av, const mopts_t *opts, \
                     opts[it].callback(NULL);
                 ret++;
             }
-        /* Not beginning with a dash */
+            /* Not beginning with a dash */
         } else {
             /* Stop reading options */
             list_add(*args, av[i], strlen(av[i]) + 1);
@@ -160,12 +139,7 @@ u32_t       read_opt(const int ac, char **av, const mopts_t *opts, \
     return ret;
 }
 
-/*!
- * \brief Print helps with a list of argument, and exit
- * \param opts List of arguments to print
- * \param ret Return code of the exit
- */
-void        opt_help(const mopts_t *opts, u8_t ret) {
+void opt_help(const mopts_t *opts, u8_t ret) {
     m_info("Help:\n");
     for (u32_t i = 0; opts[i].opt != 0; i++) {
         m_info("\t-%c | --%s : %s\n", opts[i].opt, opts[i].s_opt, opts[i].desc);
@@ -177,11 +151,7 @@ void        opt_help(const mopts_t *opts, u8_t ret) {
     exit(ret);
 }
 
-/*!
- * \brief Print the program name, the version and the maintainer, then exit
- * \param ret Return code of the exit
- */
-void        p_version(u8_t ret) {
+void p_version(u8_t ret) {
     m_info("Program: %s\n", get_program_name());
     m_info("Version: %s\n", get_version());
     m_info("%s\n", get_maintainer());
