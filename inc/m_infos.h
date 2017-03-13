@@ -19,14 +19,44 @@
 
 # include <stdio.h>
 # include <string.h>
+# include <morphux.h>
 
 # define INFOS_G_LEN_MAX 150
 
-void	set_program_name(const char *str);
-void	set_version(const char *str);
-void	set_maintainer(const char *str);
-const char	*get_program_name(void);
-const char	*get_version(void);
-const char	*get_maintainer(void);
+/*!
+ * \brief Set the program name to a string
+ * \param[in] str String to set to
+ */
+void set_program_name(const char *str);
+
+/*!
+ * \brief Set the version name to a string
+ * \param[in] str String to set to
+ */
+void set_version(const char *str);
+
+/*!
+ * \brief Set the maintainer name to a string
+ * \param[in] str String to set to
+ */
+void set_maintainer(const char *str);
+
+/*!
+ * \brief Get the program name
+ * \note If the program is not set, return NULL
+ */
+const char *get_program_name(void);
+
+/*!
+ * Get the version
+ * \note If the version is not set, return NULL
+ */
+const char *get_version(void);
+
+/*!
+ * Get the maintainer
+ * \note If the maintainer is not set, return NULL
+ */
+const char *get_maintainer(void);
 
 #endif /* M_INFOS_H */
