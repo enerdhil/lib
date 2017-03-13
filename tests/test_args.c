@@ -645,15 +645,16 @@ TEST(mixed_1) {
 	char		*av[] = {"./test", "hey", "--qwerty", "-q", "-w",
 						"Ne02ptzero", "is", "--rtyuio", "", "-e"};
 	mlist_t		*lst = NULL;
+	int		i = 0;
 
 	reset_args();
-	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1,
+	TEST_ASSERT((i = read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst)) == 5,
 				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Didn't parsed option");
 	TEST_ASSERT(args.opt_w == true, "Didn't parsed option");
 	TEST_ASSERT(args.opt_e == true, "Didn't parsed option");
 	TEST_ASSERT(args.opt_r == true, "Didn't parsed option");
-	TEST_ASSERT(args.opt_t == true, "Didn't parsed option");
+	TEST_ASSERT(args.opt_t != true, "Didn't parsed option");
 	TEST_ASSERT(lst, "List not created");
 	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
 	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
@@ -799,4 +800,6 @@ void		register_args_tests(void) {
 	reg_test("m_args", empty_param_2);
 /* Testing with empty param followed by a param */
 	reg_test("m_args", empty_param_3);
+/* Testing reading of parameters, options, and empty cases in av */
+	reg_test("m_args", mixed_1);
 }
