@@ -149,7 +149,7 @@ u32_t		read_opt(const int ac, char **av, const mopts_t *opts, \
 		/* Not beginning with a dash */
 		} else {
 			/* Stop reading options */
-			break ;
+			list_add(*args, av[i], strlen(av[i]) + 1);
 		}
 	}
 	/* If reading of flags is stopped by '-' or '--'
