@@ -77,6 +77,40 @@ TEST(opts_empty_2) {
 	return TEST_SUCCESS;
 }
 
+/* Testing single dash alone */
+TEST(dashes_alone_1) {
+	mopts_t		opt[] = {
+		{'z', "zoiberg", "No idea.", false, NULL},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "-"};
+	mlist_t		*lst = NULL;
+
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling unknown option");
+	TEST_ASSERT(lst, "List not created");
+	TEST_ASSERT(!strcmp(lst->member, "-"), "Parameter not read");
+	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
+	list_free(lst, NULL);
+	return TEST_SUCCESS;
+}
+
+/* Testing double dash alone */
+TEST(dashes_alone_2) {
+	mopts_t		opt[] = {
+		{'z', "zoiberg", "No idea.", false, NULL},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "--"};
+	mlist_t		*lst = NULL;
+
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling unknown option");
+	TEST_ASSERT(!lst, "Unwanted list created");
+	return TEST_SUCCESS;
+}
+
+
 /* Testing with unknown single dash option */
 TEST(opts_unhandled_1) {
 	mopts_t		opt[] = {
@@ -555,6 +589,7 @@ TEST(params_reading_1) {
 	TEST_ASSERT(lst, "List not created");
 	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Parameter not read");
 	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
+	list_free(lst, NULL);
 	return TEST_SUCCESS;
 }
 
@@ -572,6 +607,7 @@ TEST(params_reading_2) {
 	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
 	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
 	TEST_ASSERT(!lst->next, "Unwanted node created");
+	list_free(lst, NULL);
 	return TEST_SUCCESS;
 }
 
@@ -589,6 +625,7 @@ TEST(params_reading_3) {
 	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
 	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
 	TEST_ASSERT(!lst->next, "Unwanted node created");
+	list_free(lst, NULL);
 	return TEST_SUCCESS;
 }
 
@@ -636,6 +673,7 @@ TEST(empty_param_3) {
 	TEST_ASSERT(lst, "List not created");
 	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
 	TEST_ASSERT(lst->size == strlen(av[2]) + 1, "Wrong size allocated");
+	list_free(lst, NULL);
 	return TEST_SUCCESS;
 }
 
@@ -643,30 +681,45 @@ TEST(empty_param_3) {
 TEST(mixed_1) {
 	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "hey", "--qwerty", "-q", "-w",
-						"Ne02ptzero", "is", "--rtyuio", "", "-e"};
+						"ho", "ah", "--ertyui", "", "-", "--", "-r"};
 	mlist_t		*lst = NULL;
 	int		i = 0;
 
 	reset_args();
-	TEST_ASSERT((i = read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst)) == 5,
+	TEST_ASSERT((i = read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst)) == 4,
 				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Didn't parsed option");
 	TEST_ASSERT(args.opt_w == true, "Didn't parsed option");
 	TEST_ASSERT(args.opt_e == true, "Didn't parsed option");
-	TEST_ASSERT(args.opt_r == true, "Didn't parsed option");
-	TEST_ASSERT(args.opt_t != true, "Didn't parsed option");
+	TEST_ASSERT(args.opt_r != true, "Didn't parsed option");
+	/* First param : "hey" */
 	TEST_ASSERT(lst, "List not created");
 	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
 	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
+	/* Second param : "ho" */
 	TEST_ASSERT(lst->next, "Node not created");
-	TEST_ASSERT(!strcmp(lst->next->member, "Ne02ptzero"), "Parameter not read");
+	TEST_ASSERT(!strcmp(lst->next->member, "ho"), "Parameter not read");
 	TEST_ASSERT(lst->next->size == strlen(av[5]) + 1, "Wrong size allocated");
+	/* Third param : "ah" */
 	TEST_ASSERT(lst->next->next, "Node not created");
-	TEST_ASSERT(!strcmp(lst->next->next->member, "is"),
+	TEST_ASSERT(!strcmp(lst->next->next->member, "ah"),
 				"Parameter not read");
 	TEST_ASSERT(lst->next->next->size == strlen(av[6]) + 1,
 				"Wrong size allocated");
-	TEST_ASSERT(!lst->next->next->next, "Unwanted node created");
+	/* Fourth param : "-" */
+	TEST_ASSERT(lst->next->next->next, "Node not created");
+	TEST_ASSERT(!strcmp(lst->next->next->next->member, "-"),
+				"Parameter not read");
+	TEST_ASSERT(lst->next->next->next->size == strlen(av[9]) + 1,
+				"Wrong size allocated");
+	/* Fifth param : "-r" */
+	TEST_ASSERT(lst->next->next->next->next, "Node not created");
+	TEST_ASSERT(!strcmp(lst->next->next->next->next->member, "-r"),
+				"Parameter not read");
+	TEST_ASSERT(lst->next->next->next->next->size == strlen(av[11]) + 1,
+				"Wrong size allocated");
+	TEST_ASSERT(!lst->next->next->next->next->next, "Unwanted node created");
+	list_free(lst, NULL);
 	return TEST_SUCCESS;
 }
 
@@ -740,6 +793,10 @@ void		register_args_tests(void) {
 	reg_test("m_args", opts_empty_1);
 /* Testing with av being an array full of NULLs */
 	reg_test("m_args", opts_empty_2);
+/* Testing double dash alone */
+	reg_test("m_args", dashes_alone_1);
+/* Testing double dash alone */
+	reg_test("m_args", dashes_alone_1);
 /* Testing with unknown single dash option */
 	reg_test("m_args", opts_unhandled_1);
 /* Testing with unknown double dash option */

@@ -62,8 +62,8 @@ u32_t		read_opt(const int ac, char **av, const mopts_t *opts, \
 
 			/* If single dash alone, its a parameter */
 			if (strlen(av[i]) < 2) {
-			 	/* And we stop reading options. */
-				break ;
+				list_add(*args, av[i], strlen(av[i]) + 1);
+				continue ;
 			}
 
 			/* Builtins options */
@@ -152,8 +152,7 @@ u32_t		read_opt(const int ac, char **av, const mopts_t *opts, \
 			list_add(*args, av[i], strlen(av[i]) + 1);
 		}
 	}
-	/* If reading of flags is stopped by '-' or '--'
-	 * get the rest of the parameters */
+	/* If reading of flags is stopped by '--' get the rest of the parameters */
 	for ( /* Using u32_t i */ ; i < (u32_t)ac; i++) {
 		if (av[i] && strlen(av[i]))
 			list_add(*args, av[i], strlen(av[i]) + 1);
