@@ -155,7 +155,8 @@ u32_t		read_opt(const int ac, char **av, const mopts_t *opts, \
 	/* If reading of flags is stopped by '-' or '--'
 	 * get the rest of the parameters */
 	for ( /* Using u32_t i */ ; i < (u32_t)ac; i++) {
-		list_add(*args, av[i], strlen(av[i] + 1));
+		if (av[i] && strlen(av[i]))
+			list_add(*args, av[i], strlen(av[i]) + 1);
 	}
 	return ret;
 }

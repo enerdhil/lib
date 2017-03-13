@@ -561,6 +561,8 @@ TEST(params_reading_1) {
 	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
 				"Wrong return");
 	TEST_ASSERT(args.opt_q == false, "Wrong argument");
+	TEST_ASSERT(lst, "List not created");
+	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Parameter not read");
 	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
 	return TEST_SUCCESS;
 }
@@ -578,9 +580,86 @@ TEST(params_reading_2) {
 	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
 				"Wrong return");
 	TEST_ASSERT(args.opt_q == false, "Wrong argument");
+	TEST_ASSERT(lst, "List not created");
 	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
 	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
+	TEST_ASSERT(lst->next, "Node not created");
 	TEST_ASSERT(!strcmp(lst->next->member, "-q"), "Parameter not read");
+	TEST_ASSERT(lst->next->size == strlen(av[2]) + 1, "Wrong size allocated");
+	return TEST_SUCCESS;
+}
+
+/* Testing reading of a params then a long option */
+TEST(params_reading_3) {
+	mopts_t		opt[] = {
+		{'q', NULL, "qwerty", false, &callback_q},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "hey", "--qwerty"};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == false, "Wrong argument");
+	TEST_ASSERT(lst, "List not created");
+	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
+	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
+	TEST_ASSERT(lst->next, "Node not created");
+	TEST_ASSERT(!strcmp(lst->next->member, "--qwerty"), "Parameter not read");
+	TEST_ASSERT(lst->next->size == strlen(av[2]) + 1, "Wrong size allocated");
+	return TEST_SUCCESS;
+}
+
+/* Testing with empty param */
+TEST(empty_param_1) {
+	mopts_t		opt[] = {
+		{'q', NULL, "qwerty", false, &callback_q},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", ""};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == false, "Wrong argument");
+	TEST_ASSERT(!lst, "List created with empty param");
+	return TEST_SUCCESS;
+}
+
+/* Testing with null param */
+TEST(empty_param_2) {
+	mopts_t		opt[] = {
+		{'q', NULL, "qwerty", false, &callback_q},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", NULL};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == false, "Wrong argument");
+	TEST_ASSERT(!lst, "List created with null param");
+	return TEST_SUCCESS;
+}
+
+/* Testing with empty param followed by a param */
+TEST(empty_param_3) {
+	mopts_t		opt[] = {
+		{'q', NULL, "qwerty", false, &callback_q},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "", "hey"};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == false, "Wrong argument");
+	TEST_ASSERT(lst, "List not created");
+	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
 	TEST_ASSERT(lst->size == strlen(av[2]) + 1, "Wrong size allocated");
 	return TEST_SUCCESS;
 }
@@ -707,4 +786,12 @@ void		register_args_tests(void) {
 	reg_test("m_args", params_reading_1);
 /* Testing reading of a params then a short option */
 	reg_test("m_args", params_reading_2);
+/* Testing reading of a params then a long option */
+	reg_test("m_args", params_reading_3);
+/* Testing with empty param */
+	reg_test("m_args", empty_param_1);
+/* Testing with null param */
+	reg_test("m_args", empty_param_2);
+/* Testing with empty param followed by a param */
+	reg_test("m_args", empty_param_3);
 }
