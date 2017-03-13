@@ -6,7 +6,7 @@ static struct margs_tests	args;
 TEST(opts_NULL) {
 	char	*tab[] = {"test", "test2"};
 	mopts_t	t;
-	mlist_t	*lst = NULL;;
+	mlist_t	*lst = NULL;
 
 	/* 0 0 0 0 */
 	TEST_ASSERT(read_opt(0, NULL, NULL, NULL) == 0,
