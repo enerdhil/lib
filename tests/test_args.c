@@ -107,7 +107,7 @@ TEST(opts_unhandled_2) {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
-	char		*av[] = {"./tests", "oui", "--allow"};
+	char		*av[] = {"./tests", "--oui"};
 	pid_t		pid;
 	int			st, fd[2];
 	mlist_t		*lst = NULL;;
@@ -548,6 +548,43 @@ TEST(opts_short_only_1) {
 	return TEST_SUCCESS;
 }
 
+/* Testing reading of a params alone */
+TEST(params_reading_1) {
+	mopts_t		opt[] = {
+		{'q', NULL, "qwerty", false, &callback_q},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "hey"};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == false, "Wrong argument");
+	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
+	return TEST_SUCCESS;
+}
+
+/* Testing reading of a params then a short option */
+TEST(params_reading_2) {
+	mopts_t		opt[] = {
+		{'q', NULL, "qwerty", false, &callback_q},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "hey", "-q"};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == false, "Wrong argument");
+	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
+	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
+	TEST_ASSERT(!strcmp(lst->next->member, "-q"), "Parameter not read");
+	TEST_ASSERT(lst->size == strlen(av[2]) + 1, "Wrong size allocated");
+	return TEST_SUCCESS;
+}
+
 void		callback_q(const char *s) {
 	args.opt_q = true;
 	if (s == NULL)
@@ -666,4 +703,8 @@ void		register_args_tests(void) {
 	reg_test("m_args", opts_long_only_1);
 /* Testing existence of short-only options */
 	reg_test("m_args", opts_short_only_1);
+/* Testing reading of a params alone */
+	reg_test("m_args", params_reading_1);
+/* Testing reading of a params then a short option */
+	reg_test("m_args", params_reading_2);
 }

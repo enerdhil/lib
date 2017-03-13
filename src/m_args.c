@@ -146,10 +146,10 @@ u32_t		read_opt(const int ac, char **av, const mopts_t *opts, \
 					opts[it].callback(NULL);
 				ret++;
 			}
-		/* Not a flag */
+		/* Not beginning with a dash */
 		} else {
-			/* Add the param to the args linked list */
-			list_add_member(*args, av[i], sizeof(av[i]));
+			/* Stop reading options */
+			break ;
 		}
 	}
 	/* If reading of flags is stopped by '-' or '--'
