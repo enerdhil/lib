@@ -19,40 +19,38 @@
 
 # include <stdbool.h>
 # include <stdlib.h>
-# include <m_types.h>
-# include <m_print.h>
-# include <m_infos.h>
+# include <errno.h>
 # include <morphux.h>
 
-typedef struct args_s {
-	/**
-	 * Single letter option
-	 * Example: -f, -s
-	 */
-	char	opt;
+typedef struct      s_opts {
+    /**
+     * Single letter option
+     * Example: -f, -s
+     */
+    char    opt;
 
-	/**
-	 * Full string option
-	 * Example: --force, --skip
-	 */
-	char	*s_opt;
+    /**
+     * Full string option
+     * Example: --force, --skip
+     */
+    char    *s_opt;
 
-	/**
-	 * Description of the option.
-	 * Used for the help
-	 */
-	char	*desc;
+    /**
+     * Description of the option.
+     * Used for the help
+     */
+    char    *desc;
 
-	/**
-	 * Boolean that describe if the option must take an argument
-	 */
-	bool		take_arg;
+    /**
+     * Boolean that describe if the option must take an argument
+     */
+    bool    take_arg;
 
-	/**
-	 * Callback of the option
-	 */
-	void	(*callback)(const char *);
-} margs_t;
+    /**
+     * Callback of the option
+     */
+    void    (*callback)(const char *);
+}                   mopts_t;
 
 #define ARGS_EOL {0, NULL, NULL, false, NULL}
 #define IS_EOL(lst) (lst.opt == 0 && lst.s_opt == NULL && lst.desc == NULL && \
@@ -74,14 +72,14 @@ typedef struct args_s {
  * \note Only the arguments beginning with - are parsed.
  * \return Number of options read
  */
-u32_t read_opt(const int ac, char **av, const margs_t *args);
+u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args);
 
 /*!
  * \brief Print helps with a list of argument, and exit
  * \param[in] args List of arguments to print
  * \param[in] ret Return code of the exit
  */
-void opt_help(const margs_t *args, u8_t ret);
+void opt_help(const mopts_t *opts, u8_t ret);
 
 /*!
  * \brief Print the program name, the version and the maintainer, then exit

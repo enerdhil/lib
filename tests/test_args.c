@@ -2,75 +2,157 @@
 
 static struct margs_tests	args;
 
-TEST(args_NULL) {
-	TEST_ASSERT(read_opt(0, NULL, NULL) == 0, "Not handling null arguments");
-	return TEST_SUCCESS;
-}
-
-TEST(args_NULL_1) {
-	TEST_ASSERT(read_opt(10, NULL, NULL) == 0, "Not handling null arguments");
-	return TEST_SUCCESS;
-}
-
-TEST(args_NULL_2) {
+/* Testing all possibilities with a NULL args somewhere */
+TEST(opts_NULL) {
 	char	*tab[] = {"test", "test2"};
-	TEST_ASSERT(read_opt(0, tab, NULL) == 0, "Not handling null arguments");
+	mopts_t	t;
+	mlist_t	*lst = NULL;;
+
+	/* 0 0 0 0 */
+	TEST_ASSERT(read_opt(0, NULL, NULL, NULL) == 0,
+				"Not handling null arguments");
+	/* 0 0 0 1 */
+	TEST_ASSERT(read_opt(0, NULL, NULL, &lst) == 0,
+				"Not handling null arguments");
+	/* 0 0 1 0 */
+	TEST_ASSERT(read_opt(0, NULL, &t, NULL) == 0,
+				"Not handling null arguments");
+	/* 0 0 1 1 */
+	TEST_ASSERT(read_opt(0, NULL, &t, &lst) == 0,
+				"Not handling null arguments");
+	/* 0 1 0 0 */
+	TEST_ASSERT(read_opt(0, tab, NULL, NULL) == 0,
+				"Not handling null arguments");
+	/* 0 1 0 1 */
+	TEST_ASSERT(read_opt(0, tab, NULL, &lst) == 0,
+				"Not handling null arguments");
+	/* 0 1 1 0 */
+	TEST_ASSERT(read_opt(0, tab, &t, NULL) == 0,
+				"Not handling null arguments");
+	/* 0 1 1 1 */
+	TEST_ASSERT(read_opt(0, tab, &t, &lst) == 0,
+				"Not handling null arguments");
+	/* 1 0 0 0 */
+	TEST_ASSERT(read_opt(10, NULL, NULL, NULL) == 0,
+				"Not handling null arguments");
+	/* 1 0 0 1 */
+	TEST_ASSERT(read_opt(10, NULL, NULL, &lst) == 0,
+				"Not handling null arguments");
+	/* 1 0 1 0 */
+	TEST_ASSERT(read_opt(10, NULL, &t, NULL) == 0,
+				"Not handling null arguments");
+	/* 1 0 1 1 */
+	TEST_ASSERT(read_opt(10, NULL, &t, &lst) == 0,
+				"Not handling null arguments");
+	/* 1 1 0 0 */
+	TEST_ASSERT(read_opt(10, tab, NULL, NULL) == 0,
+				"Not handling null arguments");
+	/* 1 1 0 1 */
+	TEST_ASSERT(read_opt(10, tab, NULL, &lst) == 0,
+				"Not handling null arguments");
+	/* 1 1 1 0 */
+	TEST_ASSERT(read_opt(10, tab, &t, NULL) == 0,
+				"Not handling null arguments");
+
 	return TEST_SUCCESS;
 }
 
-TEST(args_NULL_3) {
-	char	*tab[] = {"test", "test2"};
-	TEST_ASSERT(read_opt(10, tab, NULL) == 0, "Not handling null arguments");
-	return TEST_SUCCESS;
-}
-
-TEST(args_NULL_4) {
-	char	*tab[] = {"test", "test2"};
-	margs_t	t;
-
-	TEST_ASSERT(read_opt(0, tab, &t) == 0, "Not handling null arguments");
-	return TEST_SUCCESS;
-}
-
-TEST(args_NULL_5) {
-	margs_t	t;
-
-	TEST_ASSERT(read_opt(10, NULL, &t) == 0, "Not handling null arguments");
-	return TEST_SUCCESS;
-}
-
-TEST(args_empty_1) {
-	margs_t	t;
+/* Testing with av being an array full of empty strings */
+TEST(opts_empty_1) {
+	mopts_t	t;
 	char	*tab[] = {"", "", ""};
+	mlist_t	*lst = NULL;;
 
-	TEST_ASSERT(read_opt(3, tab, &t) == 0, "Not handling null arguments");
+	TEST_ASSERT(read_opt(3, tab, &t, &lst) == 0, "Not handling null arguments");
 	return TEST_SUCCESS;
 }
 
-TEST(args_empty_2) {
-	margs_t	t;
+/* Testing with av being an array full of NULLs */
+TEST(opts_empty_2) {
+	mopts_t	t;
 	char	*tab[] = {NULL, NULL, NULL};
+	mlist_t	*lst = NULL;;
 
-	TEST_ASSERT(read_opt(3, tab, &t) == 0, "Not handling null arguments");
+	TEST_ASSERT(read_opt(3, tab, &t, &lst) == 0, "Not handling null arguments");
 	return TEST_SUCCESS;
 }
 
-
-TEST(args_unhandled_1) {
-	margs_t		opt[] = {
+/* Testing single dash alone */
+TEST(dashes_alone_1) {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
-	char		*av[] = {"./tests", "oui", "--allow"};
+	char		*av[] = {"./test", "-"};
+	mlist_t		*lst = NULL;
+
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling unknown option");
+	TEST_ASSERT(lst, "List not created");
+	TEST_ASSERT(!strcmp(lst->member, "-"), "Parameter not read");
+	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
+	list_free(lst, NULL);
+	return TEST_SUCCESS;
+}
+
+/* Testing double dash alone */
+TEST(dashes_alone_2) {
+	mopts_t		opt[] = {
+		{'z', "zoiberg", "No idea.", false, NULL},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "--"};
+	mlist_t		*lst = NULL;
+
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling unknown option");
+	TEST_ASSERT(!lst, "Unwanted list created");
+	return TEST_SUCCESS;
+}
+
+
+/* Testing with unknown single dash option */
+TEST(opts_unhandled_1) {
+	mopts_t		opt[] = {
+		{'z', "zoiberg", "No idea.", false, NULL},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "-q"};
+	int			st, fd[2];
+	pid_t		pid;
+	mlist_t		*lst = NULL;
+
+	pipe(fd);
+	if ((pid = fork()) == 0) {
+		DUP_ALL_OUTPUTS(fd);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling unknown option");
+		exit(0);
+	} else {
+		WAIT_AND_CLOSE(pid, st, fd);
+		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
+	}
+	return TEST_SUCCESS;
+}
+
+/* Testing with unknown double dash option */
+TEST(opts_unhandled_2) {
+	mopts_t		opt[] = {
+		{'z', "zoiberg", "No idea.", false, NULL},
+		ARGS_EOL
+	};
+	char		*av[] = {"./tests", "--oui"};
 	pid_t		pid;
 	int			st, fd[2];
+	mlist_t		*lst = NULL;;
 
 	pipe(fd);
 	fflush(stdout);
 	if ((pid = fork()) == 0) {
 
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av), av, opt) == 0, "Not handling properly unknown arguments");
+		TEST_ASSERT(read_opt(sizeof(av), av, opt, &lst) == 0, 
+					"Not handling properly unknown arguments");
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
@@ -78,19 +160,22 @@ TEST(args_unhandled_1) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_unhandled_2) {
-	margs_t		opt[] = {
+/* Testing with triple dash */
+TEST(opts_unhandled_3) {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "---wrong-option"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst = NULL;;
 
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling triple '-' arguments");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling triple '-' arguments");
 		exit(0);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
@@ -99,103 +184,22 @@ TEST(args_unhandled_2) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_unhandled_3) {
-	margs_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
-		ARGS_EOL
-	};
-	char		*av[] = {"./test", "-", "<-", "Single dash"};
-	int			st, fd[2];
-	pid_t		pid;
-
-	pipe(fd);
-	if ((pid = fork()) == 0) {
-		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling alone '-' in arguments");
-		exit(0);
-	} else {
-		WAIT_AND_CLOSE(pid, st, fd);
-		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
-	}
-	return TEST_SUCCESS;
-}
-
-TEST(args_unhandled_4) {
-	margs_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
-		ARGS_EOL
-	};
-	char		*av[] = {"./test", "-q"};
-	int			st, fd[2];
-	pid_t		pid;
-
-	pipe(fd);
-	if ((pid = fork()) == 0) {
-		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling unknown option");
-		exit(0);
-	} else {
-		WAIT_AND_CLOSE(pid, st, fd);
-		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
-	}
-	return TEST_SUCCESS;
-}
-
-TEST(args_unhandled_5) {
-	margs_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
-		ARGS_EOL
-	};
-	char		*av[] = {"./test", "--"};
-	int			st, fd[2];
-	pid_t		pid;
-
-	pipe(fd);
-	if ((pid = fork()) == 0) {
-		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling double dash without option");
-		exit(0);
-	} else {
-		WAIT_AND_CLOSE(pid, st, fd);
-		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
-	}
-	return TEST_SUCCESS;
-}
-
-TEST(args_unhandled_6) {
-	margs_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
-		ARGS_EOL
-	};
-	char		*av[] = {"./test", "-"};
-	int			st, fd[2];
-	pid_t		pid;
-
-	pipe(fd);
-	if ((pid = fork()) == 0) {
-		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling single dash without option");
-		exit(1);
-	} else {
-		WAIT_AND_CLOSE(pid, st, fd);
-		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
-	}
-	return TEST_SUCCESS;
-}
-
-TEST(args_help_1) {
-	margs_t		opt[] = {
+/* Testing a call to -h builtin option */
+TEST(opts_help_1) {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "-h"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst = NULL;
 
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling -h arguments");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling -h arguments");
 		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
@@ -204,19 +208,22 @@ TEST(args_help_1) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_help_2) {
-	margs_t		opt[] = {
+/* Testing a call to --help builtin option */
+TEST(opts_help_2) {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "--help"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst = NULL;
 
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling --help arguments");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling --help arguments");
 		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
@@ -225,19 +232,46 @@ TEST(args_help_2) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_version_1) {
-	margs_t		opt[] = {
+/* Testing that --help properly exits instantly */
+TEST(opts_help_3) {
+	mopts_t		opt[] = {
+		{'z', "zoiberg", "No idea.", false, NULL},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "--help", "--zoiberg"};
+	int			st, fd[2];
+	pid_t		pid;
+	mlist_t		*lst = NULL;
+
+	pipe(fd);
+	if ((pid = fork()) == 0) {
+		DUP_ALL_OUTPUTS(fd);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling --help arguments");
+		exit(5);
+	} else {
+		WAIT_AND_CLOSE(pid, st, fd);
+		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
+	}
+	return TEST_SUCCESS;
+}
+
+/* Testing a call to -V builtin option */
+TEST(opts_version_1) {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "-V"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst = NULL;
 
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling --version arguments");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling --version arguments");
 		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
@@ -246,19 +280,22 @@ TEST(args_version_1) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_version_2) {
-	margs_t		opt[] = {
+/* Testing a call to --version builtin option */
+TEST(opts_version_2) {
+	mopts_t		opt[] = {
 		{'z', "zoiberg", "No idea.", false, NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "--version"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst = NULL;
 
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling -v arguments");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling -v arguments");
 		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
@@ -267,71 +304,113 @@ TEST(args_version_2) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_base_1) {
-	margs_t		opt[] = OPT_DEF(false);
+/* Testing that --version properly exit instantly */
+TEST(opts_version_3) {
+	mopts_t		opt[] = {
+		{'z', "zoiberg", "No idea.", false, NULL},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "--version", "--zoiberg"};
+	int			st, fd[2];
+	pid_t		pid;
+	mlist_t		*lst = NULL;
+
+	pipe(fd);
+	if ((pid = fork()) == 0) {
+		DUP_ALL_OUTPUTS(fd);
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling -v arguments");
+		exit(5);
+	} else {
+		WAIT_AND_CLOSE(pid, st, fd);
+		TEST_ASSERT((WEXITSTATUS(st) == 0), "Wrong return");
+	}
+	return TEST_SUCCESS;
+}
+
+/* Testing reading of 1 option without parameters */
+TEST(opts_base_1) {
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-q"};
+	mlist_t		*lst = NULL;
 
 	reset_args();
-	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 1), "Wrong return");
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1),
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w != true, "Argument not read");
 	return TEST_SUCCESS;
 }
 
-TEST(args_base_2) {
-	margs_t		opt[] = OPT_DEF(false);
+/* Testing reading of 2 packed options without parameters */
+TEST(opts_base_2) {
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-qw"};
+	mlist_t		*lst = NULL;
 
 	reset_args();
-	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2), "Wrong return");
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 2),
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
 	TEST_ASSERT(args.opt_e != true, "Argument not read");
 	return TEST_SUCCESS;
 }
 
-TEST(args_base_3) {
-	margs_t		opt[] = OPT_DEF(false);
+/* Testing reading of 2 separated options without parameters */
+TEST(opts_base_3) {
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-q", "-w"};
+	mlist_t		*lst = NULL;
 
 	reset_args();
-	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2), "Wrong return");
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 2),
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
 	TEST_ASSERT(args.opt_e != true, "Argument not read");
 	return TEST_SUCCESS;
 }
 
-TEST(args_base_4) {
-	margs_t		opt[] = OPT_DEF(false);
+/* Testing reading of 1 long and 1 short options without parameters */
+TEST(opts_base_4) {
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "--qwerty", "-w"};
+	mlist_t		*lst = NULL;
 
 	reset_args();
-	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2), "Wrong return");
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 2),
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
 	TEST_ASSERT(args.opt_e != true, "Argument not read");
 	return TEST_SUCCESS;
 }
 
-TEST(args_base_5) {
-	margs_t		opt[] = OPT_DEF(false);
+/* Testing reading of 2 long options without parameters */
+TEST(opts_base_5) {
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "--qwerty", "--wertyu"};
+	mlist_t		*lst = NULL;
 
 	reset_args();
-	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2), "Wrong return");
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 2),
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
 	TEST_ASSERT(args.opt_e != true, "Argument not read");
 	return TEST_SUCCESS;
 }
 
-TEST(args_base_6) {
-	margs_t		opt[] = OPT_DEF(false);
+/* Testing reading 6 packed options that makes the name of a long option */
+TEST(opts_base_6) {
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "-qwerty"};
+	mlist_t		*lst = NULL;
 
 	reset_args();
-	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 6), "Wrong return");
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 6),
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
 	TEST_ASSERT(args.opt_e == true, "Argument not read");
@@ -341,12 +420,21 @@ TEST(args_base_6) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_base_7) {
-	margs_t		opt[] = OPT_DEF(false);
-	char		*av[] = {"./test", "--qwerty", "--wertyu", "--ertyui", "--rtyuio", "--tyuiop", "--yuiop["};
+/* Testing reading of 6 long options without parameters */
+TEST(opts_base_7) {
+	mopts_t		opt[] = OPT_DEF(false);
+	char		*av[] = {"./test",
+						"--qwerty",
+						"--wertyu",
+						"--ertyui",
+						"--rtyuio",
+						"--tyuiop",
+						"--yuiop["};
+	mlist_t		*lst = NULL;
 
 	reset_args();
-	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 6), "Wrong return");
+	TEST_ASSERT((read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 6),
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
 	TEST_ASSERT(args.opt_e == true, "Argument not read");
@@ -356,17 +444,20 @@ TEST(args_base_7) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_missing_value_1) {
-	margs_t		opt[] = OPT_DEF(true);
+/* Testing missing argument in short options-argument pair */
+TEST(opts_missing_value_1) {
+	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "-q"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst = NULL;
 
 	reset_args();
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling missing argument");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling missing argument");
 		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
@@ -375,17 +466,20 @@ TEST(args_missing_value_1) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_missing_value_2) {
-	margs_t		opt[] = OPT_DEF(true);
+/* Testing missing argument in long options-argument pair */
+TEST(opts_missing_value_2) {
+	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty"};
 	int			st, fd[2];
 	pid_t		pid;
+	mlist_t		*lst = NULL;
 
 	reset_args();
 	pipe(fd);
 	if ((pid = fork()) == 0) {
 		DUP_ALL_OUTPUTS(fd);
-		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 0, "Not handling missing argument");
+		TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+					"Not handling missing argument");
 		exit(5);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
@@ -394,34 +488,43 @@ TEST(args_missing_value_2) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_value_1) {
-	margs_t		opt[] = OPT_DEF(true);
+/* Testing good reading of short options-argument pair */
+TEST(opts_value_1) {
+	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "-q", "toto"};
+	mlist_t		*lst = NULL;
 
 	reset_args();
-	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 1, "Wrong return");
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1,
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(strcmp(args.str_q, "toto") == 0, "Value not read");
 	return TEST_SUCCESS;
 }
 
-TEST(args_value_2) {
-	margs_t		opt[] = OPT_DEF(true);
+/* Testing good reading of long options-argument pair */
+TEST(opts_value_2) {
+	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto"};
+	mlist_t		*lst = NULL;
 
 	reset_args();
-	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 1, "Wrong return");
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1,
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(strcmp(args.str_q, "toto") == 0, "Value not read");
 	return TEST_SUCCESS;
 }
 
-TEST(args_value_3) {
-	margs_t		opt[] = OPT_DEF(true);
+/* Mixing both tests above */
+TEST(opts_value_3) {
+	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto", "-w", "tata"};
+	mlist_t		*lst = NULL;
 
 	reset_args();
-	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2, "Wrong return");
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 2,
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(strcmp(args.str_q, "toto") == 0, "Value not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
@@ -429,12 +532,15 @@ TEST(args_value_3) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_value_4) {
-	margs_t		opt[] = OPT_DEF(true);
+/* Testing good reading of multiple long options-argument pair */
+TEST(opts_value_4) {
+	mopts_t		opt[] = OPT_DEF(true);
 	char		*av[] = {"./test", "--qwerty=toto", "--wertyu=tata"};
+	mlist_t		*lst = NULL;
 
 	reset_args();
-	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 2, "Wrong return");
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 2,
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(strcmp(args.str_q, "toto") == 0, "Value not read");
 	TEST_ASSERT(args.opt_w == true, "Argument not read");
@@ -442,20 +548,180 @@ TEST(args_value_4) {
 	return TEST_SUCCESS;
 }
 
-TEST(args_word_only_1) {
-	margs_t		opt[] = {
-		{0, "qwerty", "qwerty", false, &callback_q},
-		ARGS_EOL
-	};
+/* Testing existence of long-only options */
+TEST(opts_long_only_1) {
+	mopts_t		opt[] = OPT_DEF(false);
 	char		*av[] = {"./test", "--qwerty"};
+	mlist_t		*lst = NULL;
 
 	reset_args();
-	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt) == 1, "Wrong return");
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1,
+				"Wrong return");
 	TEST_ASSERT(args.opt_q == true, "Argument not read");
 	TEST_ASSERT(args.opt_w == false, "Wrong argument");
 	return TEST_SUCCESS;
 }
 
+/* Testing existence of short-only options */
+TEST(opts_short_only_1) {
+	mopts_t		opt[] = OPT_DEF(false);
+	char		*av[] = {"./test", "-q"};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == true, "Argument not read");
+	TEST_ASSERT(args.opt_w == false, "Wrong argument");
+	return TEST_SUCCESS;
+}
+
+/* Testing reading of a params alone */
+TEST(params_reading_1) {
+	mopts_t		opt[] = OPT_DEF(false);
+	char		*av[] = {"./test", "hey"};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == false, "Wrong argument");
+	TEST_ASSERT(lst, "List not created");
+	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Parameter not read");
+	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
+	list_free(lst, NULL);
+	return TEST_SUCCESS;
+}
+
+/* Testing reading of a params then a short option */
+TEST(params_reading_2) {
+	mopts_t		opt[] = OPT_DEF(false);
+	char		*av[] = {"./test", "hey", "-q"};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == true, "Didn't parsed option");
+	TEST_ASSERT(lst, "List not created");
+	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
+	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
+	TEST_ASSERT(!lst->next, "Unwanted node created");
+	list_free(lst, NULL);
+	return TEST_SUCCESS;
+}
+
+/* Testing reading of a params then a long option */
+TEST(params_reading_3) {
+	mopts_t		opt[] = OPT_DEF(false);
+	char		*av[] = {"./test", "hey", "--qwerty"};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 1,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == true, "Didn't parsed option");
+	TEST_ASSERT(lst, "List not created");
+	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
+	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
+	TEST_ASSERT(!lst->next, "Unwanted node created");
+	list_free(lst, NULL);
+	return TEST_SUCCESS;
+}
+
+/* Testing with empty param */
+TEST(empty_param_1) {
+	mopts_t		opt[] = OPT_DEF(false);
+	char		*av[] = {"./test", ""};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == false, "Wrong argument");
+	TEST_ASSERT(!lst, "List created with empty param");
+	return TEST_SUCCESS;
+}
+
+/* Testing with null param */
+TEST(empty_param_2) {
+	mopts_t		opt[] = OPT_DEF(false);
+	char		*av[] = {"./test", NULL};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == false, "Wrong argument");
+	TEST_ASSERT(!lst, "List created with null param");
+	return TEST_SUCCESS;
+}
+
+/* Testing with empty param followed by a param */
+TEST(empty_param_3) {
+	mopts_t		opt[] = {
+		{'q', NULL, "qwerty", false, &callback_q},
+		ARGS_EOL
+	};
+	char		*av[] = {"./test", "", "hey"};
+	mlist_t		*lst = NULL;
+
+	reset_args();
+	TEST_ASSERT(read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst) == 0,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == false, "Wrong argument");
+	TEST_ASSERT(lst, "List not created");
+	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
+	TEST_ASSERT(lst->size == strlen(av[2]) + 1, "Wrong size allocated");
+	list_free(lst, NULL);
+	return TEST_SUCCESS;
+}
+
+/* Testing reading of parameters, options, and empty cases in av */
+TEST(mixed_1) {
+	mopts_t		opt[] = OPT_DEF(false);
+	char		*av[] = {"./test", "hey", "--qwerty", "-q", "-w",
+						"ho", "ah", "--ertyui", "", "-", "--", "-r"};
+	mlist_t		*lst = NULL;
+	int		i = 0;
+
+	reset_args();
+	TEST_ASSERT((i = read_opt(sizeof(av) / sizeof(av[0]), av, opt, &lst)) == 4,
+				"Wrong return");
+	TEST_ASSERT(args.opt_q == true, "Didn't parsed option");
+	TEST_ASSERT(args.opt_w == true, "Didn't parsed option");
+	TEST_ASSERT(args.opt_e == true, "Didn't parsed option");
+	TEST_ASSERT(args.opt_r != true, "Didn't parsed option");
+	/* First param : "hey" */
+	TEST_ASSERT(lst, "List not created");
+	TEST_ASSERT(!strcmp(lst->member, "hey"), "Parameter not read");
+	TEST_ASSERT(lst->size == strlen(av[1]) + 1, "Wrong size allocated");
+	/* Second param : "ho" */
+	TEST_ASSERT(lst->next, "Node not created");
+	TEST_ASSERT(!strcmp(lst->next->member, "ho"), "Parameter not read");
+	TEST_ASSERT(lst->next->size == strlen(av[5]) + 1, "Wrong size allocated");
+	/* Third param : "ah" */
+	TEST_ASSERT(lst->next->next, "Node not created");
+	TEST_ASSERT(!strcmp(lst->next->next->member, "ah"),
+				"Parameter not read");
+	TEST_ASSERT(lst->next->next->size == strlen(av[6]) + 1,
+				"Wrong size allocated");
+	/* Fourth param : "-" */
+	TEST_ASSERT(lst->next->next->next, "Node not created");
+	TEST_ASSERT(!strcmp(lst->next->next->next->member, "-"),
+				"Parameter not read");
+	TEST_ASSERT(lst->next->next->next->size == strlen(av[9]) + 1,
+				"Wrong size allocated");
+	/* Fifth param : "-r" */
+	TEST_ASSERT(lst->next->next->next->next, "Node not created");
+	TEST_ASSERT(!strcmp(lst->next->next->next->next->member, "-r"),
+				"Parameter not read");
+	TEST_ASSERT(lst->next->next->next->next->size == strlen(av[11]) + 1,
+				"Wrong size allocated");
+	TEST_ASSERT(!lst->next->next->next->next->next, "Unwanted node created");
+	list_free(lst, NULL);
+	return TEST_SUCCESS;
+}
 
 void		callback_q(const char *s) {
 	args.opt_q = true;
@@ -521,36 +787,76 @@ void		reset_args(void) {
 }
 
 void		register_args_tests(void) {
-	reg_test("m_args", args_NULL);
-	reg_test("m_args", args_NULL_1);
-	reg_test("m_args", args_NULL_2);
-	reg_test("m_args", args_NULL_3);
-	reg_test("m_args", args_NULL_4);
-	reg_test("m_args", args_NULL_5);
-	reg_test("m_args", args_empty_1);
-	reg_test("m_args", args_empty_2);
-	reg_test("m_args", args_unhandled_1);
-	reg_test("m_args", args_unhandled_2);
-	reg_test("m_args", args_unhandled_3);
-	reg_test("m_args", args_unhandled_4);
-	reg_test("m_args", args_unhandled_5);
-	reg_test("m_args", args_unhandled_6);
-	reg_test("m_args", args_help_1);
-	reg_test("m_args", args_help_2);
-	reg_test("m_args", args_version_1);
-	reg_test("m_args", args_version_2);
-	reg_test("m_args", args_base_1);
-	reg_test("m_args", args_base_2);
-	reg_test("m_args", args_base_3);
-	reg_test("m_args", args_base_4);
-	reg_test("m_args", args_base_5);
-	reg_test("m_args", args_base_6);
-	reg_test("m_args", args_base_7);
-	reg_test("m_args", args_missing_value_1);
-	reg_test("m_args", args_missing_value_2);
-	reg_test("m_args", args_value_1);
-	reg_test("m_args", args_value_2);
-	reg_test("m_args", args_value_3);
-	reg_test("m_args", args_value_4);
-	reg_test("m_args", args_word_only_1);
+/* Testing all possibilities with a NULL args somewhere */
+	reg_test("m_args", opts_NULL);
+/* Testing with av being an array full of empty strings */
+	reg_test("m_args", opts_empty_1);
+/* Testing with av being an array full of NULLs */
+	reg_test("m_args", opts_empty_2);
+/* Testing double dash alone */
+	reg_test("m_args", dashes_alone_1);
+/* Testing double dash alone */
+	reg_test("m_args", dashes_alone_1);
+/* Testing with unknown single dash option */
+	reg_test("m_args", opts_unhandled_1);
+/* Testing with unknown double dash option */
+	reg_test("m_args", opts_unhandled_2);
+/* Testing with triple dash */
+	reg_test("m_args", opts_unhandled_3);
+/* Testing a call to -h builtin option */
+	reg_test("m_args", opts_help_1);
+/* Testing a call to --help builtin option */
+	reg_test("m_args", opts_help_2);
+/* Testing that --help properly exits instantly */
+	reg_test("m_args", opts_help_3);
+/* Testing a call to -V builtin option */
+	reg_test("m_args", opts_version_1);
+/* Testing a call to --version builtin option */
+	reg_test("m_args", opts_version_2);
+/* Testing that --version properly exit instantly */
+	reg_test("m_args", opts_version_3);
+/* Testing reading of 1 option without parameters */
+	reg_test("m_args", opts_base_1);
+/* Testing reading of 2 packed options without parameters */
+	reg_test("m_args", opts_base_2);
+/* Testing reading of 2 separated options without parameters */
+	reg_test("m_args", opts_base_3);
+/* Testing reading of 1 long and 1 short options without parameters */
+	reg_test("m_args", opts_base_4);
+/* Testing reading of 2 long options without parameters */
+	reg_test("m_args", opts_base_5);
+/* Testing reading 6 packed options that makes the name of a long option */
+	reg_test("m_args", opts_base_6);
+/* Testing reading of 6 long options without parameters */
+	reg_test("m_args", opts_base_7);
+/* Testing missing argument in short options-argument pair */
+	reg_test("m_args", opts_missing_value_1);
+/* Testing missing argument in long options-argument pair */
+	reg_test("m_args", opts_missing_value_2);
+/* Testing good reading of short options-argument pair */
+	reg_test("m_args", opts_value_1);
+/* Testing good reading of long options-argument pair */
+	reg_test("m_args", opts_value_2);
+/* Mixing both tests above */
+	reg_test("m_args", opts_value_3);
+/* Testing good reading of multiple long options-argument pair */
+	reg_test("m_args", opts_value_4);
+/* Testing existence of long-only options */
+	reg_test("m_args", opts_long_only_1);
+/* Testing existence of short-only options */
+	reg_test("m_args", opts_short_only_1);
+/* Testing reading of a params alone */
+	reg_test("m_args", params_reading_1);
+/* Testing reading of a params then a short option */
+	reg_test("m_args", params_reading_2);
+/* Testing reading of a params then a long option */
+	reg_test("m_args", params_reading_3);
+/* Testing with empty param */
+	reg_test("m_args", empty_param_1);
+/* Testing with null param */
+	reg_test("m_args", empty_param_2);
+/* Testing with empty param followed by a param */
+	reg_test("m_args", empty_param_3);
+/* Testing reading of parameters, options, and empty cases in av */
+	reg_test("m_args", mixed_1);
 }
