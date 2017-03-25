@@ -52,6 +52,12 @@ typedef struct test_results_s {
     }\
 }
 
+#ifdef COMPILE_WITH_TEST
+# define MPX_STATIC
+#else
+# define MPX_STATIC static
+#endif
+
 /*!
  * \brief Print a title
  * \param s Title name
