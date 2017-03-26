@@ -74,7 +74,13 @@ u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args) {
                     {
                         if (i + 1 < (u32_t)ac)
                         {
-                            opts[it].callback(av[++i]);
+                            if (!opts[it].callback(av[++i]))
+                            {
+                                m_error("Wrong value \"%s\" for argument -%c\n",
+                                    av[i], opts[it].opt);
+                                usage(opts);
+                                exit(1);
+                            }
                             ret++;
                             break ;
                         }
@@ -127,7 +133,7 @@ u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args) {
 
             /* Search the option in the opts array */
             for (it = 0; !IS_EOL(opts[it]) &&
-                    (strncmp(opts[it].s_opt, &(av[i][2]), k) != 0); it++)
+                    (strncmp((opts[it].s_opt != NULL ? opts[it].s_opt : ""), &(av[i][2]), k) != 0); it++)
                 ;
 
             /* Can't find the option */
@@ -143,10 +149,17 @@ u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args) {
                     m_error("Option %s must take an argument", opts[it].s_opt);
                     opt_help(opts, 1);
                 }
+                char    *arg = NULL;
+
                 if (got_arg)
-                    opts[it].callback(&(av[i][k + 3]));
-                else
-                    opts[it].callback(NULL);
+                    arg = &(av[i][k + 3]);
+                if (!opts[it].callback(arg))
+                {
+                    m_error("Wrong value \"%s\" for argument --%s\n",
+                        arg != NULL ? arg : "", opts[it].s_opt);
+                    usage(opts);
+                    exit(1);
+                }
                 ret++;
             }
             /* Not beginning with a dash */
@@ -167,15 +180,26 @@ u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args) {
 }
 
 void opt_help(const mopts_t *opts, u8_t ret) {
+    size_t        pad = 0;
+
+    usage(opts);
     m_info("Help:\n");
     for (u32_t i = 0; opts[i].opt != 0; i++)
     {
-        m_info("\t-%c | --%s : %s\n", opts[i].opt, opts[i].s_opt, opts[i].desc);
+        if (opts[i].s_opt != NULL && (strlen(opts[i].s_opt) + 2) > pad)
+            pad = strlen(opts[i].s_opt) + 6;
     }
-    write(1, "\n", 1);
-    m_info("If an argument requires a value, you can set it two ways:\n");
-    m_info("\t-o value\n");
-    m_info("\t--option=value\n");
+    for (u32_t i = 0; opts[i].opt != 0; i++)
+    {
+        if (opts[i].s_opt != NULL)
+            m_info("\t-%c, --%s%*s%s\n", opts[i].opt, opts[i].s_opt, pad - (strlen(opts[i].s_opt)), "", opts[i].desc);
+        else
+            m_info("\t-%c%*s%s\n", opts[i].opt, pad + 4, "", opts[i].desc);
+    }
+    m_info("\t-%c, --%s%*s%s\n", LIB_OPT_TOKEN_HELP, LIB_OPT_STRING_HELP,
+        pad - (strlen(LIB_OPT_STRING_HELP)), "", "Show this help");
+    m_info("\t-%c, --%s%*s%s\n", LIB_OPT_TOKEN_VERSION, LIB_OPT_STRING_VERSION,
+        pad - (strlen(LIB_OPT_STRING_VERSION)), "", "Print the current version");
     exit(ret);
 }
 
@@ -184,4 +208,40 @@ void p_version(u8_t ret) {
     m_info("Version: %s\n", get_version());
     m_info("%s\n", get_maintainer());
     exit(ret);
+}
+
+void usage(const mopts_t *opts) {
+    u8_t        i;
+
+    m_info("Usage: %s [-%c%c", get_program_name(), LIB_OPT_TOKEN_HELP,
+        LIB_OPT_TOKEN_VERSION);
+    fflush(stdout);
+    for (i = 0; !IS_EOL(opts[i]); i++)
+    {
+        if (opts[i].take_arg == false && opts[i].opt != '\0')
+        {
+            write(1, &opts[i].opt, 1);
+        }
+    }
+    fprintf(stdout, "] ");
+
+    for (i = 0; !IS_EOL(opts[i]); i++)
+    {
+        if (opts[i].take_arg == true && opts[i].usage != NULL)
+        {
+            if (opts[i].opt != '\0')
+                fprintf(stdout, "[-%c %s] ", opts[i].opt, opts[i].usage);
+            else if (opts[i].s_opt)
+                fprintf(stdout, "[--%s=%s] ", opts[i].s_opt, opts[i].usage);
+        }
+    }
+
+    for (i = 0; !IS_EOL(opts[i]); i++)
+    {
+        if (opts[i].take_arg == false && opts[i].opt == '\0')
+        {
+            fprintf(stdout, "[--%s] ", opts[i].s_opt);
+        }
+    }
+    fprintf(stdout, "\n");
 }
