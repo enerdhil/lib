@@ -80,7 +80,7 @@ TEST(opts_empty_2) {
 /* Testing single dash alone */
 TEST(dashes_alone_1) {
 	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
+		{.opt = 'z', .s_opt = "zoiberg", .desc = "No idea.", .take_arg = false, .callback = NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "-"};
@@ -98,7 +98,7 @@ TEST(dashes_alone_1) {
 /* Testing double dash alone */
 TEST(dashes_alone_2) {
 	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
+		{.opt = 'z', .s_opt = "zoiberg", .desc = "No idea.", .take_arg = false, .callback = NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "--"};
@@ -114,7 +114,7 @@ TEST(dashes_alone_2) {
 /* Testing with unknown single dash option */
 TEST(opts_unhandled_1) {
 	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
+		{.opt = 'z', .s_opt = "zoiberg", .desc = "No idea.", .take_arg = false, .callback = NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "-q"};
@@ -138,7 +138,7 @@ TEST(opts_unhandled_1) {
 /* Testing with unknown double dash option */
 TEST(opts_unhandled_2) {
 	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
+		{.opt = 'z', .s_opt = "zoiberg", .desc = "No idea.", .take_arg = false, .callback = NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./tests", "--oui"};
@@ -163,7 +163,7 @@ TEST(opts_unhandled_2) {
 /* Testing with triple dash */
 TEST(opts_unhandled_3) {
 	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
+		{.opt = 'z', .s_opt = "zoiberg", .desc = "No idea.", .take_arg = false, .callback = NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "---wrong-option"};
@@ -187,7 +187,9 @@ TEST(opts_unhandled_3) {
 /* Testing a call to -h builtin option */
 TEST(opts_help_1) {
 	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
+		{.opt = 'z', .s_opt = "zoiberg", .desc = "No idea.", .take_arg = false, .callback = NULL},
+		{.opt = 'w', .desc = "No idea.", .take_arg = false, .callback = NULL},
+		{.s_opt = "we", .desc = "No idea.", .take_arg = false, .callback = NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "-h"};
@@ -211,7 +213,7 @@ TEST(opts_help_1) {
 /* Testing a call to --help builtin option */
 TEST(opts_help_2) {
 	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
+		{.opt = 'z', .s_opt = "zoiberg", .desc = "No idea.", .take_arg = false, .callback = NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "--help"};
@@ -235,7 +237,7 @@ TEST(opts_help_2) {
 /* Testing that --help properly exits instantly */
 TEST(opts_help_3) {
 	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
+		{.opt = 'z', .s_opt = "zoiberg", .desc = "No idea.", .take_arg = false, .callback = NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "--help", "--zoiberg"};
@@ -259,7 +261,7 @@ TEST(opts_help_3) {
 /* Testing a call to -V builtin option */
 TEST(opts_version_1) {
 	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
+		{.opt = 'z', .s_opt = "zoiberg", .desc = "No idea.", .take_arg = false, .callback = NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "-V"};
@@ -283,7 +285,7 @@ TEST(opts_version_1) {
 /* Testing a call to --version builtin option */
 TEST(opts_version_2) {
 	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
+		{.opt = 'z', .s_opt = "zoiberg", .desc = "No idea.", .take_arg = false, .callback = NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "--version"};
@@ -307,7 +309,7 @@ TEST(opts_version_2) {
 /* Testing that --version properly exit instantly */
 TEST(opts_version_3) {
 	mopts_t		opt[] = {
-		{'z', "zoiberg", "No idea.", false, NULL},
+		{.opt = 'z', .s_opt = "zoiberg", .desc = "No idea.", .take_arg = false, .callback = NULL},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "--version", "--zoiberg"};
@@ -660,7 +662,7 @@ TEST(empty_param_2) {
 /* Testing with empty param followed by a param */
 TEST(empty_param_3) {
 	mopts_t		opt[] = {
-		{'q', NULL, "qwerty", false, &callback_q},
+		{.opt = 'q', .s_opt = NULL, .desc = "qwerty", .take_arg = false, .callback = &callback_q},
 		ARGS_EOL
 	};
 	char		*av[] = {"./test", "", "hey"};
@@ -723,52 +725,154 @@ TEST(mixed_1) {
 	return TEST_SUCCESS;
 }
 
-void		callback_q(const char *s) {
+TEST(usage) {
+    mopts_t opts[] = {
+        {
+            .opt = 'q'
+        },
+        {
+            .s_opt = "test"
+        },
+        {
+            .opt = 'w',
+            .usage = "TEST",
+            .take_arg = true
+        },
+        {
+            .s_opt = "rerer",
+            .usage = "wefwef",
+            .take_arg = true
+        },
+        ARGS_EOL
+    };
+    int			st, fd[2];
+    pid_t		pid;
+
+    set_program_name("test");
+    reset_args();
+    pipe(fd);
+    if ((pid = fork()) == 0) {
+        DUP_ALL_OUTPUTS(fd);
+        usage(opts);
+    } else {
+        WAIT_AND_CLOSE(pid, st, fd);
+        TEST_ASSERT(WEXITSTATUS(st) == 0, "Wrong return");
+    }
+    return TEST_SUCCESS;
+}
+
+static bool args_callback_wrong_value(const char *s) {
+    (void)s;
+    return false;
+}
+
+TEST(wrong_value_1) {
+    mopts_t opts[] = {
+        {
+            .opt = 'q',
+            .take_arg = true,
+            .callback = &args_callback_wrong_value
+        },
+        ARGS_EOL
+    };
+    char *av[] = {"./test", "-q", "nocare"};
+    int			st, fd[2];
+    pid_t		pid;
+    mlist_t             *lst = NULL;
+
+    reset_args();
+    pipe(fd);
+    if ((pid = fork()) == 0) {
+        DUP_ALL_OUTPUTS(fd);
+        read_opt(sizeof(av) / sizeof(av[0]), av, opts, &lst);
+        exit(0);
+    } else {
+        WAIT_AND_CLOSE(pid, st, fd);
+        TEST_ASSERT(WEXITSTATUS(st) == 1, "Wrong return");
+    }
+    return TEST_SUCCESS;
+}
+
+TEST(wrong_value_2) {
+    mopts_t opts[] = {
+        {
+            .s_opt = "qwert",
+            .take_arg = true,
+            .callback = &args_callback_wrong_value
+        },
+        ARGS_EOL
+    };
+    char *av[] = {"./test", "--qwert=nocare"};
+    int			st, fd[2];
+    pid_t		pid;
+    mlist_t             *lst = NULL;
+
+    reset_args();
+    pipe(fd);
+    if ((pid = fork()) == 0) {
+        DUP_ALL_OUTPUTS(fd);
+        read_opt(sizeof(av) / sizeof(av[0]), av, opts, &lst);
+        exit(0);
+    } else {
+        WAIT_AND_CLOSE(pid, st, fd);
+        TEST_ASSERT(WEXITSTATUS(st) == 1, "Wrong return");
+    }
+    return TEST_SUCCESS;
+}
+
+
+bool		callback_q(const char *s) {
 	args.opt_q = true;
 	if (s == NULL)
 		strcpy(args.str_q, "");
 	else
 		strcpy(args.str_q, s);
+        return true;
 }
 
-void		callback_w(const char *s) {
+bool		callback_w(const char *s) {
 	args.opt_w = true;
 	if (s == NULL)
 		strcpy(args.str_w, "");
 	else
 		strcpy(args.str_w, s);
+        return true;
 }
 
-void		callback_e(const char *s) {
+bool		callback_e(const char *s) {
 	args.opt_e = true;
 	if (s == NULL)
 		strcpy(args.str_e, "");
 	else
 		strcpy(args.str_e, s);
+        return true;
 }
 
-void		callback_r(const char *s) {
+bool		callback_r(const char *s) {
 	args.opt_r = true;
 	if (s == NULL)
 		strcpy(args.str_r, "");
 	else
 		strcpy(args.str_r, s);
+        return true;
 }
 
-void		callback_t(const char *s) {
+bool		callback_t(const char *s) {
 	args.opt_t = true;
 	if (s == NULL)
 		strcpy(args.str_t, "");
 	else
 		strcpy(args.str_t, s);
+        return true;
 }
 
-void		callback_y(const char *s) {
+bool		callback_y(const char *s) {
 	args.opt_y = true;
 	if (s == NULL)
 		strcpy(args.str_y, "");
 	else
 		strcpy(args.str_y, s);
+        return true;
 }
 
 void		reset_args(void) {
@@ -859,4 +963,7 @@ void		register_args_tests(void) {
 	reg_test("m_args", empty_param_3);
 /* Testing reading of parameters, options, and empty cases in av */
 	reg_test("m_args", mixed_1);
+	reg_test("m_args", usage);
+        reg_test("m_args", wrong_value_1);
+        reg_test("m_args", wrong_value_2);
 }

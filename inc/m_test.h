@@ -46,11 +46,28 @@ typedef struct test_results_s {
 # define reg_test(group, name) register_test(group, &test_##name, #name);
 # define TEST_ASSERT(condition, error_name) {\
     if (!(condition)) {\
-        char *ret = NULL; \
-        asprintf(&ret, "\t%s: Test: '%s', File %s:%d", error_name, #condition, __FILE__, __LINE__);\
-        return ret;\
+        char *__ret = NULL; \
+        asprintf(&__ret, "\t%s: Test: '%s', File %s:%d", error_name, #condition, __FILE__, __LINE__);\
+        return __ret;\
     }\
 }
+# define TEST_ASSERT_FMT(condition, error_name, ...) {\
+    if (!(condition)) {\
+        char *__ret = NULL, *tmp = NULL; \
+        asprintf(&tmp, error_name, __VA_ARGS__); \
+        asprintf(&__ret, "\t%s: Test: '%s', File %s:%d", tmp, #condition, __FILE__, __LINE__);\
+        free(tmp); \
+        return __ret;\
+    }\
+}
+
+
+
+#ifdef COMPILE_WITH_TEST
+# define MPX_STATIC
+#else
+# define MPX_STATIC static
+#endif
 
 /*!
  * \brief Print a title

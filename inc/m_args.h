@@ -22,37 +22,17 @@
 # include <errno.h>
 # include <morphux.h>
 
-typedef struct      s_opts {
-    /**
-     * Single letter option
-     * Example: -f, -s
-     */
-    char    opt;
-
-    /**
-     * Full string option
-     * Example: --force, --skip
-     */
-    char    *s_opt;
-
-    /**
-     * Description of the option.
-     * Used for the help
-     */
-    char    *desc;
-
-    /**
-     * Boolean that describe if the option must take an argument
-     */
-    bool    take_arg;
-
-    /**
-     * Callback of the option
-     */
-    void    (*callback)(const char *);
+typedef struct      opts_s {
+    char    opt;                       /*!< Single letter option. '\0' for no option */
+    char    *s_opt;                    /*!< Word option. NULL for no option */
+    char    *desc;                     /*!< Description of the option. Used for the help. */
+    char    *usage;                    /*!< Usage example */
+    bool    take_arg;                  /*!< Describe if the option must take an argument */
+    bool    required;                  /*!< Describe if the option is required or not */
+    bool    (*callback)(const char *); /*!< Callback function */
 }                   mopts_t;
 
-#define ARGS_EOL {0, NULL, NULL, false, NULL}
+#define ARGS_EOL {.opt = 0, .s_opt = NULL, .desc = NULL, .take_arg = false, .callback = NULL}
 #define IS_EOL(lst) (lst.opt == 0 && lst.s_opt == NULL && lst.desc == NULL && \
                         lst.take_arg == false && lst.callback == NULL)
 
@@ -86,5 +66,7 @@ void opt_help(const mopts_t *opts, u8_t ret);
  * \param[in] ret Return code of the exit
  */
 void p_version(u8_t ret);
+
+void usage(const mopts_t *opts);
 
 #endif /* M_ARGS_H */
