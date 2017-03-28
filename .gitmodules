@@ -1,0 +1,3 @@
+[submodule "docs/doxygen-theme"]
+	path = docs/doxygen-theme
+	url = https://github.com/Ne02ptzero/doxygen-theme
