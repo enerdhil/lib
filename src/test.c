@@ -25,6 +25,7 @@ static void    *(*real_malloc)(size_t) = &malloc;
 static ssize_t (*real_write)(int, const void *, size_t) = &write;
 static ssize_t (*real_read)(int, void *, size_t) = &read;
 static int     (*real_close)(int) = &close;
+static char    *(*real_strdup)(const char *) = &strdup;
 
 # include <fail_test.h>
 
@@ -32,6 +33,7 @@ static int      g_malloc_fail = -1;
 static int      g_write_fail = -1;
 static int      g_read_fail = -1;
 static int      g_close_fail = -1;
+static int      g_strdup_fail = -1;
 
 void    *fl_malloc(size_t alloc) {
     if (g_malloc_fail == -1)
@@ -77,6 +79,17 @@ int fl_close(int fd) {
     return real_close(fd);
 }
 
+char *fl_strdup(const char *str) {
+    if (g_strdup_fail == -1)
+        return real_strdup(str);
+    if (g_strdup_fail == 0) {
+        g_strdup_fail = -1;
+        return NULL;
+    }
+    g_strdup_fail--;
+    return real_strdup(str);
+}
+
 void set_malloc_fail(int val) {
     if (g_malloc_fail == -1)
         g_malloc_fail = val;
@@ -95,6 +108,11 @@ void set_read_fail(int val) {
 void set_close_fail(int val) {
     if (g_close_fail == -1)
         g_close_fail = val;
+}
+
+void set_strdup_fail(int val) {
+    if (g_strdup_fail == -1)
+        g_strdup_fail = val;
 }
 
 #endif /* COMPILE_WITH_TEST */

@@ -22,16 +22,19 @@
 # define write(fd, ptr, len) fl_write(fd, ptr, len)
 # define read(fd, ptr, len) fl_read(fd, ptr, len)
 # define close(fd) fl_close(fd)
+# define strdup(str) fl_strdup(str)
 
 void    *fl_malloc(size_t alloc);
 ssize_t fl_write(int fd, const void *ptr, size_t len);
 ssize_t fl_read(int fd, void *ptr, size_t len);
 int     fl_close(int fd);
+char    *fl_strdup(const char *str);
 
 void    set_malloc_fail(int val);
 void    set_write_fail(int val);
 void    set_read_fail(int val);
 void    set_close_fail(int val);
+void    set_strdup_fail(int val);
 
 
 # endif /* M_FAIL_TEST_H */
