@@ -56,7 +56,7 @@ fclean: clean
 	rm -f $(NAME)
 
 test:
-	$(MAKE) fclean all CFLAGS="$(CFLAGS) -DCOMPILE_WITH_TEST"
+	$(MAKE) fclean all CFLAGS="$(CFLAGS) -DCOMPILE_WITH_TEST -Wno-error"
 
 re: fclean all
 
