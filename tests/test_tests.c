@@ -123,6 +123,21 @@ TEST(test_fail_close) {
 	return TEST_SUCCESS;
 }
 
+TEST(test_fail_strdup) {
+    char *ptr;
+    set_strdup_fail(1);
+
+    ptr = strdup("Test");
+    TEST_ASSERT(ptr != NULL, "Strdup failed (Or we're very unlucky)");
+    free(ptr);
+    ptr = strdup("Test");
+    TEST_ASSERT(ptr == NULL, "Function should have not succeed");
+    ptr = strdup("Test");
+    TEST_ASSERT(ptr != NULL, "Strdup failed (Or we're very unlucky)");
+    free(ptr);
+    return TEST_SUCCESS;
+}
+
 TEST(test_fail_cleanup) {
 	unlink(TMP_FD_FN);
 	return TEST_SUCCESS;
@@ -138,5 +153,6 @@ void	register_tests_tests(void) {
 	reg_test("fake_functions", test_fail_write);
 	reg_test("fake_functions", test_fail_read);
 	reg_test("fake_functions", test_fail_close);
+	reg_test("fake_functions", test_fail_strdup);
 	reg_test("fake_functions", test_fail_cleanup);
 }

@@ -24,9 +24,9 @@ OBJS =		$(SRCS:%.c=%.o)
 
 OSTYPE =	$(shell uname)
 ifeq ($(OSTYPE), Linux)
-COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -lgcov -DCOMPILE_WITH_TEST"
+COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=gnu99 -g -O0 -coverage -lgcov -DCOMPILE_WITH_TEST"
 else ifeq ($(OSTYPE), Darwin)
-COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -DCOMPILE_WITH_TEST"
+COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=gnu99 -g -O0 -coverage -DCOMPILE_WITH_TEST"
 endif
 
 all: $(NAME)
