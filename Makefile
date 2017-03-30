@@ -55,6 +55,9 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 
+test:
+	$(MAKE) fclean all CFLAGS="$(CFLAGS) -DCOMPILE_WITH_TEST"
+
 re: fclean all
 
 .PHONY: fclean clean all
