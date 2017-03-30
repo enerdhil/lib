@@ -17,7 +17,7 @@
 NAME =		libmorphux.a
 CC =		gcc
 LIB =		ar
-CFLAGS =	-Wall -Wextra -Werror -Wno-unused-result -I inc/ -std=c99 -g -O3
+CFLAGS =	-Wall -Wextra -Werror -Wno-unused-result -I inc/ -std=gnu99 -g -O3
 LFLAGS =	-cq
 SRCS =		$(wildcard src/*.c)
 OBJS =		$(SRCS:%.c=%.o)
@@ -35,7 +35,7 @@ $(NAME): $(OBJS)
 	$(LIB) $(LFLAGS) $(NAME) $(OBJS)
 
 check: all
-	$(MAKE) fclean all CFLAGS="$(CFLAGS) -DCOMPILE_WITH_TEST"
+	$(MAKE) fclean all CFLAGS="$(CFLAGS) -Wno-error -DCOMPILE_WITH_TEST"
 	make -C tests re check
 
 doc:
