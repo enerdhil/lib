@@ -25,6 +25,7 @@
 # include <m_list.h>
 # include <m_args.h>
 # include <m_test.h>
+# include <m_file.h>
 
 # include <fail_test.h>
 

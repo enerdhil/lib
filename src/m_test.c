@@ -35,10 +35,15 @@ void title(char *s) {
 void print_result(const char *title, u32_t success, u32_t failed) {
     u32_t   total = success + failed;
     u32_t   percent = success * 100 / total;
+    u8_t    padding = 14;
 
+    if (success >= 100)
+        padding++;
+    if (total >= 100)
+        padding++;
     m_info("%s:", title);
     fflush(stdout);
-    for (u32_t i = LINE_SIZE - strlen(title) + 1 - 14; i > 0; i--)
+    for (u32_t i = LINE_SIZE - strlen(title) + 1 - padding; i > 0; i--)
         write(1, " ", 1);
     fprintf(stdout, "%02d/%02d [", success, total);
     fflush(stdout);

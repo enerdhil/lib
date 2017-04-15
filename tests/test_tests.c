@@ -138,6 +138,22 @@ TEST(test_fail_strdup) {
     return TEST_SUCCESS;
 }
 
+TEST(test_fail_fstat) {
+    int     fd = open("./Makefile", O_RDONLY);
+    struct stat     buf;
+    int     ret;
+
+    set_fstat_fail(1);
+    ret = fstat(fd, &buf);
+    TEST_ASSERT(ret != -1, "fstat failed");
+    ret = fstat(fd, &buf);
+    TEST_ASSERT(ret == -1, "fstat succeed");
+    ret = fstat(fd, &buf);
+    TEST_ASSERT(ret != -1, "fstat failed");
+    close(fd);
+    return TEST_SUCCESS;
+}
+
 TEST(test_fail_cleanup) {
 	unlink(TMP_FD_FN);
 	return TEST_SUCCESS;
@@ -154,5 +170,6 @@ void	register_tests_tests(void) {
 	reg_test("fake_functions", test_fail_read);
 	reg_test("fake_functions", test_fail_close);
 	reg_test("fake_functions", test_fail_strdup);
+	reg_test("fake_functions", test_fail_fstat);
 	reg_test("fake_functions", test_fail_cleanup);
 }

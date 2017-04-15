@@ -14,10 +14,9 @@
  *                       limitations under the License.                         *
  \******************************************************************************/
 
-#include <m_file.h>
+#include <morphux.h>
 
-off_t mpm_get_file_size_from_fd(int fd)
-{
+off_t mpm_get_file_size_from_fd(int fd) {
     struct stat buf;
     if (fd == -1)
         return 0;
@@ -27,8 +26,7 @@ off_t mpm_get_file_size_from_fd(int fd)
     return buf.st_size;
 }
 
-off_t mpm_get_file_size_from_fn(const char *fn)
-{
+off_t mpm_get_file_size_from_fn(const char *fn) {
     int     fd;
     off_t   ret;
 
@@ -43,8 +41,7 @@ off_t mpm_get_file_size_from_fn(const char *fn)
     return ret;
 }
 
-char *mpm_read_file_from_fd(int fd)
-{
+char *mpm_read_file_from_fd(int fd) {
     char    *ret = NULL;
     off_t   size;
 
@@ -69,8 +66,7 @@ cleanup:
     return NULL;
 }
 
-char *mpm_read_file_from_fn(const char *fn)
-{
+char *mpm_read_file_from_fn(const char *fn) {
     int     fd;
     char    *ret = NULL;
 

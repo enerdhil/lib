@@ -18,6 +18,7 @@
 # include <string.h>
 # include <stdlib.h>
 # include <sys/types.h>
+# include <sys/stat.h>
 # include <fcntl.h>
 # include <unistd.h>
 
@@ -27,6 +28,7 @@ static ssize_t (*real_write)(int, const void *, size_t) = &write;
 static ssize_t (*real_read)(int, void *, size_t) = &read;
 static int     (*real_close)(int) = &close;
 static char    *(*real_strdup)(const char *) = &strdup;
+static int     (*real_fstat)(int, struct stat *) = &fstat;
 
 # include <fail_test.h>
 
@@ -35,6 +37,7 @@ static int      g_write_fail = -1;
 static int      g_read_fail = -1;
 static int      g_close_fail = -1;
 static int      g_strdup_fail = -1;
+static int      g_fstat_fail = -1;
 
 void    *fl_malloc(size_t alloc) {
 static char    *(*real_strdup)(const char *) = &(strdup);
@@ -92,6 +95,18 @@ char *fl_strdup(const char *str) {
     return real_strdup(str);
 }
 
+int fl_fstat(int fd, struct stat *buf) {
+    if (g_fstat_fail == -1)
+        return real_fstat(fd, buf);
+    if (g_fstat_fail == 0)
+    {
+        g_fstat_fail = -1;
+        return -1;
+    }
+    g_fstat_fail--;
+    return real_fstat(fd, buf);
+}
+
 void set_malloc_fail(int val) {
     if (g_malloc_fail == -1)
         g_malloc_fail = val;
@@ -115,6 +130,11 @@ void set_close_fail(int val) {
 void set_strdup_fail(int val) {
     if (g_strdup_fail == -1)
         g_strdup_fail = val;
+}
+
+void set_fstat_fail(int val) {
+    if (g_fstat_fail == -1)
+        g_fstat_fail = val;
 }
 
 #endif /* COMPILE_WITH_TEST */
