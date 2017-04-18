@@ -52,12 +52,14 @@ char *mpm_read_file_from_fd(int fd) {
     if (size == 0)
         return NULL;
 
-    ret = malloc(size);
+    ret = malloc(size + 1);
     if (ret == NULL)
         return NULL;
 
     if (read(fd, ret, size) == -1)
         goto cleanup;
+
+    ret[size] = 0;
 
     return ret;
 
