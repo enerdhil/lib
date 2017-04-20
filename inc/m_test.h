@@ -47,7 +47,18 @@ typedef struct test_results_s {
 # define TEST_ASSERT(condition, error_name) {\
     if (!(condition)) {\
         char *__ret = NULL; \
-        asprintf(&__ret, "\t%s: Test: '%s', File %s:%d", error_name, #condition, __FILE__, __LINE__);\
+        asprintf(&__ret, "\n%s\tFunction: %s\n%s\tError: %s\n%s\tTest: '%s'\n%s\tFile: %s:%d\n%s", \
+                "\033[0;31m> \033[0m", \
+                __FUNCTION__, \
+                "\033[0;31m> \033[0m", \
+                error_name, \
+                "\033[0;31m> \033[0m", \
+                #condition, \
+                "\033[0;31m> \033[0m", \
+                __FILE__, \
+                __LINE__, \
+                "\033[0;31m> \033[0m" \
+                );\
         return __ret;\
     }\
 }
@@ -55,7 +66,18 @@ typedef struct test_results_s {
     if (!(condition)) {\
         char *__ret = NULL, *tmp = NULL; \
         asprintf(&tmp, error_name, __VA_ARGS__); \
-        asprintf(&__ret, "\t%s: Test: '%s', File %s:%d", tmp, #condition, __FILE__, __LINE__);\
+        asprintf(&__ret, "\n%s\tFunction: %s\n%s\tError: %s\n%s\tTest: '%s'\n%s\tFile: %s:%d\n%s", \
+                "\033[0;31m> \033[0m", \
+                __FUNCTION__, \
+                "\033[0;31m> \033[0m", \
+                tmp, \
+                "\033[0;31m> \033[0m", \
+                #condition, \
+                "\033[0;31m> \033[0m", \
+                __FILE__, \
+                __LINE__, \
+                "\033[0;31m> \033[0m" \
+                );\
         free(tmp); \
         return __ret;\
     }\

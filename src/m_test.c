@@ -23,12 +23,12 @@ void title(char *s) {
     int     i;
 
     len -= strlen(s);
-    for (i = 0; i < len / 2; i++, write(1, "=", 1))
+    for (i = 0; i < len / 2; i++, write(1, "━", 3))
         ;
     write(1, " ", 1);
     write(1, s, strlen(s));
     write(1, " ", 1);
-    for (; i < len; i++, write(1, "=", 1));
+    for (; i < len; i++, write(1, "━", 3));
     write(1, "\n", 1);
 }
 
@@ -45,16 +45,16 @@ void print_result(const char *title, u32_t success, u32_t failed) {
     fflush(stdout);
     for (u32_t i = LINE_SIZE - strlen(title) + 1 - padding; i > 0; i--)
         write(1, " ", 1);
-    fprintf(stdout, "%02d/%02d [", success, total);
-    fflush(stdout);
     if (percent == 100)
         fprintf(stdout, "\033[1;32m");
     else if (percent >= 90)
         fprintf(stdout, "\033[1;33m");
     else
         fprintf(stdout, "\033[1;31m");
+
+    fprintf(stdout, "       %02d/%02d ", success, total);
     fflush(stdout);
-    fprintf(stdout, "%03d%%\033[0;m]\n", percent);
+    fprintf(stdout, "\033[0;m\n");
     fflush(stdout);
 }
 
@@ -111,14 +111,14 @@ mtest_results_t test_group(char *group) {
 
             if ((s_tmp = ptr->fn_test()) != TEST_SUCCESS)
             {
-                printf("[ \033[1;31mKO\033[0m ]\n");
+                printf(" [ \033[1;31m✕\033[0m ]\n");
                 m_warning("\033[0;37m%s\033[0m\n", s_tmp);
                 free(s_tmp);
                 res.failed++;
             }
             else
             {
-                printf("[ \033[1;32mOK\033[0m ]\n");
+                printf(" [ \033[1;32m✓\033[0m ]\n");
                 res.success++;
             }
         }
