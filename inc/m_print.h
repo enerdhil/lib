@@ -77,6 +77,13 @@ void m_warning(const char *str, ...);
 void m_info(const char *str, ...);
 
 /*!
+ * \brief Print a string on standard output
+ * \note Support printf format
+ * \note Only printing when compiled in debug mode, with the DEBUG define
+ */
+void m_debug(const char *str, ...);
+
+/*!
  * \brief Write a string in an already opened log file
  * \return true on success, false on failure
  * \note Support printf format

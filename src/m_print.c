@@ -135,6 +135,21 @@ void m_info(const char *str, ...) {
     va_end(ap);
 }
 
+void m_debug(const char *str, ...) {
+#ifdef DEBUG
+    va_list     ap;
+
+    va_start(ap, str);
+    vprintf(str, ap);
+    fflush(stdout);
+    va_end(ap);
+#else
+    (void)str;
+    return ;
+#endif
+
+}
+
 bool m_log(const char *str, ...) {
     va_list     ap;
     bool        ret;
