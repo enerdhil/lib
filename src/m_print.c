@@ -21,7 +21,7 @@ static u8_t     g_log_flags = M_LOG_NONE;
 
 bool m_init_log(const char *file, u8_t flags) {
     u32_t    open_flags = O_CREAT | O_WRONLY | O_ASYNC;
-    int     fd;
+    int      fd;
 
     if (flags & M_LOG_TRUNC)
         open_flags |= O_TRUNC;
