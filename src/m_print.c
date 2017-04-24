@@ -126,6 +126,7 @@ void m_info(const char *str, ...) {
     {
         write(1, "\033[0;34m> \033[0m", 13);
         vprintf(str, ap);
+        fflush(stdout);
     }
     va_end(ap);
 }
