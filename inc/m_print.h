@@ -32,9 +32,20 @@
 # include <m_types.h>
 # include <morphux.h>
 
-# define M_LOG_NONE (1 << 0)
+# define M_COLOR_RED    "\033[0;31m"
+# define M_COLOR_BLUE   "\033[0;34m"
+# define M_COLOR_RESET  "\033[0m"
+
+# define M_LOG_NONE  (1 << 0)
 # define M_LOG_FORCE (1 << 2)
 # define M_LOG_TRUNC (1 << 3)
+
+# define M_LOG_DEF_CHAR ">"
+
+# define M_PANIC_BEG    M_COLOR_RED M_LOG_DEF_CHAR " " M_COLOR_RESET
+# define M_ERROR_BEG    M_COLOR_RED M_LOG_DEF_CHAR " " M_COLOR_RESET
+# define M_WARN_BEG     M_COLOR_RED M_LOG_DEF_CHAR " " M_COLOR_RESET
+# define M_INFO_BEG     M_COLOR_BLUE M_LOG_DEF_CHAR " " M_COLOR_RESET
 
 /*!
  * \brief Print a string in an error fomat, then call exit with 1

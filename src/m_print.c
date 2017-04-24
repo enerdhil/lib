@@ -69,7 +69,7 @@ void m_panic(const char *str, ...) {
     }
     else
     {
-        write(2, "\033[0;31m> \033[0m", 13);
+        write(2, M_PANIC_BEG, sizeof(M_PANIC_BEG));
         vfprintf(stderr, str, ap);
         if (str[strlen(str) - 1] != '\n')
             fprintf(stderr, "\n");
@@ -89,7 +89,7 @@ void m_error(const char *str, ...) {
     }
     else
     {
-        write(2, "\033[0;31m> \033[0m", 13);
+        write(2, M_ERROR_BEG, sizeof(M_ERROR_BEG));
         vfprintf(stderr, str, ap);
         if (str[strlen(str) - 1] != '\n')
             fprintf(stderr, "\n");
@@ -108,7 +108,7 @@ void m_warning(const char *str, ...) {
     }
     else
     {
-        write(2, "\033[0;31m> \033[0m", 13);
+        write(2, M_WARN_BEG, sizeof(M_WARN_BEG));
         vfprintf(stderr, str, ap);
     }
     va_end(ap);
@@ -124,7 +124,7 @@ void m_info(const char *str, ...) {
     }
     else
     {
-        write(1, "\033[0;34m> \033[0m", 13);
+        write(1, M_INFO_BEG, sizeof(M_INFO_BEG));
         vprintf(str, ap);
         fflush(stdout);
     }
