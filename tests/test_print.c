@@ -60,6 +60,21 @@ TEST(print_panic) {
     return TEST_SUCCESS;
 }
 
+TEST(print_debug) {
+    int			st, fd[2];
+    pid_t		pid;
+
+    pipe(fd);
+    if ((pid = fork()) == 0) {
+        DUP_ALL_OUTPUTS(fd);
+        m_debug("Test");
+        exit(0);
+    } else {
+        WAIT_AND_CLOSE(pid, st, fd);
+    }
+    return TEST_SUCCESS;
+}
+
 TEST(print_log_err) {
     TEST_ASSERT(m_log("Balec/20") == false, "Return is wrong");
     return TEST_SUCCESS;
@@ -192,6 +207,7 @@ void	register_print_tests(void) {
     reg_test("mprint", print_warning);
     reg_test("mprint", print_error);
     reg_test("mprint", print_panic);
+    reg_test("mprint", print_debug);
     reg_test("mprint", print_log_err);
     reg_test("mprint", print_log_init);
     reg_test("mprint", print_log_1);
