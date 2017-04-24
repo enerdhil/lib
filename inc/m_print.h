@@ -63,6 +63,7 @@ void m_info(const char *str, ...);
 /*!
  * \brief Write a string in an already opened log file
  * \return true on success, false on failure
+ * \note Support printf format
  */
 bool m_log(const char *str, ...);
 
@@ -71,7 +72,7 @@ bool m_log(const char *str, ...);
  * \param[in] str File path
  * \param[in] flags Flag (see defines M_LOG_* in m_print.h)
  *
- * Open a file with O_APPEN flag, and keep it open.
+ * Open a file with O_APPEND flag, and keep it open.
  * If the M_LOG_FORCE flag is true, all the calls to m_{panic,error,warning,info}
  * will be written in the log file.
  */
