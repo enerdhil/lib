@@ -159,3 +159,31 @@ bool m_log(const char *str, ...) {
     va_end(ap);
     return ret;
 }
+
+#ifdef DEBUG_FULL
+# define __USE_GNU
+# include <dlfcn.h>
+# include <time.h>
+
+void __cyg_profile_func_enter(void *fn, void *call) __attribute__((no_instrument_function));
+void __cyg_profile_func_exit(void *fn, void *call) __attribute__((no_instrument_function));
+
+void __cyg_profile_func_enter(void *fn, void *call) {
+    Dl_info     info;
+
+    (void)call;
+    if (dladdr(fn, &info) != 0)
+    {
+        printf("[%lu]: %s:%s %p\n", time(NULL), info.dli_fname,
+            info.dli_sname == NULL ? "???" : info.dli_sname, fn);
+        return ;
+    }
+}
+
+void __cyg_profile_func_exit(void *fn, void *call) {
+    (void)fn;
+    (void)call;
+    return ;
+}
+
+#endif

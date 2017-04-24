@@ -18,6 +18,8 @@
 # ifndef M_FAIL_TEST_H
 #  define M_FAIL_TEST_H
 
+# undef strdup
+
 # define malloc(x) fl_malloc(x)
 # define write(fd, ptr, len) fl_write(fd, ptr, len)
 # define read(fd, ptr, len) fl_read(fd, ptr, len)

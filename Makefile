@@ -35,7 +35,7 @@ $(NAME): $(OBJS)
 	$(LIB) $(LFLAGS) $(NAME) $(OBJS)
 
 check: all
-	$(MAKE) fclean all CFLAGS="$(CFLAGS) -Wno-error -DCOMPILE_WITH_TEST -DDEBUG"
+	$(MAKE) fclean all CFLAGS="$(CFLAGS) -Wno-error -DCOMPILE_WITH_TEST -DDEBUG -DDEBUG_FULL -ldl"
 	make -C tests re check
 
 doc:

@@ -40,7 +40,6 @@ static int      g_strdup_fail = -1;
 static int      g_fstat_fail = -1;
 
 void    *fl_malloc(size_t alloc) {
-static char    *(*real_strdup)(const char *) = &(strdup);
     if (g_malloc_fail == -1)
         return real_malloc(alloc);
     if (g_malloc_fail == 0) {

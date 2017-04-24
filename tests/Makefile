@@ -1,7 +1,7 @@
 NAME =		test
 CC =		gcc
-CFLAGS =	-Wall -Wextra -Wno-unused-result -g -O3 -I../inc -DDEBUG
-LDFLAGS = -lmorphux
+CFLAGS =	-Wall -Wextra -Wno-unused-result -g -O3 -I../inc -DDEBUG #-finstrument-functions -export-dynamic
+LDFLAGS = -lmorphux -ldl
 SRCS =		$(wildcard *.c)
 OBJS =		$(SRCS:%.c=%.o)
 
@@ -15,7 +15,7 @@ endif
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -L../ -lmorphux
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -L../ $(LDFLAGS)
 
 check: $(NAME)
 	./$(NAME)
