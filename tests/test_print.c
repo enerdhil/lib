@@ -116,12 +116,12 @@ TEST(print_log_minfo) {
     m_info("Test 123");
 
     int         fd = open(TEST_LOG_FN, O_RDONLY);
-    char        buf[8];
+    char        buf[14];
 
     TEST_ASSERT(fd != 0, "Can't open the log file");
-    TEST_ASSERT(read(fd, buf, 8) == 8, "Read return is wrong");
+    TEST_ASSERT(read(fd, buf, 14) == 14, "Read return is wrong");
     close(fd);
-    TEST_ASSERT(memcmp(buf, "Test 123", 8) == 0, "Content of the file is wrong");
+    TEST_ASSERT(memcmp(buf, "[INFO] Test 123", 14) == 0, "Content of the file is wrong");
     TEST_ASSERT(m_clean_log() == true, "Return is wrong");
     return TEST_SUCCESS;
 }
@@ -131,11 +131,11 @@ TEST(print_log_mwarning) {
     m_warning("Test 123");
 
     int         fd = open(TEST_LOG_FN, O_RDONLY);
-    char        buf[8];
+    char        buf[14];
 
     TEST_ASSERT(fd != 0, "Can't open the log file");
-    TEST_ASSERT(read(fd, buf, 8) == 8, "Read return is wrong");
-    TEST_ASSERT(memcmp(buf, "Test 123", 8) == 0, "Content of the file is wrong");
+    TEST_ASSERT(read(fd, buf, 14) == 14, "Read return is wrong");
+    TEST_ASSERT(memcmp(buf, "[WARN] Test 123", 14) == 0, "Content of the file is wrong");
     close(fd);
     TEST_ASSERT(m_clean_log() == true, "Return is wrong");
     return TEST_SUCCESS;
@@ -146,11 +146,11 @@ TEST(print_log_merror) {
     m_error("Test 123");
 
     int         fd = open(TEST_LOG_FN, O_RDONLY);
-    char        buf[8];
+    char        buf[15];
 
     TEST_ASSERT(fd != 0, "Can't open the log file");
-    TEST_ASSERT(read(fd, buf, 8) == 8, "Read return is wrong");
-    TEST_ASSERT(memcmp(buf, "Test 123", 8) == 0, "Content of the file is wrong");
+    TEST_ASSERT(read(fd, buf, 15) == 15, "Read return is wrong");
+    TEST_ASSERT(memcmp(buf, "[ERROR] Test 123", 15) == 0, "Content of the file is wrong");
     close(fd);
     TEST_ASSERT(m_clean_log() == true, "Return is wrong");
     return TEST_SUCCESS;
@@ -172,12 +172,12 @@ TEST(print_log_mpanic) {
     }
 
     int         fd = open(TEST_LOG_FN, O_RDONLY);
-    char        buf[8];
+    char        buf[15];
 
     TEST_ASSERT(fd != 0, "Can't open the log file");
-    TEST_ASSERT(read(fd, buf, 8) == 8, "Read return is wrong");
+    TEST_ASSERT(read(fd, buf, 15) == 15, "Read return is wrong");
     close(fd);
-    TEST_ASSERT(memcmp(buf, "Test 123", 8) == 0, "Content of the file is wrong");
+    TEST_ASSERT(memcmp(buf, "[PANIC] Test 123", 15) == 0, "Content of the file is wrong");
     TEST_ASSERT(m_clean_log() == true, "Return is wrong");
     return TEST_SUCCESS;
 }

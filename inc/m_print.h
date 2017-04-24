@@ -47,6 +47,11 @@
 # define M_WARN_BEG     M_COLOR_RED M_LOG_DEF_CHAR " " M_COLOR_RESET
 # define M_INFO_BEG     M_COLOR_BLUE M_LOG_DEF_CHAR " " M_COLOR_RESET
 
+# define M_LOG_PANIC_BEG    "[PANIC] "
+# define M_LOG_ERROR_BEG    "[ERROR] "
+# define M_LOG_WARN_BEG     "[WARN] "
+# define M_LOG_INFO_BEG     "[INFO] "
+
 /*!
  * \brief Print a string in an error fomat, then call exit with 1
  * \note Support printf format

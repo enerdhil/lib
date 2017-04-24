@@ -65,6 +65,7 @@ void m_panic(const char *str, ...) {
     va_start(ap, str);
     if (g_log_flags & M_LOG_FORCE)
     {
+        m_log(M_LOG_PANIC_BEG);
         m_log_v(str, ap);
     }
     else
@@ -85,6 +86,7 @@ void m_error(const char *str, ...) {
     va_start(ap, str);
     if (g_log_flags & M_LOG_FORCE)
     {
+        m_log(M_LOG_ERROR_BEG);
         m_log_v(str, ap);
     }
     else
@@ -104,6 +106,7 @@ void m_warning(const char *str, ...) {
     va_start(ap, str);
     if (g_log_flags & M_LOG_FORCE)
     {
+        m_log(M_LOG_WARN_BEG);
         m_log_v(str, ap);
     }
     else
@@ -120,6 +123,7 @@ void m_info(const char *str, ...) {
     va_start(ap, str);
     if (g_log_flags & M_LOG_FORCE)
     {
+        m_log(M_LOG_INFO_BEG);
         m_log_v(str, ap);
     }
     else
