@@ -14,49 +14,54 @@
  *                       limitations under the License.                         *
  \******************************************************************************/
 
-#include <m_infos.h>
+#ifndef M_FILE_H
+# define M_FILE_H
+
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <fcntl.h>
+
+/*!
+ * \brief Read an entire file from an fd
+ *
+ * \param[in] fd File descriptor
+ *
+ * Read an entire from a fd, in two syscalls
+ *
+ * \return The content of the file, NULL on failure
+ */
+char *mpm_read_file_from_fd(int fd);
+
+/*!
+ * \brief Read an entire file from a filename
+ *
+ * \param[in] fn Filename
+ *
+ * Read an entire file from a fd, in 4 syscalls
+ * 
+ * \return The content of the file, NULL on failure
+ */
+char *mpm_read_file_from_fn(const char *fn);
+
+/*!
+ * \brief Get a size from an fd, in bytes
+ *
+ * \param[in] fd File descriptor
+ *
+ * \return The size of file, 0 on failure
+ */
+off_t mpm_get_file_size_from_fd(int fd);
+
+/*!
+ * \brief Get a size from a filename, in bytes
+ *
+ * \param[in] fn Filename
+ *
+ * \return The size of the file, 0 on failure
+ */
+off_t mpm_get_file_size_from_fn(const char *fn);
 
 
-/* Globals */
-static char     program[INFOS_G_LEN_MAX] = "";
-static char     version[INFOS_G_LEN_MAX] = "";
-static char     maintainer[INFOS_G_LEN_MAX] = "";
-
-void set_program_name(const char *str) {
-    if (str == NULL)
-        strcpy(program, "");
-    else if (strlen(str) < INFOS_G_LEN_MAX)
-        strcpy(program, str);
-}
-
-void set_version(const char *str) {
-    if (str == NULL)
-        strcpy(version, "");
-    else if (strlen(str) < INFOS_G_LEN_MAX)
-        strcpy(version, str);
-}
-
-void set_maintainer(const char *str) {
-    if (str == NULL)
-        strcpy(maintainer, "");
-    else if (strlen(str) < INFOS_G_LEN_MAX)
-        strcpy(maintainer, str);
-}
-
-const char *get_program_name(void) {
-    if (strlen(program) != 0)
-        return program;
-    return NULL;
-}
-
-const char *get_version(void) {
-    if (strlen(version) != 0)
-        return version;
-    return NULL;
-}
-
-const char *get_maintainer(void) {
-    if (strlen(maintainer) != 0)
-        return maintainer;
-    return NULL;
-}
+#endif /* M_FILE_H */

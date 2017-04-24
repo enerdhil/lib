@@ -17,16 +17,16 @@
 NAME =		libmorphux.a
 CC =		gcc
 LIB =		ar
-CFLAGS =	-Wall -Wextra -Werror -Wno-unused-result -I inc/ -std=c99 -g -O3
+CFLAGS =	-Wall -Wextra -Werror -Wno-unused-result -I inc/ -std=gnu99 -g -O3
 LFLAGS =	-cq
 SRCS =		$(wildcard src/*.c)
 OBJS =		$(SRCS:%.c=%.o)
 
 OSTYPE =	$(shell uname)
 ifeq ($(OSTYPE), Linux)
-COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -lgcov -DCOMPILE_WITH_TEST"
+COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=gnu99 -g -O0 -coverage -lgcov -DCOMPILE_WITH_TEST"
 else ifeq ($(OSTYPE), Darwin)
-COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=c99 -g -O0 -coverage -DCOMPILE_WITH_TEST"
+COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=gnu99 -g -O0 -coverage -DCOMPILE_WITH_TEST"
 endif
 
 all: $(NAME)
@@ -35,7 +35,7 @@ $(NAME): $(OBJS)
 	$(LIB) $(LFLAGS) $(NAME) $(OBJS)
 
 check: all
-	$(MAKE) fclean all CFLAGS="$(CFLAGS) -DCOMPILE_WITH_TEST"
+	$(MAKE) fclean all CFLAGS="$(CFLAGS) -Wno-error -DCOMPILE_WITH_TEST"
 	make -C tests re check
 
 doc:
@@ -44,7 +44,6 @@ doc:
 coverage:
 	$(MAKE) fclean all CFLAGS=$(COVFLAGS)
 	make -C tests coverage check
-	rm src/test.gc*
 	gcov -o src/ $(SRCS)
 
 clean:
@@ -55,6 +54,9 @@ clean:
 
 fclean: clean
 	rm -f $(NAME)
+
+test:
+	$(MAKE) fclean all CFLAGS="$(CFLAGS) -DCOMPILE_WITH_TEST -Wno-error"
 
 re: fclean all
 

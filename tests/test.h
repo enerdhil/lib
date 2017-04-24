@@ -12,12 +12,12 @@
 # define WAIT_AND_CLOSE(pid, status, fd) pid = waitpid(pid, &status, 0); close(fd[1]);
 # define OPT_STR_SIZE 150
 # define OPT_DEF(val) { \
-	{'q', "qwerty", "qwerty", val, &callback_q}, \
-	{'w', "wertyu", "wertyu", val, &callback_w}, \
-	{'e', "ertyui", "rtyuio", val, &callback_e}, \
-	{'r', "rtyuio", "tyuiop", val, &callback_r}, \
-	{'t', "tyuiop", "tyuiop", val, &callback_t}, \
-	{'y', "yuiop[", "yuiop[", val, &callback_y}, \
+	{.opt = 'q', .s_opt = "qwerty", .desc = "qwerty", .take_arg = val, .callback = &callback_q}, \
+	{.opt = 'w', .s_opt = "wertyu", .desc = "wertyu", .take_arg = val, .callback = &callback_w}, \
+	{.opt = 'e', .s_opt = "ertyui", .desc = "rtyuio", .take_arg = val, .callback = &callback_e}, \
+	{.opt = 'r', .s_opt = "rtyuio", .desc = "tyuiop", .take_arg = val, .callback = &callback_r}, \
+	{.opt = 't', .s_opt = "tyuiop", .desc = "tyuiop", .take_arg = val, .callback = &callback_t}, \
+	{.opt = 'y', .s_opt = "yuiop[", .desc = "yuiop[", .take_arg = val, .callback = &callback_y}, \
 	ARGS_EOL \
 }
 
@@ -26,12 +26,13 @@ void	register_args_tests(void);
 void	register_list_tests(void);
 void	register_tests_tests(void);
 void	register_print_tests(void);
-void		callback_q(const char *s);
-void		callback_w(const char *s);
-void		callback_e(const char *s);
-void		callback_r(const char *s);
-void		callback_t(const char *s);
-void		callback_y(const char *s);
+void    register_files_tests(void);
+bool		callback_q(const char *s);
+bool		callback_w(const char *s);
+bool		callback_e(const char *s);
+bool		callback_r(const char *s);
+bool		callback_t(const char *s);
+bool		callback_y(const char *s);
 void		reset_args(void);
 
 

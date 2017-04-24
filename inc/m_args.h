@@ -19,48 +19,54 @@
 
 # include <stdbool.h>
 # include <stdlib.h>
-# include <m_types.h>
-# include <m_print.h>
-# include <m_infos.h>
+# include <errno.h>
 # include <morphux.h>
 
-typedef struct		s_args {
-	/**
-	 * Single letter option
-	 * Example: -f, -s
-	 */
-	char	opt;
+typedef struct      opts_s {
+    char    opt;                       /*!< Single letter option. '\0' for no option */
+    char    *s_opt;                    /*!< Word option. NULL for no option */
+    char    *desc;                     /*!< Description of the option. Used for the help. */
+    char    *usage;                    /*!< Usage example */
+    bool    take_arg;                  /*!< Describe if the option must take an argument */
+    bool    required;                  /*!< Describe if the option is required or not */
+    bool    (*callback)(const char *); /*!< Callback function */
+}                   mopts_t;
 
-	/**
-	 * Full string option
-	 * Example: --force, --skip
-	 */
-	char	*s_opt;
-
-	/**
-	 * Description of the option.
-	 * Used for the help
-	 */
-	char	*desc;
-
-	/**
-	 * Boolean that describe if the option must take an argument
-	 */
-	bool		take_arg;
-
-	/**
-	 * Callback of the option
-	 */
-	void	(*callback)(const char *);
-}					margs_t;
-
-#define ARGS_EOL {0, NULL, NULL, false, NULL}
+#define ARGS_EOL {.opt = 0, .s_opt = NULL, .desc = NULL, .take_arg = false, .callback = NULL}
 #define IS_EOL(lst) (lst.opt == 0 && lst.s_opt == NULL && lst.desc == NULL && \
-						lst.take_arg == false && lst.callback == NULL)
+                        lst.take_arg == false && lst.callback == NULL)
 
+/*!
+ * \brief Read the options given by the program
+ * \param[in] ac Number of argument in av
+ * \param[in] av Array of string, containing the arguments
+ * \param[in] args Array of margs_t, containing the preset options. Must end with
+ * an empty structure.
+ *
+ * The read_opt function reads a given list of arguments, and parse the options
+ * in it. The options are read from the args array.
+ * If an option is not known, the function calls the help and quit.
+ * If the option -h | --help is passed, the function call the help and quit.
+ * If the option -v | --version is passed, the function call the version and quit.
+ *
+ * \note Only the arguments beginning with - are parsed.
+ * \return Number of options read
+ */
+u32_t read_opt(const int ac, char **av, const mopts_t *opts, mlist_t **args);
 
-u32_t			read_opt(const int ac, char **av, const margs_t *args);
-void			opt_help(const margs_t *args, u8_t ret);
-void			p_version(u8_t ret);
+/*!
+ * \brief Print helps with a list of argument, and exit
+ * \param[in] args List of arguments to print
+ * \param[in] ret Return code of the exit
+ */
+void opt_help(const mopts_t *opts, u8_t ret);
+
+/*!
+ * \brief Print the program name, the version and the maintainer, then exit
+ * \param[in] ret Return code of the exit
+ */
+void p_version(u8_t ret);
+
+void usage(const mopts_t *opts);
 
 #endif /* M_ARGS_H */

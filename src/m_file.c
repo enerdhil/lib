@@ -14,49 +14,72 @@
  *                       limitations under the License.                         *
  \******************************************************************************/
 
-#include <m_infos.h>
+#include <morphux.h>
 
+off_t mpm_get_file_size_from_fd(int fd) {
+    struct stat buf;
+    if (fd == -1)
+        return 0;
 
-/* Globals */
-static char     program[INFOS_G_LEN_MAX] = "";
-static char     version[INFOS_G_LEN_MAX] = "";
-static char     maintainer[INFOS_G_LEN_MAX] = "";
-
-void set_program_name(const char *str) {
-    if (str == NULL)
-        strcpy(program, "");
-    else if (strlen(str) < INFOS_G_LEN_MAX)
-        strcpy(program, str);
+    if (fstat(fd, &buf) == -1)
+        return 0;
+    return buf.st_size;
 }
 
-void set_version(const char *str) {
-    if (str == NULL)
-        strcpy(version, "");
-    else if (strlen(str) < INFOS_G_LEN_MAX)
-        strcpy(version, str);
+off_t mpm_get_file_size_from_fn(const char *fn) {
+    int     fd;
+    off_t   ret;
+
+    if (fn == NULL)
+        return 0;
+
+    fd = open(fn, O_RDONLY);
+    if (fd == -1)
+        return 0;
+    ret = mpm_get_file_size_from_fd(fd);
+    close(fd);
+    return ret;
 }
 
-void set_maintainer(const char *str) {
-    if (str == NULL)
-        strcpy(maintainer, "");
-    else if (strlen(str) < INFOS_G_LEN_MAX)
-        strcpy(maintainer, str);
-}
+char *mpm_read_file_from_fd(int fd) {
+    char    *ret = NULL;
+    off_t   size;
 
-const char *get_program_name(void) {
-    if (strlen(program) != 0)
-        return program;
+    if (fd == -1)
+        return NULL;
+
+    size = mpm_get_file_size_from_fd(fd);
+    if (size == 0)
+        return NULL;
+
+    ret = malloc(size + 1);
+    if (ret == NULL)
+        return NULL;
+
+    if (read(fd, ret, size) == -1)
+        goto cleanup;
+
+    ret[size] = 0;
+
+    return ret;
+
+cleanup:
+    free(ret);
     return NULL;
 }
 
-const char *get_version(void) {
-    if (strlen(version) != 0)
-        return version;
-    return NULL;
-}
+char *mpm_read_file_from_fn(const char *fn) {
+    int     fd;
+    char    *ret = NULL;
 
-const char *get_maintainer(void) {
-    if (strlen(maintainer) != 0)
-        return maintainer;
-    return NULL;
+    if (fn == NULL)
+        return NULL;
+
+    fd = open(fn, O_RDONLY);
+    if (fd == -1)
+        return NULL;
+
+    ret = mpm_read_file_from_fd(fd);
+    close(fd);
+    return ret;
 }
