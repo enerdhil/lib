@@ -14,14 +14,24 @@
 #                       limitations under the License.                         #
 ################################################################################
 
+# Names and binaries
 NAME =		libmorphux.a
 CC =		gcc
 LIB =		ar
-CFLAGS =	-Wall -Wextra -Werror -Wno-unused-result -I inc/ -std=gnu99 -g -O3
+
+# Flags
+IFLAGS =	-I inc/
+SFLAGS =	-Wall -Wextra -Werror -Wno-unused-result
+OFLAGS =	-std=gnu99 -g -O3
 LFLAGS =	-cq
+
+CFLAGS =	$(IFLAGS) $(SFLAGS) $(OFLAGS)
+
+# Sources
 SRCS =		$(wildcard src/*.c)
 OBJS =		$(SRCS:%.c=%.o)
 
+# Coverage flags
 OSTYPE =	$(shell uname)
 ifeq ($(OSTYPE), Linux)
 COVFLAGS =	"-Wall -Wextra -Wno-unused-result -I inc/ -std=gnu99 -g -O0 -coverage -lgcov -DCOMPILE_WITH_TEST"
@@ -31,8 +41,13 @@ endif
 
 all: $(NAME)
 
+%.o: %.c
+	@echo "CC\t\t$@"
+	@$(CC) $(CFLAGS) -c -o $@ $^
+
 $(NAME): $(OBJS)
-	$(LIB) $(LFLAGS) $(NAME) $(OBJS)
+	@$(LIB) $(LFLAGS) $(NAME) $(OBJS)
+	@echo "CCLD\t\t$(NAME)"
 
 check: all
 	$(MAKE) fclean all CFLAGS="$(CFLAGS) -Wno-error -DCOMPILE_WITH_TEST -DDEBUG -DDEBUG_FULL -ldl"
@@ -56,7 +71,7 @@ fclean: clean
 	rm -f $(NAME)
 
 test:
-	$(MAKE) fclean all CFLAGS="$(CFLAGS) -DCOMPILE_WITH_TEST -Wno-error"
+	$(MAKE) fclean all CFLAGS="$(CFLAGS) -DCOMPILE_WITH_TEST -Wno-error -DDEBUG_FULL"
 
 re: fclean all
 
