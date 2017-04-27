@@ -29,6 +29,7 @@ static ssize_t (*real_read)(int, void *, size_t) = &read;
 static int     (*real_close)(int) = &close;
 static char    *(*real_strdup)(const char *) = &strdup;
 static int     (*real_fstat)(int, struct stat *) = &fstat;
+static void    *(*real_calloc)(size_t, size_t) = &calloc;
 
 # include <fail_test.h>
 
@@ -38,6 +39,7 @@ static int      g_read_fail = -1;
 static int      g_close_fail = -1;
 static int      g_strdup_fail = -1;
 static int      g_fstat_fail = -1;
+static int      g_calloc_fail = -1;
 
 void    *fl_malloc(size_t alloc) {
     if (g_malloc_fail == -1)
@@ -48,6 +50,18 @@ void    *fl_malloc(size_t alloc) {
     }
     g_malloc_fail--;
     return real_malloc(alloc);
+}
+
+void    *fl_calloc(size_t nmemb, size_t size) {
+    if (g_calloc_fail == -1)
+        return real_calloc(nmemb, size);
+    if (g_calloc_fail == 0)
+    {
+        g_calloc_fail = -1;
+        return NULL;
+    }
+    g_calloc_fail--;
+    return real_calloc(nmemb, size);
 }
 
 ssize_t fl_write(int fd, const void *ptr, size_t len) {
@@ -109,6 +123,11 @@ int fl_fstat(int fd, struct stat *buf) {
 void set_malloc_fail(int val) {
     if (g_malloc_fail == -1)
         g_malloc_fail = val;
+}
+
+void set_calloc_fail(int val) {
+    if (g_calloc_fail == -1)
+        g_calloc_fail = val;
 }
 
 void set_write_fail(int val) {

@@ -84,6 +84,21 @@ TEST(test_fail_malloc) {
 	return TEST_SUCCESS;
 }
 
+TEST(test_fail_calloc) {
+
+    char    *ret = calloc(1, 10);
+    TEST_ASSERT(ret != NULL, "calloc should have succeed (Or we're very unlucky)");
+    free(ret);
+
+    set_calloc_fail(1);
+    ret = calloc(1, 10);
+    TEST_ASSERT(ret != NULL, "calloc should have succeed (Or we're very unlucky)");
+    free(ret);
+    ret = calloc(1, 10);
+    TEST_ASSERT(ret == NULL, "calloc should have failed")
+    return TEST_SUCCESS;
+}
+
 # define TMP_FD_FN		"/tmp/test_fake_functions"
 
 TEST(test_fail_write) {
@@ -166,6 +181,7 @@ void	register_tests_tests(void) {
 	test_test_result();
 	test_test_group_fail();
 	reg_test("fake_functions", test_fail_malloc);
+	reg_test("fake_functions", test_fail_calloc);
 	reg_test("fake_functions", test_fail_write);
 	reg_test("fake_functions", test_fail_read);
 	reg_test("fake_functions", test_fail_close);
