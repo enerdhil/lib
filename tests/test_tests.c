@@ -169,6 +169,34 @@ TEST(test_fail_fstat) {
     return TEST_SUCCESS;
 }
 
+TEST(test_fail_strcpy) {
+    const char  *src = "Hello !";
+    char        dst[sizeof(src)];
+
+    TEST_ASSERT((strcpy(dst, src) != NULL), "Should have succeed");
+    set_strcpy_fail(1);
+    TEST_ASSERT((strcpy(dst, src) != NULL), "Should have succeed");
+    TEST_ASSERT((strcpy(dst, src) == NULL), "Should have failed");
+
+    return TEST_SUCCESS;
+}
+
+TEST(test_fail_strcat) {
+    const char  *src = "Hello !";
+    char        dst[sizeof(src) + 5];
+
+    strcpy(dst, "Test");
+    TEST_ASSERT((strcat(dst, src) != NULL), "Should have succeed");
+    set_strcat_fail(1);
+    strcpy(dst, "Test");
+    TEST_ASSERT((strcat(dst, src) != NULL), "Should have succeed");
+    strcpy(dst, "Test");
+    TEST_ASSERT((strcat(dst, src) == NULL), "Should have failed");
+
+    return TEST_SUCCESS;
+}
+
+
 TEST(test_fail_cleanup) {
 	unlink(TMP_FD_FN);
 	return TEST_SUCCESS;
@@ -187,5 +215,7 @@ void	register_tests_tests(void) {
 	reg_test("fake_functions", test_fail_close);
 	reg_test("fake_functions", test_fail_strdup);
 	reg_test("fake_functions", test_fail_fstat);
+	reg_test("fake_functions", test_fail_strcpy);
+	reg_test("fake_functions", test_fail_strcat);
 	reg_test("fake_functions", test_fail_cleanup);
 }

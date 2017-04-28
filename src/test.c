@@ -30,6 +30,8 @@ static int     (*real_close)(int) = &close;
 static char    *(*real_strdup)(const char *) = &strdup;
 static int     (*real_fstat)(int, struct stat *) = &fstat;
 static void    *(*real_calloc)(size_t, size_t) = &calloc;
+static char    *(*real_strcpy)(char *, const char *) = &strcpy;
+static char    *(*real_strcat)(char *, const char *) = &strcat;
 
 # include <fail_test.h>
 
@@ -40,6 +42,8 @@ static int      g_close_fail = -1;
 static int      g_strdup_fail = -1;
 static int      g_fstat_fail = -1;
 static int      g_calloc_fail = -1;
+static int      g_strcpy_fail = -1;
+static int      g_strcat_fail = -1;
 
 void    *fl_malloc(size_t alloc) {
     if (g_malloc_fail == -1)
@@ -120,6 +124,30 @@ int fl_fstat(int fd, struct stat *buf) {
     return real_fstat(fd, buf);
 }
 
+char *fl_strcpy(char *dst, const char *src) {
+    if (g_strcpy_fail == -1)
+        return real_strcpy(dst, src);
+    if (g_strcpy_fail == 0)
+    {
+        g_strcpy_fail = -1;
+        return NULL;
+    }
+    g_strcpy_fail--;
+    return real_strcpy(dst, src);
+}
+
+char *fl_strcat(char *dst, const char *src) {
+    if (g_strcat_fail == -1)
+        return real_strcat(dst, src);
+    if (g_strcat_fail == 0)
+    {
+        g_strcat_fail = -1;
+        return NULL;
+    }
+    g_strcat_fail--;
+    return real_strcat(dst, src);
+}
+
 void set_malloc_fail(int val) {
     if (g_malloc_fail == -1)
         g_malloc_fail = val;
@@ -153,6 +181,16 @@ void set_strdup_fail(int val) {
 void set_fstat_fail(int val) {
     if (g_fstat_fail == -1)
         g_fstat_fail = val;
+}
+
+void set_strcpy_fail(int val) {
+    if (g_strcpy_fail == -1)
+        g_strcpy_fail = val;
+}
+
+void set_strcat_fail(int val) {
+    if (g_strcat_fail == -1)
+        g_strcat_fail = val;
 }
 
 #endif /* COMPILE_WITH_TEST */
