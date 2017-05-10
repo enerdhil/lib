@@ -18,10 +18,14 @@ $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -L../ $(LDFLAGS)
 
 check: $(NAME)
+	mkdir -p test_dir_2 && touch test_dir_2/file && chmod a-w test_dir_2
 	./$(NAME)
+	chmod +w test_dir_2 && rm -rf test_dir_2
 
 valgrind: $(NAME)
+	mkdir test_dir_2 && touch test_dir_2/file && chmod a-w test_dir_2
 	valgrind --leak-check=full --error-exitcode=1 ./$(NAME)
+	chmod +w test_dir_2 && rm -rf test_dir_2
 
 coverage:
 	$(MAKE) fclean all CFLAGS=$(COVFLAGS)

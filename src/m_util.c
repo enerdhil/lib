@@ -33,7 +33,7 @@ bool recursive_delete(const char *dir) {
             case FTS_DNR:
             /* FALLTROUGH */
             case FTS_ERR:
-                return false;
+                goto error;
 
             case FTS_DC:
             /* FALLTROUGH */
@@ -53,11 +53,15 @@ bool recursive_delete(const char *dir) {
             /* FALLTROUGH */
             case FTS_DEFAULT:
                 if (remove(curr->fts_accpath) < 0)
-                    return false;
+                    goto error;
                 break;
         }
     }
 
     fts_close(ftsp);
     return true;
+
+error:
+    fts_close(ftsp);
+    return false;
 }
