@@ -1,15 +1,15 @@
 NAME =		test
 CC =		gcc
-CFLAGS =	-Wall -Wextra -Wno-unused-result -g -O3 -I../inc -DDEBUG #-finstrument-functions -export-dynamic
+CFLAGS =	-Wall -Wextra -Wno-unused-result -g -O3 -I../inc -DDEBUG -std=gnu99#-finstrument-functions -export-dynamic
 LDFLAGS = -lmorphux -ldl
 SRCS =		$(wildcard *.c)
 OBJS =		$(SRCS:%.c=%.o)
 
 OSTYPE =	$(shell uname)
 ifeq ($(OSTYPE), Linux)
-COVFLAGS =	"-Wall -Wextra -Wno-unused-result -g -O0 -I../inc -coverage -lgcov"
+COVFLAGS =	"-Wall -Wextra -Wno-unused-result -g -O0 -I../inc -coverage -lgcov -std=gnu99"
 else ifeq ($(OSTYPE), Darwin)
-COVFLAGS =	"-Wall -Wextra -Wno-unused-result -g -O0 -I../inc -coverage"
+COVFLAGS =	"-Wall -Wextra -Wno-unused-result -g -O0 -I../inc -coverage -std=gnu99"
 endif
 
 all: $(NAME)

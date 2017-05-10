@@ -27,6 +27,7 @@ void	register_list_tests(void);
 void	register_tests_tests(void);
 void	register_print_tests(void);
 void    register_files_tests(void);
+void    register_util_tests(void);
 bool		callback_q(const char *s);
 bool		callback_w(const char *s);
 bool		callback_e(const char *s);

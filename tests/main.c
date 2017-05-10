@@ -10,6 +10,7 @@ int     main(void) {
     register_list_tests();
     register_print_tests();
     register_files_tests();
+    register_util_tests();
 
     m_info("Beginning tests...\n");
     ret = test_all();

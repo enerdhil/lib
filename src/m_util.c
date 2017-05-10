@@ -15,6 +15,7 @@
  \******************************************************************************/
 
 #include <m_util.h>
+#include <fts.h>
 
 bool recursive_delete(const char *dir) {
     FTS         *ftsp = NULL;
@@ -22,11 +23,11 @@ bool recursive_delete(const char *dir) {
     const char  *files[] = { (char *)dir, NULL };
 
     ftsp = fts_open((char * const *)files, FTS_NOCHDIR | FTS_PHYSICAL | FTS_XDEV, NULL);
-    if (ftsp == NULL)
-        return false;
+    assert(ftsp != NULL);
 
     while ((curr = fts_read(ftsp))) {
         switch (curr->fts_info) {
+#ifndef COMPILE_WITH_TEST
             case FTS_NS:
             /* FALLTROUGH */
             case FTS_DNR:
@@ -40,6 +41,7 @@ bool recursive_delete(const char *dir) {
             /* FALLTROUGH */
             case FTS_NSOK:
                 break ;
+#endif /* COMPILE_WITH_TEST */
 
             case FTS_DP:
             /* FALLTROUGH */

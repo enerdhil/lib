@@ -17,11 +17,18 @@
 #ifndef M_UTIL
 # define M_UTIL
 
+# include <stdint.h>
 # include <sys/types.h>
 # include <sys/stat.h>
-# include <fts.h>
 # include <morphux.h>
 
+/*!
+ * \brief Delete a directory recursively
+ *
+ * \param[in] dir Path of the directory to delete
+ *
+ * \return true on success, false on failure
+ */
 bool recursive_delete(const char *dir);
 
 #endif /* M_UTIL */
