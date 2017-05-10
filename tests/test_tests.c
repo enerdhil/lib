@@ -196,6 +196,20 @@ TEST(test_fail_strcat) {
     return TEST_SUCCESS;
 }
 
+TEST(test_fail_mkdir) {
+    const char *dir = "/tmp/test_fail_mkdir";
+
+    TEST_ASSERT(mkdir(dir, S_IRWXU) != -1, "Should have succeed")
+    rmdir(dir);
+
+    set_mkdir_fail(1);
+    TEST_ASSERT(mkdir(dir, S_IRWXU) != -1, "Should have succeed")
+    rmdir(dir);
+
+    TEST_ASSERT(mkdir(dir, S_IRWXU) == -1, "Should have failed")
+    return TEST_SUCCESS;
+}
+
 
 TEST(test_fail_cleanup) {
 	unlink(TMP_FD_FN);
@@ -218,4 +232,5 @@ void	register_tests_tests(void) {
 	reg_test("fake_functions", test_fail_strcpy);
 	reg_test("fake_functions", test_fail_strcat);
 	reg_test("fake_functions", test_fail_cleanup);
+	reg_test("fake_functions", test_fail_mkdir);
 }

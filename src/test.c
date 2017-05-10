@@ -32,6 +32,7 @@ static int     (*real_fstat)(int, struct stat *) = &fstat;
 static void    *(*real_calloc)(size_t, size_t) = &calloc;
 static char    *(*real_strcpy)(char *, const char *) = &strcpy;
 static char    *(*real_strcat)(char *, const char *) = &strcat;
+static int     (*real_mkdir)(const char *, mode_t) = &mkdir;
 
 # include <fail_test.h>
 
@@ -44,6 +45,7 @@ static int      g_fstat_fail = -1;
 static int      g_calloc_fail = -1;
 static int      g_strcpy_fail = -1;
 static int      g_strcat_fail = -1;
+static int      g_mkdir_fail = -1;
 
 void    *fl_malloc(size_t alloc) {
     if (g_malloc_fail == -1)
@@ -148,6 +150,20 @@ char *fl_strcat(char *dst, const char *src) {
     return real_strcat(dst, src);
 }
 
+int fl_mkdir(const char *path, mode_t mode) {
+    if (g_mkdir_fail == -1)
+        return real_mkdir(path, mode);
+    if (g_mkdir_fail == 0)
+    {
+        g_mkdir_fail = -1;
+        /* Emptying ERRNO, in order to prevent real errors */
+        errno = 0;
+        return -1;
+    }
+    g_mkdir_fail--;
+    return real_mkdir(path, mode);
+}
+
 void set_malloc_fail(int val) {
     if (g_malloc_fail == -1)
         g_malloc_fail = val;
@@ -193,4 +209,8 @@ void set_strcat_fail(int val) {
         g_strcat_fail = val;
 }
 
+void set_mkdir_fail(int val) {
+    if (g_mkdir_fail == -1)
+        g_mkdir_fail = val;
+}
 #endif /* COMPILE_WITH_TEST */

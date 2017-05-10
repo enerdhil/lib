@@ -29,6 +29,9 @@
 # define calloc(memb, size) fl_calloc(memb, size)
 # define strcpy(dst, src) fl_strcpy(dst, src)
 # define strcat(dst, src) fl_strcat(dst, src)
+# define mkdir(path, mode) fl_mkdir(path, mode)
+
+#include <errno.h>
 
 void    *fl_malloc(size_t alloc);
 ssize_t fl_write(int fd, const void *ptr, size_t len);
@@ -39,6 +42,7 @@ int     fl_fstat(int fd, struct stat *buf);
 void    *fl_calloc(size_t nmemb, size_t size);
 char    *fl_strcpy(char *dst, const char *src);
 char    *fl_strcat(char *dst, const char *src);
+int     fl_mkdir(const char *pathname, mode_t mode);
 
 void    set_malloc_fail(int val);
 void    set_write_fail(int val);
@@ -49,6 +53,7 @@ void    set_fstat_fail(int val);
 void    set_calloc_fail(int val);
 void    set_strcpy_fail(int val);
 void    set_strcat_fail(int val);
+void    set_mkdir_fail(int val);
 
 # endif /* M_FAIL_TEST_H */
 #endif /* COMPILE_WITH_TEST */
