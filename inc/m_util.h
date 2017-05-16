@@ -22,6 +22,9 @@
 # include <sys/stat.h>
 # include <morphux.h>
 
+# define STR_OR_EMPTY(str) (str ? str : "")
+# define STR_NULL_OR_EMPTY(str) (str == NULL || (str != NULL && *str == '\0'))
+
 /*!
  * \brief Delete a directory recursively
  *
