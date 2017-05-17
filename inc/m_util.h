@@ -34,4 +34,19 @@
  */
 bool recursive_delete(const char *dir);
 
+/*!
+ * \brief Check if a file is there or not
+ *
+ * \param[in] str File path
+ *
+ * \return true if the file exist, false otherwise
+ */
+static inline bool file_exist(const char *str) {
+    int         fd = open(str, O_RDONLY);
+    bool        result = (fd != -1);
+
+    close(fd);
+    return result;
+}
+
 #endif /* M_UTIL */

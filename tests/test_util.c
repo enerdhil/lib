@@ -48,7 +48,14 @@ TEST(recursive_delete) {
     return TEST_SUCCESS;
 }
 
+TEST(file_exist) {
+    TEST_ASSERT(file_exist("Makefile") == true, "Error on the return");
+    TEST_ASSERT(file_exist("Makefile_totally_not_here") == false, "Error on the return");
+    return TEST_SUCCESS;
+}
+
 void register_util_tests(void) {
     reg_test("util", init_dir);
     reg_test("util", recursive_delete);
+    reg_test("util", file_exist);
 }
