@@ -45,7 +45,8 @@ static inline bool file_exist(const char *str) {
     int         fd = open(str, O_RDONLY);
     bool        result = (fd != -1);
 
-    close(fd);
+    if (result == true)
+        close(fd);
     return result;
 }
 
