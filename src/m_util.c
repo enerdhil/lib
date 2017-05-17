@@ -65,3 +65,38 @@ error:
     fts_close(ftsp);
     return false;
 }
+
+int exec_line(const char *str) {
+    mlist_t     *list = NULL;
+    char        *cmd;
+    size_t      j, i, len;
+
+    if (str == NULL)
+        return 0;
+
+    cmd = strdup(str);
+    if (cmd == NULL)
+        return 0;
+
+    len = strlen(cmd);
+    for (i = 0, j = 0; i < len; i++)
+    {
+        if (cmd[i] == ' ')
+        {
+            while (i < len && cmd[i] == ' ')
+                i++;
+
+            i--;
+            cmd[i] = '\0';
+            list_add(list, cmd + j, i - j + 1);
+            cmd[i] = ' ';
+            j = i + 1;
+        }
+    }
+    list_add(list, cmd + j, i - j + 1);
+
+    /* TODO: exec */
+    list_free(list, NULL);
+    free(cmd);
+    return 0;
+}

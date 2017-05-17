@@ -50,4 +50,13 @@ static inline bool file_exist(const char *str) {
     return result;
 }
 
+/*!
+ * \brief Execute a command from a string
+ *
+ * \param[in] str Command to execute
+ *
+ * \return 0 success, error on failure
+ */
+int exec_line(const char *str);
+
 #endif /* M_UTIL */
