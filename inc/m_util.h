@@ -59,4 +59,6 @@ static inline bool file_exist(const char *str) {
  */
 int exec_line(const char *str);
 
+int exec_list(mlist_t *list);
+
 #endif /* M_UTIL */

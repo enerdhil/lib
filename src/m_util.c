@@ -66,6 +66,31 @@ error:
     return false;
 }
 
+MPX_STATIC char **str_list_to_array(mlist_t *list) {
+    char    **arr = NULL, *ptr = NULL;
+    mlist_t *tmp;
+    size_t  i = 0;
+
+    arr = malloc(sizeof(char *) * (list_size(list) + 1));
+    if (arr == NULL)
+        return NULL;
+
+    list_for_each(list, tmp, ptr) {
+        arr[i] = strdup(ptr);
+        arr[i + 1] = NULL;
+        if (arr[i] == NULL)
+            goto end;
+    }
+
+    return arr;
+
+end:
+    for (i = 0; arr[i] != NULL; i++)
+        free(arr[i]);
+    free(arr);
+    return NULL;
+}
+
 int exec_line(const char *str) {
     mlist_t     *list = NULL;
     char        *cmd;
@@ -95,8 +120,16 @@ int exec_line(const char *str) {
     }
     list_add(list, cmd + j, i - j + 1);
 
-    /* TODO: exec */
+    exec_list(list);
     list_free(list, NULL);
     free(cmd);
+    return 0;
+}
+
+int exec_list(mlist_t *list) {
+    char    **tab = NULL;
+
+    tab = str_list_to_array(list);
+    // exec 
     return 0;
 }
