@@ -21,6 +21,8 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <morphux.h>
+# include <sys/wait.h>
+
 
 # define STR_OR_EMPTY(str) (str ? str : "")
 # define STR_NULL_OR_EMPTY(str) (str == NULL || (str != NULL && *str == '\0'))

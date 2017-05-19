@@ -80,6 +80,7 @@ MPX_STATIC char **str_list_to_array(mlist_t *list) {
         arr[i + 1] = NULL;
         if (arr[i] == NULL)
             goto end;
+        i++;
     }
 
     return arr;
@@ -128,8 +129,29 @@ int exec_line(const char *str) {
 
 int exec_list(mlist_t *list) {
     char    **tab = NULL;
+    int     pid, status = 1;
 
     tab = str_list_to_array(list);
-    // exec 
-    return 0;
+
+    if (tab == NULL)
+        goto end;
+
+    if ((pid = fork()) == -1)
+        goto end;
+
+    if (pid == 0)
+    {
+        execvp(tab[0], tab);
+        exit(1);
+    }
+    else
+    {
+        waitpid(pid, &status, 0);
+    }
+
+end:
+    for (size_t i = 0; tab[i]; i++)
+        free(tab[i]);
+    free(tab);
+    return status;
 }
