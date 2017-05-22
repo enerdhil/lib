@@ -96,6 +96,7 @@ int exec_line(const char *str) {
     mlist_t     *list = NULL;
     char        *cmd;
     size_t      j, i, len;
+    int         ret;
 
     if (str == NULL)
         return 0;
@@ -121,10 +122,10 @@ int exec_line(const char *str) {
     }
     list_add(list, cmd + j, i - j + 1);
 
-    exec_list(list);
+    ret = exec_list(list);
     list_free(list, NULL);
     free(cmd);
-    return 0;
+    return ret;
 }
 
 int exec_list(mlist_t *list) {
