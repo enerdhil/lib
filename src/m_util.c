@@ -17,6 +17,12 @@
 #include <m_util.h>
 #include <fts.h>
 
+static u8_t g_compile_flags = COMP_FLAGS_NONE;
+
+void set_execute_flags(u8_t flags) {
+    g_compile_flags = flags;
+}
+
 bool recursive_delete(const char *dir) {
     FTS         *ftsp = NULL;
     FTSENT      *curr = NULL;
@@ -131,23 +137,33 @@ int exec_line(const char *str) {
 int exec_list(mlist_t *list) {
     char    **tab = NULL;
     int     pid, status = 1;
+    int     fds[2];
 
     tab = str_list_to_array(list);
 
     if (tab == NULL)
         goto end;
 
+    pipe(fds);
     if ((pid = fork()) == -1)
         goto end;
 
     if (pid == 0)
     {
+        if (g_compile_flags & COMP_FLAGS_NONE)
+        {
+            dup2(fds[1], 1);
+            dup2(fds[1], 2);
+        }
+        close(fds[1]);
+
         execvp(tab[0], tab);
         exit(1);
     }
     else
     {
         waitpid(pid, &status, 0);
+        close(fds[1]);
     }
 
 end:

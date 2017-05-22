@@ -23,9 +23,23 @@
 # include <morphux.h>
 # include <sys/wait.h>
 
+# define COMP_FLAGS_NONE   1 << 0x0
+# define COMP_FLAGS_FILE   1 << 0x1
+# define COMP_FLAGS_STDOUT 1 << 0x2
+
 
 # define STR_OR_EMPTY(str) (str ? str : "")
 # define STR_NULL_OR_EMPTY(str) (str == NULL || (str != NULL && *str == '\0'))
+
+/*!
+ * \brief Set flags for compilation output
+ *
+ * \param[in] flags Flags to set
+ *
+ * \note If COMP_FLAGS_FILE is used, the compilations will call m_log.
+ * Caller must init the logging first.
+ */
+void set_execute_flags(u8_t flags);
 
 /*!
  * \brief Delete a directory recursively
