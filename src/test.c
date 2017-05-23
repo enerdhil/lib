@@ -24,17 +24,17 @@
 
 
 /* Real functions */
-static void     *(*real_malloc)(size_t) = &malloc;
-static ssize_t  (*real_write)(int, const void *, size_t) = &write;
-static ssize_t  (*real_read)(int, void *, size_t) = &read;
-static int      (*real_close)(int) = &close;
-static char     *(*real_strdup)(const char *) = &strdup;
-static int      (*real_fstat)(int, struct stat *) = &fstat;
-static void     *(*real_calloc)(size_t, size_t) = &calloc;
-static char     *(*real_strcpy)(char *, const char *) = &strcpy;
-static char     *(*real_strcat)(char *, const char *) = &strcat;
-static int      (*real_mkdir)(const char *, mode_t) = &mkdir;
-static pid_t    (*real_fork)(void) = &fork;
+static void     *(*real_malloc)(size_t)                     = &malloc;
+static ssize_t  (*real_write)(int, const void *, size_t)    = &write;
+static ssize_t  (*real_read)(int, void *, size_t)           = &read;
+static int      (*real_close)(int)                          = &close;
+static char     *(*real_strdup)(const char *)               = &strdup;
+static int      (*real_fstat)(int, struct stat *)           = &fstat;
+static void     *(*real_calloc)(size_t, size_t)             = &calloc;
+static char     *(*real_strcpy)(char *, const char *)       = &strcpy;
+static char     *(*real_strcat)(char *, const char *)       = &strcat;
+static int      (*real_mkdir)(const char *, mode_t)         = &mkdir;
+static pid_t    (*real_fork)(void)                          = &fork;
 
 # include <fail_test.h>
 

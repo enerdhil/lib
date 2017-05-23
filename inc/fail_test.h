@@ -20,16 +20,16 @@
 
 # undef strdup
 
-# define malloc(size) fl_malloc(size)
-# define write(fd, ptr, len) fl_write(fd, ptr, len)
-# define read(fd, ptr, len) fl_read(fd, ptr, len)
-# define close(fd) fl_close(fd)
-# define strdup(str) fl_strdup(str)
-# define fstat(fd, buf) fl_fstat(fd, buf)
-# define calloc(memb, size) fl_calloc(memb, size)
-# define strcpy(dst, src) fl_strcpy(dst, src)
-# define strcat(dst, src) fl_strcat(dst, src)
-# define mkdir(path, mode) fl_mkdir(path, mode)
+# define malloc(size)           fl_malloc(size)
+# define write(fd, ptr, len)    fl_write(fd, ptr, len)
+# define read(fd, ptr, len)     fl_read(fd, ptr, len)
+# define close(fd)              fl_close(fd)
+# define strdup(str)            fl_strdup(str)
+# define fstat(fd, buf)         fl_fstat(fd, buf)
+# define calloc(memb, size)     fl_calloc(memb, size)
+# define strcpy(dst, src)       fl_strcpy(dst, src)
+# define strcat(dst, src)       fl_strcat(dst, src)
+# define mkdir(path, mode)      fl_mkdir(path, mode)
 # define fork fl_fork
 
 #include <errno.h>
