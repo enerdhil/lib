@@ -22,6 +22,7 @@
 # include <fcntl.h>
 # include <unistd.h>
 
+
 /* Real functions */
 static void     *(*real_malloc)(size_t) = &malloc;
 static ssize_t  (*real_write)(int, const void *, size_t) = &write;
@@ -37,17 +38,17 @@ static pid_t    (*real_fork)(void) = &fork;
 
 # include <fail_test.h>
 
-static int      g_malloc_fail = -1;
-static int      g_write_fail = -1;
-static int      g_read_fail = -1;
-static int      g_close_fail = -1;
-static int      g_strdup_fail = -1;
-static int      g_fstat_fail = -1;
-static int      g_calloc_fail = -1;
-static int      g_strcpy_fail = -1;
-static int      g_strcat_fail = -1;
-static int      g_mkdir_fail = -1;
-static int      g_fork_fail = -1;
+MOCK_SET_IMP(malloc);
+MOCK_SET_IMP(write);
+MOCK_SET_IMP(read);
+MOCK_SET_IMP(close);
+MOCK_SET_IMP(strdup);
+MOCK_SET_IMP(fstat);
+MOCK_SET_IMP(calloc);
+MOCK_SET_IMP(strcpy);
+MOCK_SET_IMP(strcat);
+MOCK_SET_IMP(mkdir);
+MOCK_SET_IMP(fork);
 
 void    *fl_malloc(size_t alloc) {
     if (g_malloc_fail == -1)
@@ -176,62 +177,6 @@ pid_t fl_fork(void) {
     }
     g_fork_fail--;
     return real_fork();
-}
-
-void set_malloc_fail(int val) {
-    if (g_malloc_fail == -1)
-        g_malloc_fail = val;
-}
-
-void set_calloc_fail(int val) {
-    if (g_calloc_fail == -1)
-        g_calloc_fail = val;
-}
-
-void set_write_fail(int val) {
-    if (g_write_fail == -1)
-        g_write_fail = val;
-}
-
-void set_read_fail(int val) {
-    if (g_read_fail == -1)
-        g_read_fail = val;
-}
-
-void set_close_fail(int val) {
-    if (g_close_fail == -1)
-        g_close_fail = val;
-}
-
-void set_strdup_fail(int val) {
-    if (g_strdup_fail == -1)
-        g_strdup_fail = val;
-}
-
-void set_fstat_fail(int val) {
-    if (g_fstat_fail == -1)
-        g_fstat_fail = val;
-}
-
-void set_strcpy_fail(int val) {
-    if (g_strcpy_fail == -1)
-        g_strcpy_fail = val;
-}
-
-void set_strcat_fail(int val) {
-    if (g_strcat_fail == -1)
-        g_strcat_fail = val;
-}
-
-void set_mkdir_fail(int val) {
-    if (g_mkdir_fail == -1)
-        g_mkdir_fail = val;
-}
-
-void set_fork_fail(int val) {
-    if (g_fork_fail == -1) {
-        g_fork_fail = val;
-    }
 }
 
 #endif /* COMPILE_WITH_TEST */

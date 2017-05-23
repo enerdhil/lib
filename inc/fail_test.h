@@ -20,7 +20,7 @@
 
 # undef strdup
 
-# define malloc(x) fl_malloc(x)
+# define malloc(size) fl_malloc(size)
 # define write(fd, ptr, len) fl_write(fd, ptr, len)
 # define read(fd, ptr, len) fl_read(fd, ptr, len)
 # define close(fd) fl_close(fd)
@@ -34,6 +34,13 @@
 
 #include <errno.h>
 
+#define MOCK_SET_DECL(fn_name)      void set_##fn_name##_fail(int val);
+#define MOCK_SET_IMP(fn_name)       static int g_##fn_name##_fail = -1; \
+                                    void set_##fn_name##_fail(int val) { \
+                                        if (g_##fn_name##_fail == -1) \
+                                            g_##fn_name##_fail = val; \
+                                    }
+
 void    *fl_malloc(size_t alloc);
 ssize_t fl_write(int fd, const void *ptr, size_t len);
 ssize_t fl_read(int fd, void *ptr, size_t len);
@@ -46,17 +53,17 @@ char    *fl_strcat(char *dst, const char *src);
 int     fl_mkdir(const char *pathname, mode_t mode);
 pid_t   fl_fork(void);
 
-void    set_malloc_fail(int val);
-void    set_write_fail(int val);
-void    set_read_fail(int val);
-void    set_close_fail(int val);
-void    set_strdup_fail(int val);
-void    set_fstat_fail(int val);
-void    set_calloc_fail(int val);
-void    set_strcpy_fail(int val);
-void    set_strcat_fail(int val);
-void    set_mkdir_fail(int val);
-void    set_fork_fail(int val);
+MOCK_SET_DECL(malloc);
+MOCK_SET_DECL(write);
+MOCK_SET_DECL(read);
+MOCK_SET_DECL(close);
+MOCK_SET_DECL(strdup);
+MOCK_SET_DECL(fstat);
+MOCK_SET_DECL(calloc);
+MOCK_SET_DECL(strcpy);
+MOCK_SET_DECL(strcat);
+MOCK_SET_DECL(mkdir);
+MOCK_SET_DECL(fork);
 
 # endif /* M_FAIL_TEST_H */
 #endif /* COMPILE_WITH_TEST */
