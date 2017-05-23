@@ -210,6 +210,25 @@ TEST(test_fail_mkdir) {
     return TEST_SUCCESS;
 }
 
+TEST(test_fail_fork) {
+    pid_t       ret;
+
+    ret = fork();
+    TEST_ASSERT(ret != -1, "Should have succeed");
+    if (ret == 0)
+        exit(0);
+
+    set_fork_fail(1);
+    ret = fork();
+    TEST_ASSERT(ret != -1, "Should have succeed");
+    if (ret == 0)
+        exit(0);
+
+    ret = fork();
+    TEST_ASSERT(ret == -1, "Should have failed");
+    return TEST_SUCCESS;
+}
+
 
 TEST(test_fail_cleanup) {
 	unlink(TMP_FD_FN);
@@ -233,4 +252,5 @@ void	register_tests_tests(void) {
 	reg_test("fake_functions", test_fail_strcat);
 	reg_test("fake_functions", test_fail_cleanup);
 	reg_test("fake_functions", test_fail_mkdir);
+	reg_test("fake_functions", test_fail_fork);
 }

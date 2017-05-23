@@ -105,11 +105,11 @@ int exec_line(const char *str) {
     int         ret;
 
     if (str == NULL)
-        return 0;
+        return 1;
 
     cmd = strdup(str);
     if (cmd == NULL)
-        return 0;
+        return 1;
 
     len = strlen(cmd);
     for (i = 0, j = 0; i < len; i++)
@@ -167,8 +167,11 @@ int exec_list(mlist_t *list) {
     }
 
 end:
-    for (size_t i = 0; tab[i]; i++)
-        free(tab[i]);
-    free(tab);
+    if (tab != NULL)
+    {
+        for (size_t i = 0; tab[i]; i++)
+            free(tab[i]);
+        free(tab);
+    }
     return status;
 }
