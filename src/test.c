@@ -21,162 +21,71 @@
 # include <sys/stat.h>
 # include <fcntl.h>
 # include <unistd.h>
+# include <errno.h>
 
+# define MOCK_SET_IMP(fn_name, type, error, ...) \
+    static type (*real_##fn_name)(__VA_ARGS__) = &(fn_name); \
+    static int g_##fn_name##_fail = -1; \
+    void set_##fn_name##_fail(int val) { \
+        if (g_##fn_name##_fail == -1) \
+            g_##fn_name##_fail = val; \
+    } \
+    type fl_##fn_name(__VA_ARGS__) { \
+        if (g_##fn_name##_fail == 0) { \
+            g_##fn_name##_fail = -1; \
+            return error; \
+        } if (g_##fn_name##_fail != -1) \
+            g_##fn_name##_fail--;
 
-/* Real functions */
-static void     *(*real_malloc)(size_t)                     = &malloc;
-static ssize_t  (*real_write)(int, const void *, size_t)    = &write;
-static ssize_t  (*real_read)(int, void *, size_t)           = &read;
-static int      (*real_close)(int)                          = &close;
-static char     *(*real_strdup)(const char *)               = &strdup;
-static int      (*real_fstat)(int, struct stat *)           = &fstat;
-static void     *(*real_calloc)(size_t, size_t)             = &calloc;
-static char     *(*real_strcpy)(char *, const char *)       = &strcpy;
-static char     *(*real_strcat)(char *, const char *)       = &strcat;
-static int      (*real_mkdir)(const char *, mode_t)         = &mkdir;
-static pid_t    (*real_fork)(void)                          = &fork;
+# define MOCK_REAL_CALL(fn_name, ...) return real_##fn_name(__VA_ARGS__); }
 
-# include <fail_test.h>
+/*!
+ * USAGE:
+ * MOCK_SET_IMP(Real_function_name, Real_function_return, Errored_return, args...);
+ */
 
-MOCK_SET_IMP(malloc);
-MOCK_SET_IMP(write);
-MOCK_SET_IMP(read);
-MOCK_SET_IMP(close);
-MOCK_SET_IMP(strdup);
-MOCK_SET_IMP(fstat);
-MOCK_SET_IMP(calloc);
-MOCK_SET_IMP(strcpy);
-MOCK_SET_IMP(strcat);
-MOCK_SET_IMP(mkdir);
-MOCK_SET_IMP(fork);
-
-void    *fl_malloc(size_t alloc) {
-    if (g_malloc_fail == -1)
-        return real_malloc(alloc);
-    if (g_malloc_fail == 0) {
-        g_malloc_fail = -1;
-        return NULL;
-    }
-    g_malloc_fail--;
-    return real_malloc(alloc);
+MOCK_SET_IMP(malloc, void *, NULL, size_t alloc) {
+    MOCK_REAL_CALL(malloc, alloc);
 }
 
-void    *fl_calloc(size_t nmemb, size_t size) {
-    if (g_calloc_fail == -1)
-        return real_calloc(nmemb, size);
-    if (g_calloc_fail == 0)
-    {
-        g_calloc_fail = -1;
-        return NULL;
-    }
-    g_calloc_fail--;
-    return real_calloc(nmemb, size);
+MOCK_SET_IMP(write, ssize_t, -1, int fd, const void *ptr, size_t len) {
+    MOCK_REAL_CALL(write, fd, ptr, len);
 }
 
-ssize_t fl_write(int fd, const void *ptr, size_t len) {
-    if (g_write_fail == -1)
-        return real_write(fd, ptr, len);
-    if (g_write_fail == 0) {
-        g_write_fail = -1;
-        return -1;
-    }
-    g_write_fail--;
-    return real_write(fd, ptr, len);
+MOCK_SET_IMP(read, ssize_t, -1, int fd, void *ptr, size_t len) {
+    MOCK_REAL_CALL(read, fd, ptr, len);
 }
 
-ssize_t fl_read(int fd, void *ptr, size_t len) {
-    if (g_read_fail == -1)
-        return real_read(fd, ptr, len);
-    if (g_read_fail == 0) {
-        g_read_fail = -1;
-        return -1;
-    }
-    g_read_fail--;
-    return real_read(fd, ptr, len);
+MOCK_SET_IMP(close, int, -1, int fd) {
+    MOCK_REAL_CALL(close, fd);
 }
 
-int fl_close(int fd) {
-    if (g_close_fail == -1)
-        return real_close(fd);
-    if (g_close_fail == 0) {
-        g_close_fail = -1;
-        return -1;
-    }
-    g_close_fail--;
-    return real_close(fd);
+MOCK_SET_IMP(strdup, char *, NULL, const char *str) {
+    MOCK_REAL_CALL(strdup, str);
 }
 
-char *fl_strdup(const char *str) {
-    if (g_strdup_fail == -1)
-        return real_strdup(str);
-    if (g_strdup_fail == 0) {
-        g_strdup_fail = -1;
-        return NULL;
-    }
-    g_strdup_fail--;
-    return real_strdup(str);
+MOCK_SET_IMP(fstat, int, -1, int fd, struct stat *buf) {
+    MOCK_REAL_CALL(fstat, fd, buf);
 }
 
-int fl_fstat(int fd, struct stat *buf) {
-    if (g_fstat_fail == -1)
-        return real_fstat(fd, buf);
-    if (g_fstat_fail == 0)
-    {
-        g_fstat_fail = -1;
-        return -1;
-    }
-    g_fstat_fail--;
-    return real_fstat(fd, buf);
+MOCK_SET_IMP(calloc, void *, NULL, size_t nmemb, size_t size) {
+    MOCK_REAL_CALL(calloc, nmemb, size)
 }
 
-char *fl_strcpy(char *dst, const char *src) {
-    if (g_strcpy_fail == -1)
-        return real_strcpy(dst, src);
-    if (g_strcpy_fail == 0)
-    {
-        g_strcpy_fail = -1;
-        return NULL;
-    }
-    g_strcpy_fail--;
-    return real_strcpy(dst, src);
+MOCK_SET_IMP(strcpy, char *, NULL, char *dst, const char *src) {
+    MOCK_REAL_CALL(strcpy, dst, src);
 }
 
-char *fl_strcat(char *dst, const char *src) {
-    if (g_strcat_fail == -1)
-        return real_strcat(dst, src);
-    if (g_strcat_fail == 0)
-    {
-        g_strcat_fail = -1;
-        return NULL;
-    }
-    g_strcat_fail--;
-    return real_strcat(dst, src);
+MOCK_SET_IMP(strcat, char *, NULL, char *dst, const char *src) {
+    MOCK_REAL_CALL(strcat, dst, src);
 }
 
-int fl_mkdir(const char *path, mode_t mode) {
-    if (g_mkdir_fail == -1)
-        return real_mkdir(path, mode);
-    if (g_mkdir_fail == 0)
-    {
-        g_mkdir_fail = -1;
-        /* Emptying ERRNO, in order to prevent real errors */
-        errno = 0;
-        return -1;
-    }
-    g_mkdir_fail--;
-    return real_mkdir(path, mode);
+MOCK_SET_IMP(mkdir, int, -1, const char *pathname, mode_t mode) {
+    MOCK_REAL_CALL(mkdir, pathname, mode);
 }
 
-pid_t fl_fork(void) {
-    if (g_fork_fail == -1)
-        return real_fork();
-    if (g_fork_fail == 0)
-    {
-        g_fork_fail = -1;
-        return -1;
-    }
-    g_fork_fail--;
-    return real_fork();
+MOCK_SET_IMP(fork, pid_t, -1) {
+    MOCK_REAL_CALL(fork);
 }
 
 #endif /* COMPILE_WITH_TEST */

@@ -754,6 +754,7 @@ TEST(usage) {
     if ((pid = fork()) == 0) {
         DUP_ALL_OUTPUTS(fd);
         usage(opts);
+        exit(0);
     } else {
         WAIT_AND_CLOSE(pid, st, fd);
         TEST_ASSERT(WEXITSTATUS(st) == 0, "Wrong return");

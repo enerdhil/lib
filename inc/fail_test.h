@@ -32,38 +32,21 @@
 # define mkdir(path, mode)      fl_mkdir(path, mode)
 # define fork fl_fork
 
-#include <errno.h>
+# define MOCK_SET_DECL(fn_name, type, ...) \
+                            void set_##fn_name##_fail(int val); \
+                            type fl_##fn_name(__VA_ARGS__);
 
-#define MOCK_SET_DECL(fn_name)      void set_##fn_name##_fail(int val);
-#define MOCK_SET_IMP(fn_name)       static int g_##fn_name##_fail = -1; \
-                                    void set_##fn_name##_fail(int val) { \
-                                        if (g_##fn_name##_fail == -1) \
-                                            g_##fn_name##_fail = val; \
-                                    }
-
-void    *fl_malloc(size_t alloc);
-ssize_t fl_write(int fd, const void *ptr, size_t len);
-ssize_t fl_read(int fd, void *ptr, size_t len);
-int     fl_close(int fd);
-char    *fl_strdup(const char *str);
-int     fl_fstat(int fd, struct stat *buf);
-void    *fl_calloc(size_t nmemb, size_t size);
-char    *fl_strcpy(char *dst, const char *src);
-char    *fl_strcat(char *dst, const char *src);
-int     fl_mkdir(const char *pathname, mode_t mode);
-pid_t   fl_fork(void);
-
-MOCK_SET_DECL(malloc);
-MOCK_SET_DECL(write);
-MOCK_SET_DECL(read);
-MOCK_SET_DECL(close);
-MOCK_SET_DECL(strdup);
-MOCK_SET_DECL(fstat);
-MOCK_SET_DECL(calloc);
-MOCK_SET_DECL(strcpy);
-MOCK_SET_DECL(strcat);
-MOCK_SET_DECL(mkdir);
-MOCK_SET_DECL(fork);
+MOCK_SET_DECL(malloc, void *, size_t);
+MOCK_SET_DECL(write, ssize_t, int, const void *, size_t);
+MOCK_SET_DECL(read, ssize_t, int, void *, size_t);
+MOCK_SET_DECL(close, int, int);
+MOCK_SET_DECL(strdup, char *, const char *);
+MOCK_SET_DECL(fstat, int, int, struct stat *);
+MOCK_SET_DECL(calloc, void *, size_t, size_t);
+MOCK_SET_DECL(strcpy, char *, char *, const char *);
+MOCK_SET_DECL(strcat, char *, char *, const char *);
+MOCK_SET_DECL(mkdir, int, const char *, mode_t);
+MOCK_SET_DECL(fork, pid_t);
 
 # endif /* M_FAIL_TEST_H */
 #endif /* COMPILE_WITH_TEST */
