@@ -27,7 +27,7 @@
     static type (*real_##fn_name)(__VA_ARGS__) = &(fn_name); \
     static int g_##fn_name##_fail = -1; \
     void set_##fn_name##_fail(int val) { \
-        if (g_##fn_name##_fail == -1) \
+        if (g_##fn_name##_fail == -1 || val == -1) \
             g_##fn_name##_fail = val; \
     } \
     type fl_##fn_name(__VA_ARGS__) { \
