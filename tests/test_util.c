@@ -65,18 +65,19 @@ TEST(str_list_to_array) {
     };
 
     for (size_t i = 0; i < sizeof(strings) / sizeof(strings[0]); i++)
-        list_add(head, strings[i], sizeof(strings[i]));
+        list_add(head, strings[i], strlen(strings[i]) + 1);
 
     set_malloc_fail(0);
     TEST_ASSERT(str_list_to_array(head) == NULL, "Malloc failed did not return an error");
     set_strdup_fail(1);
     TEST_ASSERT(str_list_to_array(head) == NULL, "Failed copy did not return an error");
+
     tmp = str_list_to_array(head);
     TEST_ASSERT(tmp != NULL, "An error happened");
 
     for (size_t i = 0; i < sizeof(strings) / sizeof(strings[0]); i++)
     {
-        TEST_ASSERT_FMT(strcmp(strings[i], tmp[i]) == 0, "Strings are different (%s/%s)", strings[i], tmp[i]);
+        TEST_ASSERT((strcmp(strings[i], tmp[i]) == 0), "Strings are different");
         free(tmp[i]);
     }
     free(tmp);
@@ -103,7 +104,7 @@ TEST(exec_list) {
     };
 
     for (size_t i = 0; i < sizeof(strings) / sizeof(strings[0]); i++)
-        list_add(head, strings[i], sizeof(strings[i]));
+        list_add(head, strings[i], strlen(strings[i]) + 1);
 
     set_malloc_fail(0);
     TEST_ASSERT(exec_list(head) == 1, "Malloc failed did not return an error");

@@ -212,17 +212,36 @@ TEST(test_fail_mkdir) {
 
 TEST(test_fail_fork) {
     pid_t       ret;
+    int         status;
 
     ret = fork();
-    TEST_ASSERT(ret != -1, "Should have succeed");
     if (ret == 0)
-        exit(0);
+    {
+        _exit(0);
+    }
+    else if (ret == -1)
+    {
+        TEST_ASSERT(ret != -1, "Should have succeed");
+    }
+    else
+    {
+        waitpid(ret, &status, 0);
+    }
 
     set_fork_fail(1);
     ret = fork();
-    TEST_ASSERT(ret != -1, "Should have succeed");
     if (ret == 0)
-        exit(0);
+    {
+        _exit(0);
+    }
+    else if (ret == -1)
+    {
+        TEST_ASSERT(ret != -1, "Should have succeed");
+    }
+    else
+    {
+        waitpid(ret, &status, 0);
+    }
 
     ret = fork();
     TEST_ASSERT(ret == -1, "Should have failed");
@@ -252,5 +271,5 @@ void	register_tests_tests(void) {
 	reg_test("fake_functions", test_fail_strcat);
 	reg_test("fake_functions", test_fail_cleanup);
 	reg_test("fake_functions", test_fail_mkdir);
-	reg_test("fake_functions", test_fail_fork);
+        reg_test("fake_functions", test_fail_fork);
 }

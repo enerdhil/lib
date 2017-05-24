@@ -153,6 +153,7 @@ TEST(opts_unhandled_2) {
 		DUP_ALL_OUTPUTS(fd);
 		TEST_ASSERT(read_opt(sizeof(av), av, opt, &lst) == 0, 
 					"Not handling properly unknown arguments");
+		exit(0);
 	} else {
 		WAIT_AND_CLOSE(pid, st, fd);
 		TEST_ASSERT((WEXITSTATUS(st) == 1), "Wrong return");
