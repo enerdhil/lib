@@ -68,6 +68,10 @@ MOCK_SET_IMP(fstat, int, -1, int fd, struct stat *buf) {
     MOCK_REAL_CALL(fstat, fd, buf);
 }
 
+MOCK_SET_IMP(stat, int, -1, const char *fn, struct stat *buf) {
+    MOCK_REAL_CALL(stat, fn, buf);
+}
+
 MOCK_SET_IMP(calloc, void *, NULL, size_t nmemb, size_t size) {
     MOCK_REAL_CALL(calloc, nmemb, size)
 }

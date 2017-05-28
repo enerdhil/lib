@@ -169,6 +169,22 @@ TEST(test_fail_fstat) {
     return TEST_SUCCESS;
 }
 
+TEST(test_fail_stat) {
+    struct stat     buf;
+    int             ret;
+
+    set_stat_fail(1);
+    ret = stat("Makefile", &buf);
+    TEST_ASSERT(ret != -1, "stat failed");
+    ret = stat("Makefile", &buf);
+    TEST_ASSERT(ret == -1, "stat succeed");
+    ret = stat("Makefile", &buf);
+    TEST_ASSERT(ret != -1, "stat failed");
+
+    return TEST_SUCCESS;
+}
+
+
 TEST(test_fail_strcpy) {
     const char  *src = "Hello !";
     char        dst[sizeof(src)];
@@ -267,6 +283,7 @@ void	register_tests_tests(void) {
 	reg_test("fake_functions", test_fail_close);
 	reg_test("fake_functions", test_fail_strdup);
 	reg_test("fake_functions", test_fail_fstat);
+	reg_test("fake_functions", test_fail_stat);
 	reg_test("fake_functions", test_fail_strcpy);
 	reg_test("fake_functions", test_fail_strcat);
 	reg_test("fake_functions", test_fail_cleanup);

@@ -26,11 +26,12 @@
 # define close(fd)              fl_close(fd)
 # define strdup(str)            fl_strdup(str)
 # define fstat(fd, buf)         fl_fstat(fd, buf)
+# define stat(fd, buf)          fl_stat(fd, buf)
 # define calloc(memb, size)     fl_calloc(memb, size)
 # define strcpy(dst, src)       fl_strcpy(dst, src)
 # define strcat(dst, src)       fl_strcat(dst, src)
 # define mkdir(path, mode)      fl_mkdir(path, mode)
-# define fork fl_fork
+# define fork                   fl_fork
 
 # define MOCK_SET_DECL(fn_name, type, ...) \
                             void set_##fn_name##_fail(int val); \
@@ -42,6 +43,7 @@ MOCK_SET_DECL(read, ssize_t, int, void *, size_t);
 MOCK_SET_DECL(close, int, int);
 MOCK_SET_DECL(strdup, char *, const char *);
 MOCK_SET_DECL(fstat, int, int, struct stat *);
+MOCK_SET_DECL(stat, int, const char *, struct stat *);
 MOCK_SET_DECL(calloc, void *, size_t, size_t);
 MOCK_SET_DECL(strcpy, char *, char *, const char *);
 MOCK_SET_DECL(strcat, char *, char *, const char *);
