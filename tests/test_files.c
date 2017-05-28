@@ -95,6 +95,21 @@ TEST(file_read_file_from_fn_3) {
     return TEST_SUCCESS;
 }
 
+# define _DIR_TO_CREATE "/tmp/dir_1/dir_2/dir_3/file"
+TEST(recursive_file_open) {
+    FILE    *fd = NULL;
+
+    TEST_ASSERT(recursive_file_open("/somepath_i_cant_create/file") == NULL, "Error did not raise");
+    set_strdup_fail(0);
+    TEST_ASSERT(recursive_file_open("/somepath_i_cant_create/file") == NULL, "Error did not raise");
+
+    fd = recursive_file_open(_DIR_TO_CREATE);
+    TEST_ASSERT(fd != NULL, "Can't create the file");
+    fclose(fd);
+    recursive_delete("/tmp/dir_1");
+    return TEST_SUCCESS;
+}
+
 
 void register_files_tests(void) {
     reg_test("m_file", file_get_file_size_from_fd_1);
@@ -111,4 +126,5 @@ void register_files_tests(void) {
     reg_test("m_file", file_read_file_from_fn_1);
     reg_test("m_file", file_read_file_from_fn_2);
     reg_test("m_file", file_read_file_from_fn_3);
+    reg_test("m_file", recursive_file_open);
 }

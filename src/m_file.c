@@ -83,3 +83,30 @@ char *mpm_read_file_from_fn(const char *fn) {
     close(fd);
     return ret;
 }
+
+FILE *recursive_file_open(char *path) {
+    char        *tmp = NULL, *fn = NULL;
+
+    /* Sanitize path */
+    fn = strdup(path);
+    if (fn == NULL)
+        return NULL;
+
+    for (tmp = fn + 1; *tmp != '\0'; tmp++)
+    {
+        if (*tmp == '/')
+        {
+            *tmp = '\0';
+            if (mkdir(fn, S_IRWXU) == -1 && errno != EEXIST)
+            {
+                *tmp = '/';
+                goto open;
+            }
+            *tmp = '/';
+        }
+    }
+
+open:
+    free(fn);
+    return fopen(path, "w+");
+}

@@ -63,5 +63,19 @@ off_t mpm_get_file_size_from_fd(int fd);
  */
 off_t mpm_get_file_size_from_fn(const char *fn);
 
+/*!
+ * \brief Open a file, an create directory in order to access it
+ *
+ * \param[in] File path
+ *
+ * This function will create directories in order to achieve the desired path,
+ * then return a FILE * on the opened file.
+ * Example:
+ * > recursive_file_open("/tmp/something/somedir/somefile");
+ *
+ * \note Due to its nature, this function is not very likely to fail
+ * \return A FILE * on success, NULL on failure
+ */
+FILE *recursive_file_open(char *fn);
 
 #endif /* M_FILE_H */
