@@ -92,4 +92,8 @@ MOCK_SET_IMP(fork, pid_t, -1) {
     MOCK_REAL_CALL(fork);
 }
 
+MOCK_SET_IMP(chdir, int, -1, const char *path) {
+    MOCK_REAL_CALL(chdir, path);
+}
+
 #endif /* COMPILE_WITH_TEST */
