@@ -1,6 +1,7 @@
 /* Inception BWAAAAAAH */
 
 #include "test.h"
+#include <limits.h>
 
 TEST(test_all_empty) {
 	int			st, fd[2];
@@ -264,6 +265,17 @@ TEST(test_fail_fork) {
     return TEST_SUCCESS;
 }
 
+TEST(test_fail_chdir) {
+    char        oldpwd[PATH_MAX];
+
+    getcwd(oldpwd, PATH_MAX);
+    TEST_ASSERT(chdir("/") != -1, "Should have suceed (Or your computer is broken)");
+    set_chdir_fail(1);
+    TEST_ASSERT(chdir("/") != -1, "Should have suceed (Or your computer is broken)");
+    TEST_ASSERT(chdir("/") == -1, "Should have failed");
+    chdir(oldpwd);
+    return TEST_SUCCESS;
+}
 
 TEST(test_fail_cleanup) {
 	unlink(TMP_FD_FN);
@@ -289,4 +301,5 @@ void	register_tests_tests(void) {
 	reg_test("fake_functions", test_fail_cleanup);
 	reg_test("fake_functions", test_fail_mkdir);
         reg_test("fake_functions", test_fail_fork);
+        reg_test("fake_functions", test_fail_chdir);
 }
