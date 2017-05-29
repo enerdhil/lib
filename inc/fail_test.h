@@ -19,6 +19,8 @@
 #  define M_FAIL_TEST_H
 
 # undef strdup
+# undef strcpy
+# undef strcat
 
 # define malloc(size)           fl_malloc(size)
 # define write(fd, ptr, len)    fl_write(fd, ptr, len)
