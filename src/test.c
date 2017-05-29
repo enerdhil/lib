@@ -19,9 +19,13 @@
 # include <stdlib.h>
 # include <sys/types.h>
 # include <sys/stat.h>
+# include <sys/socket.h>
 # include <fcntl.h>
 # include <unistd.h>
 # include <errno.h>
+# include <netdb.h>
+# include <arpa/inet.h>
+
 
 # define MOCK_SET_IMP(fn_name, type, error, ...) \
     static type (*real_##fn_name)(__VA_ARGS__) = &(fn_name); \
@@ -96,4 +100,9 @@ MOCK_SET_IMP(chdir, int, -1, const char *path) {
     MOCK_REAL_CALL(chdir, path);
 }
 
+MOCK_SET_IMP(getaddrinfo, int, EAI_FAIL, const char *hostname,
+                const char *servname, const struct addrinfo *hints,
+                    struct addrinfo **res) {
+    MOCK_REAL_CALL(getaddrinfo, hostname, servname, hints, res);
+}
 #endif /* COMPILE_WITH_TEST */

@@ -277,6 +277,25 @@ TEST(test_fail_chdir) {
     return TEST_SUCCESS;
 }
 
+TEST(test_fail_getaddrinfo) {
+    struct addrinfo   hints,
+                      *servinfo;
+
+    memset(&hints, 0, sizeof(hints));
+
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+
+    TEST_ASSERT((getaddrinfo(NULL, "3390", &hints, &servinfo) == 0),
+        "Should have succeed");
+    set_getaddrinfo_fail(1);
+    TEST_ASSERT((getaddrinfo(NULL, "3390", &hints, &servinfo) == 0),
+        "Should have succeed");
+    TEST_ASSERT((getaddrinfo(NULL, "3390", &hints, &servinfo) != 0),
+        "Should have failed");
+    return TEST_SUCCESS;
+}
+
 TEST(test_fail_cleanup) {
     unlink(TMP_FD_FN);
     return TEST_SUCCESS;
@@ -302,4 +321,5 @@ void    register_tests_tests(void) {
     reg_test("fake_functions", test_fail_mkdir);
     reg_test("fake_functions", test_fail_fork);
     reg_test("fake_functions", test_fail_chdir);
+    reg_test("fake_functions", test_fail_getaddrinfo);
 }
