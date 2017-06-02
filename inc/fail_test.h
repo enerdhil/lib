@@ -38,6 +38,7 @@
 # define fork                   fl_fork
 # define chdir                  fl_chdir
 # define getaddrinfo            fl_getaddrinfo
+# define socket                 fl_socket
 
 # define MOCK_SET_DECL(fn_name, type, ...) \
                             void set_##fn_name##_fail(int val); \
@@ -59,6 +60,7 @@ MOCK_SET_DECL(chdir, int, const char *);
 MOCK_SET_DECL(chdir, int, const char *);
 MOCK_SET_DECL(getaddrinfo, int, const char *, const char *,
                                 const struct addrinfo *, struct addrinfo **);
+MOCK_SET_DECL(socket, int, int, int, int);
 
 # endif /* M_FAIL_TEST_H */
 #endif /* COMPILE_WITH_TEST */

@@ -105,4 +105,9 @@ MOCK_SET_IMP(getaddrinfo, int, EAI_FAIL, const char *hostname,
                     struct addrinfo **res) {
     MOCK_REAL_CALL(getaddrinfo, hostname, servname, hints, res);
 }
+
+MOCK_SET_IMP(socket, int, -1, int domain, int type, int protocol) {
+    MOCK_REAL_CALL(socket, domain, type, protocol);
+}
+
 #endif /* COMPILE_WITH_TEST */

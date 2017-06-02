@@ -296,6 +296,41 @@ TEST(test_fail_getaddrinfo) {
     return TEST_SUCCESS;
 }
 
+TEST(test_fail_socket) {
+    int             sockfd = 0, rval;
+    struct addrinfo hints, *servinfo, *ptr;
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+
+    TEST_ASSERT((rval = getaddrinfo(NULL, "5982", &hints, &servinfo)) == 0,
+        "getaddrinfo failed, please launch the test suite again")
+
+    for (ptr = servinfo; ptr != NULL; ptr = ptr->ai_next)
+    {
+        if ((sockfd = socket(ptr->ai_family,
+                ptr->ai_socktype, ptr->ai_protocol)) == -1)
+        {
+            continue ;
+        }
+        else
+        {
+        TEST_ASSERT((socket(ptr->ai_family,
+                ptr->ai_socktype, ptr->ai_protocol) >= 0),
+            "Should have succeed");
+        set_socket_fail(1);
+        TEST_ASSERT((socket(ptr->ai_family,
+                ptr->ai_socktype, ptr->ai_protocol) >= 0),
+            "Should have succeed");
+        TEST_ASSERT((socket(ptr->ai_family,
+                ptr->ai_socktype, ptr->ai_protocol) == -1),
+            "Should have failed");
+        }
+    }
+    return TEST_SUCCESS;
+}
+
 TEST(test_fail_cleanup) {
     unlink(TMP_FD_FN);
     return TEST_SUCCESS;
@@ -322,4 +357,5 @@ void    register_tests_tests(void) {
     reg_test("fake_functions", test_fail_fork);
     reg_test("fake_functions", test_fail_chdir);
     reg_test("fake_functions", test_fail_getaddrinfo);
+    reg_test("fake_functions", test_fail_socket);
 }
